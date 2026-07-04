@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wirkungsversprechen in 30 Minuten · Wirkungswerkstatt</title>
+<style>
+  @font-face {
+    font-family: 'BundesSans';
+    src: url('assets/fonts/BundesSans-Web-Regular.woff2') format('woff2');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  :root {
+    --blau: #36349D; --minze: #4DFFB0; --kirsche: #DB0045;
+    --lavendel: #E3E6F2; --weiss: #FFFFFF; --dunkel: #0D0C2B;
+    --blau-10: #EEEEF9; --blau-20: #C5C4EA; --blau-60: #5957B4;
+    --kirsche-10: #FCEEE3;
+    --fg: var(--dunkel); --fg-2: #4A4869; --fg-muted: #7C7AA8;
+    --line: rgba(54,52,157,0.15);
+    --display: 'Open Sans', system-ui, sans-serif;
+    --body: 'BundesSans', 'Open Sans', system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body { font-family: var(--body); color: var(--fg); background: var(--blau-10); line-height: 1.55; }
+  ::selection { background: var(--minze); color: var(--dunkel); }
+  h1,h2,h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
+
+  header.top { position: relative; background: var(--dunkel); color: var(--weiss); padding: 16px clamp(16px,4vw,40px); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { font-family: var(--display); font-weight: 800; font-size: 16px; }
+  .badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 2px 9px; border: 1.5px solid var(--minze); color: var(--minze); border-radius: 999px; font-size: 11px; font-weight: 700; font-family: var(--display); white-space: nowrap; }
+  @media (max-width: 760px) { .badge { position: static; transform: none; margin-inline: auto; } }
+  #reset { border: none; background: none; color: var(--blau-20); font-family: var(--display); font-size: 12px; font-weight: 700; cursor: pointer; }
+  #reset:hover { color: var(--minze); }
+
+  .progress { display: flex; gap: 6px; padding: 14px clamp(16px,4vw,40px); background: var(--weiss); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; overflow-x: auto; }
+  .pstep { flex: 1; min-width: 64px; border: none; background: none; cursor: pointer; font-family: var(--display); font-size: 11.5px; font-weight: 700; color: var(--fg-muted); padding: 6px 4px 8px; border-top: 3px solid var(--blau-20); text-align: left; white-space: nowrap; }
+  .pstep.act { color: var(--blau); border-top-color: var(--blau); }
+  .pstep.done { border-top-color: var(--minze); }
+  @media (max-width: 640px) {
+    .pstep { min-width: 0; text-align: center; }
+    .pstep .plabel { display: none; }
+    .pstep.act .plabel { display: inline; }
+  }
+
+  main { max-width: 720px; margin: 0 auto; padding: clamp(20px,4vw,36px) clamp(16px,4vw,24px) 100px; }
+  .step { display: none; }
+  .step.act { display: block; animation: fadein .25s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .kicker { font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blau); margin-bottom: 8px; }
+  .step h2 { font-size: clamp(22px,4vw,30px); margin-bottom: 10px; }
+  .step p.lead { color: var(--fg-2); margin-bottom: 20px; font-size: 15.5px; }
+
+  .card { background: var(--weiss); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+  label.lbl { display: block; font-family: var(--display); font-weight: 700; font-size: 13.5px; margin-bottom: 6px; }
+  .sub { font-size: 13px; color: var(--fg-muted); margin: -2px 0 8px; }
+  input[type=text], textarea { width: 100%; font-family: var(--body); font-size: 15px; padding: 10px 12px; border: 1.5px solid var(--blau-20); border-radius: 9px; background: var(--weiss); color: var(--fg); }
+  input:focus, textarea:focus { outline: none; border-color: var(--blau); }
+  textarea { min-height: 72px; resize: vertical; }
+
+  .btn { font-family: var(--display); font-weight: 700; font-size: 14.5px; padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer; }
+  .btn.primary { background: var(--blau); color: var(--weiss); }
+  .btn.primary:hover { background: var(--blau-60); }
+  .btn.minze { background: var(--minze); color: var(--dunkel); }
+  .btn.ghost { background: none; border: 1.5px solid var(--blau-20); color: var(--fg-2); }
+  .btn.ghost:hover { border-color: var(--blau); color: var(--blau); }
+  .btn.add { width: 100%; border: 1.5px dashed var(--blau-20); background: none; color: var(--blau); padding: 13px; }
+  .btn.add:hover { border-color: var(--blau); background: var(--weiss); }
+
+  .navbtns { position: fixed; bottom: 0; left: 0; right: 0; background: var(--weiss); border-top: 1px solid var(--line); padding: 12px clamp(16px,4vw,24px); display: flex; justify-content: space-between; gap: 10px; z-index: 6; }
+  .navbtns .inner { max-width: 720px; margin: 0 auto; display: flex; justify-content: space-between; width: 100%; gap: 10px; }
+
+  .hint { background: var(--weiss); border-left: 4px solid var(--minze); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 14px; color: var(--fg-2); margin: 16px 0; }
+  .rcheck { background: var(--kirsche-10); border-left: 4px solid var(--kirsche); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 14px; margin: 16px 0; }
+  .rcheck b { color: var(--kirsche); font-family: var(--display); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 4px; }
+  .privacy { font-size: 13px; color: var(--fg-muted); margin-top: 14px; }
+
+  .satz { background: var(--blau-10); border-radius: 10px; padding: 12px 16px; font-size: 15.5px; margin-top: 12px; color: var(--fg); }
+  .satz .ph { color: var(--fg-muted); font-style: italic; }
+
+  .recap .rlbl { font-family: var(--display); font-weight: 700; font-size: 11.5px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--blau); margin: 14px 0 3px; }
+  .recap .rlbl:first-child { margin-top: 0; }
+  .recap p { font-size: 14.5px; margin: 0 0 4px; }
+  .recap .leer { color: var(--fg-muted); font-style: italic; }
+  .recap .ph { color: var(--fg-muted); font-style: italic; }
+
+  details.bsp { margin: 14px 0 0; border: 1px solid var(--line); border-radius: 10px; background: var(--blau-10); }
+  details.bsp summary { cursor: pointer; font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--blau); padding: 10px 14px; list-style-position: inside; }
+  details.bsp div { padding: 0 14px 12px; font-size: 14px; color: var(--fg-2); }
+
+  .sigcard { position: relative; }
+  .sigcard .signum { font-family: var(--display); font-weight: 800; font-size: 13px; color: var(--blau); margin-bottom: 10px; }
+  .sigcard .rm { position: absolute; top: 16px; right: 16px; border: none; background: none; font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--fg-muted); cursor: pointer; }
+  .sigcard .rm:hover { color: var(--kirsche); }
+  .frow { margin-bottom: 12px; }
+
+  .qc { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .qc:last-of-type { border-bottom: none; }
+  .qc input[type=checkbox] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--blau); flex-shrink: 0; cursor: pointer; }
+  .qc span { font-size: 15px; }
+
+  .exportbtns { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 6px; }
+  .mdlink { font-size: 13px; color: var(--fg-muted); }
+  .mdlink a { color: var(--fg-2); cursor: pointer; text-decoration: underline; }
+
+  #printout { display: none; }
+  @media print {
+    header.top, .progress, main, .navbtns { display: none !important; }
+    body { background: #fff; }
+    #printout { display: block; padding: 0; font-family: Georgia, 'Times New Roman', serif; color: #111; font-size: 12.5px; line-height: 1.5; }
+    #printout .po-brand { font-family: Arial, sans-serif; font-weight: bold; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #36349D; margin-bottom: 4px; }
+    #printout h1 { font-family: Arial, sans-serif; font-size: 21px; margin-bottom: 2px; }
+    #printout .po-meta { color: #666; margin-bottom: 18px; font-size: 11.5px; }
+    #printout h2 { font-family: Arial, sans-serif; font-size: 13.5px; margin: 18px 0 6px; padding-bottom: 3px; border-bottom: 1.5px solid #36349D; }
+    #printout p { margin: 4px 0; }
+    #printout ol, #printout ul { margin: 4px 0 4px 18px; }
+    #printout li { margin-bottom: 8px; }
+    #printout .po-foot { margin-top: 24px; padding-top: 8px; border-top: 0.5px solid #ccc; color: #888; font-size: 10px; }
+  }
+  @page { margin: 2cm; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="brand" href="index.html" style="text-decoration:none; color:inherit;" title="Zur Wirkungswerkstatt">Wirkungsversprechen</a>
+  <span class="badge">Wirkungswerkstatt · Werkstattstand</span>
+  <button id="reset">Neu starten</button>
+</header>
+
+<nav class="progress" id="prog"></nav>
+
+<main id="main"></main>
+
+<div class="navbtns"><div class="inner">
+  <button class="btn ghost" id="back">Zurück</button>
+  <button class="btn primary" id="next">Weiter</button>
+</div></div>
+
+<div id="printout"></div>
+
+<script>
+(function(){
+'use strict';
+
+const STEPS = ['Vorhaben','Beitrag','Veränderung','Signale','Liefergegenstände','Check'];
+const ZEIT = ['2 Minuten','ca. 5 Minuten','ca. 10 Minuten','ca. 10 Minuten','ca. 5 Minuten','2 Minuten'];
+const QC = [
+  'In meinem Künftig-Satz steht ein Zustand, kein Ding.',
+  'Mindestens ein "Wir liegen falsch, wenn"-Satz tut ein bisschen weh.',
+  'Jedes Signal hat einen Ausgangswert, notfalls geschätzt.',
+  'Eine Person, die das Vorhaben nicht kennt, versteht nach dem Lesen, warum es Ressourcen verdient.',
+  'Beitrag und Veränderung wiederholen nicht nur mit anderen Worten die Liefergegenstände.'
+];
+const BSP = {
+  beitrag: 'Das Vorhaben trägt dazu bei, dass <b>Digitalvorhaben der Verwaltung schneller und wirtschaftlicher umgesetzt werden</b>, indem es <b>Basisfunktionen einmal entwickelt und vielfach wiederverwendbar macht</b>.',
+  heute: '<b>Heute</b> entwickeln Projekte Standardfunktionen (Formulare, Identifizierung, Bezahldienste) parallel und mehrfach; jede Eigenentwicklung kostet Zeit, Geld und dauerhafte Wartung.<br><b>Künftig</b> setzen neue Digitalvorhaben für Standardfunktionen auf geprüfte Komponenten aus der Plattform und verwenden ihre Kapazität auf das Fachliche.',
+  signal: '<b>Wir beobachten:</b> den Anteil neuer Digitalvorhaben, die mindestens eine Komponente produktiv einsetzen (nicht: Downloads).<br><b>Daraus schließen wir,</b> dass die Plattform Doppelarbeit ersetzt, <b>weil wir annehmen:</b> Produktiver Einsatz passiert nur, wenn Integration günstiger ist als Eigenbau.<br><b>Wir liegen falsch, wenn:</b> Komponenten zwar abgerufen, aber nach zwei Quartalen in keinem zweiten Vorhaben produktiv eingesetzt werden.<br><b>Heute liegt das bei:</b> Ausgangswert unbekannt, wird im ersten Quartal einmalig erhoben, bis dahin geschätzt niedrig.',
+  liefer: 'Komponentenkatalog mit Dokumentation, Integrationsleitfaden, Support-Kanal, Aufnahme- und Qualitätsprozess für neue Komponenten.'
+};
+
+function emptySignal(){ return { beob:'', ausgang:'', schluss:'', annahme:'', falsch:'' }; }
+
+let S = {
+  vorhaben: '', kontext: '',
+  beitragDass: '', beitragIndem: '',
+  heute: '', kuenftig: '',
+  signale: [ emptySignal() ],
+  liefer: '',
+  checks: [false,false,false,false,false],
+  cur: 0
+};
+try {
+  const saved = JSON.parse(localStorage.getItem('wirkungsversprechen') || 'null');
+  if (saved) { S = Object.assign({}, S, saved); if (!Array.isArray(S.signale) || !S.signale.length) S.signale = [ emptySignal() ]; }
+} catch(e){}
+function save(){ try { localStorage.setItem('wirkungsversprechen', JSON.stringify(S)); } catch(e){} }
+function esc(s){ const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function clean(s){ return (s || '').trim().replace(/[.\s]+$/, ''); }
+
+const main = document.getElementById('main');
+const prog = document.getElementById('prog');
+
+function renderProgress(){
+  prog.innerHTML = STEPS.map((s,i)=>
+    `<button class="pstep ${i===S.cur?'act':''} ${i<S.cur?'done':''}" data-i="${i}">${i+1}<span class="plabel"> · ${s}</span></button>`).join('');
+  prog.querySelectorAll('.pstep').forEach(b=>b.onclick=()=>{ S.cur=+b.dataset.i; save(); render(); });
+}
+function kicker(i){ return `<div class="kicker">Schritt ${i+1} von 6 · ${ZEIT[i]}</div>`; }
+function bsp(key, titel){
+  return `<details class="bsp"><summary>${titel || 'Beispiel ansehen (Komponentenplattform)'}</summary><div>${BSP[key]}</div></details>`;
+}
+
+function step0(){
+  return `<div class="step act">
+    ${kicker(0)}
+    <h2>Dein Wirkungsversprechen in 30 Minuten</h2>
+    <p class="lead">Vier kurze Antworten, die zusammen erklären, warum es dein Vorhaben geben soll, was sich dadurch ändert und woran man das merken würde. Kein Formular für den Aktenordner, sondern ein Schutzinstrument:</p>
+    <div class="card">
+      <ul style="margin-left:18px; font-size:15px; color:var(--fg-2);">
+        <li style="margin-bottom:8px;">Du kommst schneller durch die Priorisierung, weil Leitung sofort versteht, wofür das Vorhaben da ist.</li>
+        <li style="margin-bottom:8px;">Du wehrst dich leichter gegen Kennzahlen, die dir jemand überstülpt: Du hast schon bessere.</li>
+        <li>Du kannst Nein mit Argument sagen: Anforderungen, die auf keine der vier Antworten einzahlen, sind verhandelbar.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <label class="lbl">Wie heißt dein Vorhaben?</label>
+      <input type="text" id="vorhaben" maxlength="80" placeholder="z. B. Digitaler Antragsprozess Wohngeld" value="${esc(S.vorhaben)}">
+      <div style="height:12px"></div>
+      <label class="lbl">Worum geht es, in einem Satz? (optional)</label>
+      <input type="text" id="kontext" placeholder="z. B. Der Antrag soll digital werden" value="${esc(S.kontext)}">
+    </div>
+    <div class="hint">Dieses Blatt ersetzt die Freitext-Kurzbeschreibung deines Vorhabens (im Vorschlag, im Steckbrief, auf der ersten Folie). Wenn du es zusätzlich zu allem anderen ausfüllst, läuft etwas falsch.</div>
+    <p class="privacy">Alles, was du hier eingibst, bleibt ausschließlich auf deinem Gerät. Kein Server, keine Übertragung, kein Konto. Mit "Neu starten" oben löschst du deinen lokalen Stand.</p>
+  </div>`;
+}
+
+function satzPreview(){
+  const d = clean(S.beitragDass), i = clean(S.beitragIndem);
+  return `Das Vorhaben trägt dazu bei, dass ${d ? esc(d) : '<span class="ph">[übergeordnetes Ziel oder Aufgabe]</span>'}, indem es ${i ? esc(i) : '<span class="ph">[dein Hebel]</span>'}.`;
+}
+
+function vSatzPreview(){
+  const h = clean(S.heute), k = clean(S.kuenftig);
+  return `Heute ${h ? esc(h) : '<span class="ph">[was mühsam, langsam oder doppelt ist]</span>'}. Künftig ${k ? esc(k) : '<span class="ph">[was für wen anders ist]</span>'}.`;
+}
+
+function sigSatz(sig){
+  const ph = t => `<span class="ph">[${t}]</span>`;
+  const b = clean(sig.beob), s = clean(sig.schluss), a = clean(sig.annahme), f = clean(sig.falsch), g = clean(sig.ausgang);
+  return `Wir beobachten: ${b ? esc(b) : ph('was')}. Daraus schließen wir, ${s ? esc(s) : ph('welchen Schluss')}, weil wir annehmen: ${a ? esc(a) : ph('welche Annahme')}. Wir liegen falsch, wenn ${f ? esc(f) : ph('welcher Ausgang')}.${g ? ' Heute liegt das bei: ' + esc(g) + '.' : ''}`;
+}
+
+function step1(){
+  return `<div class="step act">
+    ${kicker(1)}
+    <h2>Beitrag</h2>
+    <p class="lead">Wozu trägt das Vorhaben über sich hinaus bei? Der Bezugspunkt ist das, woran sich dein Haus tatsächlich orientiert: ein Zielbild, eine Strategie, ein politischer Auftrag. Gibt es so etwas nicht, nimm das, worauf du dich berufen würdest, wenn jemand fragt: "Warum machen wir das eigentlich?"</p>
+    <div class="card">
+      <label class="lbl">Das Vorhaben trägt dazu bei, dass …</label>
+      <input type="text" id="beitragDass" placeholder="z. B. Bürgerinnen und Bürger Leistungen ohne Behördengang erhalten" value="${esc(S.beitragDass)}">
+      <div style="height:12px"></div>
+      <label class="lbl">… indem es …</label>
+      <input type="text" id="beitragIndem" placeholder="z. B. den häufigsten Antragsprozess vollständig digitalisiert" value="${esc(S.beitragIndem)}">
+      <div class="satz" id="bsatz">${satzPreview()}</div>
+      ${bsp('beitrag')}
+    </div>
+    <div class="hint">Prüffrage: Würde deine Hausleitung diesen Satz unterschreiben, ohne vorher bei dir anzurufen?</div>
+  </div>`;
+}
+
+function step2(){
+  return `<div class="step act">
+    ${kicker(2)}
+    <h2>Angestrebte Veränderung</h2>
+    <p class="lead">Was soll sich für wen konkret verändern? Beschreibe zwei Zustände: den mühsamen von heute und den besseren von morgen.</p>
+    <div class="card">
+      <label class="lbl">Heute …</label>
+      <div class="sub">Was ist mühsam, langsam, doppelt, fehleranfällig? Schreib den Satz weiter: "Heute …"</div>
+      <textarea id="heute" placeholder="z. B. kommen Anträge auf Papier, jede zweite Akte braucht Rückfragen, die Bearbeitung dauert Wochen">${esc(S.heute)}</textarea>
+      <div style="height:12px"></div>
+      <label class="lbl">Künftig …</label>
+      <div class="sub">Was ist anders, für welche Zielgruppe oder welchen Prozess? "Künftig …"</div>
+      <textarea id="kuenftig" placeholder="z. B. werden die häufigsten Fälle vollständig digital und ohne Rückfragen eingereicht und schneller entschieden">${esc(S.kuenftig)}</textarea>
+      <div class="satz" id="vsatz">${vSatzPreview()}</div>
+      ${bsp('heute')}
+    </div>
+    <div class="rcheck"><b>Realitätscheck</b>Steht in deinem Künftig-Satz ein Ding? "Es gibt eine Plattform" ist keine Veränderung, das ist ein Liefergegenstand, und der gehört in Schritt 5. Die Veränderung ist das, was Menschen mit dem Ding anders machen als heute.</div>
+  </div>`;
+}
+
+function sigCard(sig, i){
+  const rm = S.signale.length > 1 ? `<button class="rm" data-rm="${i}">entfernen</button>` : '';
+  return `<div class="card sigcard">
+    <div class="signum">Signal ${i+1}</div>
+    ${rm}
+    <div class="frow">
+      <label class="lbl">Wir beobachten:</label>
+      <div class="sub">Was genau, aus welcher Quelle? Das ist der Anker: Alles Weitere bezieht sich auf diese Beobachtung.</div>
+      <input type="text" data-sig="${i}" data-f="beob" placeholder="z. B. Anteil digital eingereichter Standardfälle" value="${esc(sig.beob)}">
+    </div>
+    <div class="frow">
+      <label class="lbl">Daraus schließen wir …</label>
+      <div class="sub">Wenn sich die Beobachtung bewegt: Was heißt das für eure Veränderung?</div>
+      <input type="text" data-sig="${i}" data-f="schluss" placeholder="z. B. dass der digitale Weg für Normalfälle funktioniert" value="${esc(sig.schluss)}">
+    </div>
+    <div class="frow">
+      <label class="lbl">… weil wir annehmen:</label>
+      <div class="sub">Die Annahme, die Beobachtung und Veränderung verbindet.</div>
+      <input type="text" data-sig="${i}" data-f="annahme" placeholder="z. B. dass Menschen den digitalen Weg wählen, sobald er einfacher ist als Papier" value="${esc(sig.annahme)}">
+    </div>
+    <div class="frow">
+      <label class="lbl">Wir liegen falsch, wenn:</label>
+      <div class="sub">Welcher Ausgang würde eure Annahme erschüttern? Ohne diese Zeile ist das Signal Deko.</div>
+      <input type="text" data-sig="${i}" data-f="falsch" placeholder="z. B. die Abbruchquote im digitalen Antrag über Monate hoch bleibt" value="${esc(sig.falsch)}">
+    </div>
+    <div class="frow" style="margin-bottom:0;">
+      <label class="lbl">Und heute liegt das bei:</label>
+      <div class="sub">Der Ausgangswert, gegen den ihr später vergleicht. Grobe Schätzung ist erlaubt, dann schreib "geschätzt" dazu.</div>
+      <input type="text" data-sig="${i}" data-f="ausgang" placeholder="z. B. geschätzt unter 10 Prozent" value="${esc(sig.ausgang)}">
+    </div>
+    <div class="satz" id="sigsatz-${i}">${sigSatz(sig)}</div>
+  </div>`;
+}
+
+function step3(){
+  return `<div class="step act">
+    ${kicker(3)}
+    <h2>Fortschrittssignale</h2>
+    <p class="lead">Woran würdet ihr erkennen, dass sich die Veränderung andeutet? Zwei bis drei Signale, nicht mehr. Suche zuerst nach Signalen, die es schon gibt (Prozessdaten, Nutzungszahlen, Rückfragen, Beschwerden), bevor du neue Erhebungen erfindest.</p>
+    ${S.signale.map(sigCard).join('')}
+    ${S.signale.length < 3 ? '<button class="btn add" id="addSig">+ Weiteres Signal (maximal 3)</button>' : ''}
+    ${bsp('signal', 'Beispiel für ein komplettes Signal ansehen')}
+    <div class="rcheck"><b>Realitätscheck</b>Sieht dein Signal bei jedem Ausgang gut aus? (Mehr Beratungsgespräche: "große Nachfrage!" Weniger: "läuft ja alles!") Dann hast du kein Signal, du hast Deko.</div>
+  </div>`;
+}
+
+function step4(){
+  return `<div class="step act">
+    ${kicker(4)}
+    <h2>Liefergegenstände</h2>
+    <p class="lead">Was muss das Vorhaben dafür hervorbringen? Stichpunkte reichen: Produkte, Prozesse, Freigaben, Standards. Das ist die Ebene, über die ohnehin alle gern reden. Genau deshalb kommt sie zuletzt.</p>
+    <div class="card">
+      <label class="lbl">Dafür muss entstehen:</label>
+      <textarea id="liefer" style="min-height:110px;" placeholder="z. B.&#10;- Online-Antragsstrecke für die drei häufigsten Fallgruppen&#10;- Schnittstelle zum Fachverfahren&#10;- geänderte Arbeitsanweisung für die Sachbearbeitung">${esc(S.liefer)}</textarea>
+      ${bsp('liefer')}
+    </div>
+  </div>`;
+}
+
+function qcHint(done){
+  return done === 5
+    ? 'Alle fünf. Dann raus damit: in den Projektvorschlag, den Steckbrief oder das nächste Gespräch mit deiner Leitung.'
+    : 'Noch ' + (5-done) + ' offen. Nicht schummeln: Lieber jetzt zwei Minuten nachschärfen als später an einer schiefen Kennzahl gemessen werden. Zum Nachbessern oben einfach den Schritt anklicken.';
+}
+
+function recapHTML(){
+  const leer = '<span class="leer">noch leer</span>';
+  let h = '<div class="rlbl">Vorhaben</div><p>' + (S.vorhaben.trim() ? esc(S.vorhaben) : leer) + '</p>';
+  h += '<div class="rlbl">Beitrag</div><p>' + ((S.beitragDass.trim() || S.beitragIndem.trim()) ? satzPreview() : leer) + '</p>';
+  h += '<div class="rlbl">Angestrebte Veränderung</div><p>' + ((S.heute.trim() || S.kuenftig.trim()) ? vSatzPreview() : leer) + '</p>';
+  h += '<div class="rlbl">Fortschrittssignale</div>';
+  const sigs = S.signale.filter(s => s.beob || s.schluss || s.annahme || s.falsch || s.ausgang);
+  h += sigs.length ? sigs.map((s,i)=>'<p><b>'+(i+1)+'.</b> '+sigSatz(s)+'</p>').join('') : '<p>' + leer + '</p>';
+  h += '<div class="rlbl">Liefergegenstände</div><p>' + (S.liefer.trim() ? esc(S.liefer).replace(/\n/g,'<br>') : leer) + '</p>';
+  return '<div class="card recap">' + h + '</div>';
+}
+
+function step5(){
+  const done = S.checks.filter(Boolean).length;
+  return `<div class="step act">
+    ${kicker(5)}
+    <h2>Qualitätscheck</h2>
+    <p class="lead">Erst gegenlesen, dann abhaken: Oben steht dein Versprechen im Wortlaut, darunter die fünf ehrlichen Fragen. Prüfe am Text, nicht aus dem Gedächtnis.</p>
+    ${recapHTML()}
+    <div class="card">
+      ${QC.map((q,i)=>`<label class="qc"><input type="checkbox" data-qc="${i}" ${S.checks[i]?'checked':''}><span>${q}</span></label>`).join('')}
+    </div>
+    <div class="hint" id="qchint">${qcHint(done)}</div>
+    <div class="exportbtns">
+      <button class="btn primary" id="prt">Drucken / PDF</button>
+      <button class="btn minze" id="dlDoc">Als Word-Datei speichern</button>
+      <button class="btn ghost" id="cp">Formatiert kopieren</button>
+    </div>
+    <p class="mdlink">Für Textdateien-Fans: <a id="dlMd">als Markdown (.md) speichern</a></p>
+    <p class="privacy">Alles bleibt auf deinem Gerät. Kein Server, keine Übertragung, kein Konto.</p>
+  </div>`;
+}
+
+/* ---------- Export ---------- */
+function summaryHTML(){
+  const datum = new Date().toLocaleDateString('de-DE', { year:'numeric', month:'long', day:'numeric' });
+  let h = '<div class="po-brand">Wirkungswerkstatt · Wirkungsversprechen</div>';
+  h += '<h1>' + (esc(S.vorhaben) || 'Mein Vorhaben') + '</h1>';
+  h += '<p class="po-meta">Wirkungsversprechen, Stand ' + datum + (S.kontext ? ' · ' + esc(S.kontext) : '') + '</p>';
+  h += '<h2>Beitrag</h2>';
+  h += '<p>Das Vorhaben trägt dazu bei, dass ' + (esc(S.beitragDass)||'…') + ', indem es ' + (esc(S.beitragIndem)||'…') + '.</p>';
+  h += '<h2>Angestrebte Veränderung</h2>';
+  h += '<p><strong>Heute:</strong> ' + (esc(S.heute)||'…') + '</p>';
+  h += '<p><strong>Künftig:</strong> ' + (esc(S.kuenftig)||'…') + '</p>';
+  h += '<h2>Fortschrittssignale</h2><ol>';
+  S.signale.forEach(sig=>{
+    if (!(sig.beob || sig.falsch || sig.schluss)) return;
+    h += '<li><strong>Wir beobachten:</strong> ' + esc(sig.beob) +
+         (sig.schluss || sig.annahme ? '<br><strong>Daraus schließen wir</strong> ' + esc(sig.schluss) + (sig.annahme ? ', <strong>weil wir annehmen:</strong> ' + esc(sig.annahme) : '') : '') +
+         (sig.falsch ? '<br><strong>Wir liegen falsch, wenn:</strong> ' + esc(sig.falsch) : '') +
+         (sig.ausgang ? '<br><strong>Heute liegt das bei:</strong> ' + esc(sig.ausgang) : '') + '</li>';
+  });
+  h += '</ol>';
+  h += '<h2>Liefergegenstände</h2><p>' + (esc(S.liefer)||'…').replace(/\n/g,'<br>') + '</p>';
+  const offen = QC.filter((q,i)=>!S.checks[i]);
+  h += '<h2>Qualitätscheck</h2>';
+  h += '<p>' + S.checks.filter(Boolean).length + ' von 5 bestätigt.' + (offen.length ? ' Noch offen: ' + offen.map(esc).join(' / ') : '') + '</p>';
+  h += '<p class="po-foot">Erstellt mit dem Wirkungsversprechen-Werkzeug der Wirkungswerkstatt (Werkstattstand). Alles lokal erstellt, nichts wurde übertragen.</p>';
+  return h;
+}
+
+const DOC_CSS = 'body{font-family:Arial,Helvetica,sans-serif;font-size:11pt;color:#111;line-height:1.45;}h1{font-size:17pt;margin:0 0 2pt;}h2{font-size:12pt;color:#36349D;border-bottom:1pt solid #36349D;padding-bottom:2pt;margin:14pt 0 5pt;}p{margin:3pt 0;}ol,ul{margin:3pt 0 3pt 16pt;}li{margin-bottom:8pt;}.po-brand{font-weight:bold;font-size:9pt;letter-spacing:1pt;color:#36349D;text-transform:uppercase;}.po-meta{color:#666;font-size:9pt;margin-bottom:10pt;}.po-foot{margin-top:16pt;border-top:0.5pt solid #ccc;padding-top:4pt;color:#888;font-size:8pt;}';
+
+function fullDoc(){
+  return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Wirkungsversprechen</title><style>' + DOC_CSS + '</style></head><body>' + summaryHTML() + '</body></html>';
+}
+function plainText(){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = summaryHTML();
+  const out = [];
+  tmp.childNodes.forEach(n=>{
+    if (n.nodeType !== 1) return;
+    const tag = n.tagName;
+    if (tag === 'H1') out.push(n.textContent.toUpperCase(), '');
+    else if (tag === 'H2') out.push('', n.textContent.toUpperCase());
+    else if (tag === 'OL' || tag === 'UL') n.querySelectorAll('li').forEach((li,i)=>out.push('  ' + (i+1) + '. ' + li.textContent));
+    else out.push(n.textContent);
+  });
+  return out.join('\n');
+}
+function buildMd(){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = summaryHTML();
+  const out = [];
+  tmp.childNodes.forEach(n=>{
+    if (n.nodeType !== 1) return;
+    const tag = n.tagName;
+    if (tag === 'H1') out.push('# ' + n.textContent, '');
+    else if (tag === 'H2') out.push('', '## ' + n.textContent, '');
+    else if (tag === 'OL' || tag === 'UL') n.querySelectorAll('li').forEach((li,i)=>out.push((i+1) + '. ' + li.textContent));
+    else out.push(n.textContent);
+  });
+  return out.join('\n');
+}
+function download(content, name, type){
+  const blob = new Blob([content], { type: type });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---------- Events ---------- */
+function bind(){
+  const q = sel => main.querySelector(sel);
+  const qa = sel => main.querySelectorAll(sel);
+
+  if (S.cur === 0){
+    q('#vorhaben').oninput = e=>{ S.vorhaben = e.target.value; save(); };
+    q('#kontext').oninput = e=>{ S.kontext = e.target.value; save(); };
+  }
+  if (S.cur === 1){
+    const upd = ()=>{ const el = q('#bsatz'); if (el) el.innerHTML = satzPreview(); };
+    q('#beitragDass').oninput = e=>{ S.beitragDass = e.target.value; save(); upd(); };
+    q('#beitragIndem').oninput = e=>{ S.beitragIndem = e.target.value; save(); upd(); };
+  }
+  if (S.cur === 2){
+    const upd = ()=>{ const el = q('#vsatz'); if (el) el.innerHTML = vSatzPreview(); };
+    q('#heute').oninput = e=>{ S.heute = e.target.value; save(); upd(); };
+    q('#kuenftig').oninput = e=>{ S.kuenftig = e.target.value; save(); upd(); };
+  }
+  if (S.cur === 3){
+    qa('[data-sig]').forEach(inp=>inp.oninput = e=>{
+      const i = +inp.dataset.sig;
+      S.signale[i][inp.dataset.f] = e.target.value; save();
+      const el = q('#sigsatz-' + i);
+      if (el) el.innerHTML = sigSatz(S.signale[i]);
+    });
+    qa('[data-rm]').forEach(b=>b.onclick = ()=>{ S.signale.splice(+b.dataset.rm,1); save(); render(); });
+    const add = q('#addSig');
+    if (add) add.onclick = ()=>{ S.signale.push(emptySignal()); save(); render(); };
+  }
+  if (S.cur === 4){
+    q('#liefer').oninput = e=>{ S.liefer = e.target.value; save(); };
+  }
+  if (S.cur === 5){
+    qa('[data-qc]').forEach(cb=>cb.onchange = ()=>{
+      S.checks[+cb.dataset.qc] = cb.checked; save();
+      const hint = q('#qchint');
+      if (hint) hint.textContent = qcHint(S.checks.filter(Boolean).length);
+    });
+    q('#prt').onclick = ()=>{ document.getElementById('printout').innerHTML = summaryHTML(); window.print(); };
+    q('#dlDoc').onclick = ()=>{ download(fullDoc(), 'wirkungsversprechen.doc', 'application/msword'); };
+    q('#dlMd').onclick = ()=>{ download(buildMd(), 'wirkungsversprechen.md', 'text/markdown;charset=utf-8'); };
+    q('#cp').onclick = async (e)=>{
+      const ok = ()=>{ e.target.textContent = 'Kopiert!'; setTimeout(()=>e.target.textContent='Formatiert kopieren', 1500); };
+      try {
+        const item = new ClipboardItem({
+          'text/html': new Blob(['<style>' + DOC_CSS + '</style>' + summaryHTML()], { type:'text/html' }),
+          'text/plain': new Blob([plainText()], { type:'text/plain' })
+        });
+        await navigator.clipboard.write([item]); ok();
+      } catch(err) {
+        try { await navigator.clipboard.writeText(plainText()); ok(); }
+        catch(err2) { alert('Kopieren nicht möglich. Nutze "Als Word-Datei speichern".'); }
+      }
+    };
+  }
+}
+
+function render(){
+  renderProgress();
+  const steps = [step0, step1, step2, step3, step4, step5];
+  main.innerHTML = steps[S.cur]();
+  bind();
+  document.getElementById('back').style.visibility = S.cur === 0 ? 'hidden' : 'visible';
+  document.getElementById('next').textContent = S.cur === STEPS.length - 1 ? 'Fertig · zur Werkstatt' : 'Weiter';
+}
+
+document.getElementById('reset').onclick = ()=>{
+  if (confirm('Alles löschen und von vorn beginnen?')) {
+    try { localStorage.removeItem('wirkungsversprechen'); } catch(e){}
+    location.reload();
+  }
+};
+document.getElementById('back').onclick = ()=>{ if (S.cur > 0){ S.cur--; save(); render(); window.scrollTo({top:0}); } };
+document.getElementById('next').onclick = ()=>{
+  if (S.cur < STEPS.length - 1) { S.cur++; save(); render(); window.scrollTo({top:0}); }
+  else { location.href = 'index.html'; }
+};
+
+render();
+})();
+</script>
+</body>
+</html>

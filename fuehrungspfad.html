@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ich führe · Wirkungswerkstatt</title>
+<meta name="description" content="Der Fünf-Minuten-Pfad für Führung: was Wirkungsklärung an einem Projektvorschlag verändert, die drei Fragen für den Alltag und die drei Beiträge, die nur Führung leisten kann.">
+<link rel="stylesheet" href="shared/style.css">
+<style>
+  /* Seitenspezifisch: Führungspfad */
+  .num { display: inline-flex; align-items: center; justify-content: center; width: 27px; height: 27px; border-radius: 50%; background: var(--blau-10); color: var(--blau); font-family: var(--display); font-weight: 800; font-size: 13.5px; flex-shrink: 0; }
+
+  /* Vorher/Nachher: Änderungen markieren */
+  .chg-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .chg-chips .chip { font-family: var(--display); font-size: 13px; font-weight: 700; padding: 8px 14px; border: 1.5px solid var(--blau-20); border-radius: 999px; background: var(--weiss); color: var(--fg-2); cursor: pointer; transition: all .15s; }
+  .chg-chips .chip:hover { border-color: var(--blau); color: var(--blau); }
+  .chg-chips .chip.on { background: var(--blau); border-color: var(--blau); color: var(--weiss); }
+  .chg-note { font-size: 13.5px; color: var(--fg-muted); margin-top: 10px; }
+  mark.chg { background: transparent; color: inherit; border-radius: 3px; padding: 0 1px; cursor: pointer; transition: background .15s, box-shadow .15s; }
+  .vorher mark.chg.on { background: var(--kirsche-10); box-shadow: inset 0 -2px 0 var(--kirsche); }
+  .nachher mark.chg.on { background: var(--minze-20); box-shadow: inset 0 -2px 0 var(--minze); }
+
+  .cardhead { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .card h3 { margin: 0; font-size: 16.5px; }
+  .card p { font-size: 14.5px; color: var(--fg-2); }
+  .chg-exp .card { transition: border-color .2s, box-shadow .2s; }
+  .chg-exp .card.on { border-color: var(--blau); box-shadow: 0 10px 26px rgba(13,12,43,0.08); }
+
+  /* Drei Fragen: aufklappbare Karten */
+  details.frage { padding: 0; cursor: default; transition: border-color .2s; }
+  details.frage:hover { border-color: var(--blau); }
+  details.frage summary { display: flex; align-items: center; gap: 12px; padding: 20px; cursor: pointer; list-style: none; }
+  details.frage summary::-webkit-details-marker { display: none; }
+  details.frage summary p { font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--fg); margin: 0; }
+  details.frage summary::after { content: '+'; margin-left: auto; font-family: var(--display); font-weight: 800; font-size: 17px; color: var(--blau); flex-shrink: 0; }
+  details.frage[open] summary::after { content: '\2212'; }
+  details.frage .mehr { padding: 0 20px 18px; font-size: 14.5px; color: var(--fg-2); }
+  details.frage .mehr p { margin: 0 0 10px; }
+  details.frage .mehr .bsp { background: var(--blau-10); border-radius: 8px; padding: 10px 14px; }
+  details.frage .mehr .bsp b { display: block; font-family: var(--display); font-size: 11.5px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--blau); margin-bottom: 3px; }
+
+  /* Sechs Steuerungsfragen */
+  .sf { display: flex; align-items: flex-start; gap: 12px; }
+  .sf p { font-family: var(--display); font-weight: 700; font-size: 15.5px; color: var(--fg); margin: 2px 0 0; }
+  .agenda-ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; align-items: center; }
+
+  /* Drei Führungsbeiträge */
+  .beitrag .check { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--fg-muted); }
+  .beitrag .check b { color: var(--blau); font-family: var(--display); font-size: 11.5px; letter-spacing: 0.09em; text-transform: uppercase; display: block; margin-bottom: 2px; }
+
+  /* Agenda-Vorlage (nur Druck) */
+  #printout { display: none; }
+  @media print {
+    nav.top, main.page, footer.site { display: none !important; }
+    body { background: #fff; }
+    #printout { display: block; font-family: Georgia, 'Times New Roman', serif; color: #111; font-size: 12.5px; line-height: 1.5; }
+    #printout .po-brand { font-family: Arial, sans-serif; font-weight: bold; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #36349D; margin-bottom: 4px; }
+    #printout h1 { font-family: Arial, sans-serif; font-size: 21px; margin-bottom: 2px; }
+    #printout .po-meta { color: #666; margin-bottom: 16px; font-size: 11.5px; }
+    #printout h2 { font-family: Arial, sans-serif; font-size: 13px; margin: 14px 0 4px; }
+    #printout .po-line { border-bottom: 0.5px solid #bbb; height: 20px; }
+    #printout .po-wer { font-family: Arial, sans-serif; font-size: 10px; color: #666; margin-top: 4px; }
+    #printout .po-foot { margin-top: 22px; padding-top: 8px; border-top: 0.5px solid #ccc; color: #888; font-size: 10px; }
+  }
+  @page { margin: 2cm; }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a class="brand" href="index.html">Wirkungswerkstatt</a>
+  <span class="badge">Werkstattstand</span>
+  <div class="links">
+    <a href="index.html#pfade">Einstieg</a>
+    <a href="index.html#leiter">Begriffe</a>
+    <a href="wirkungsversprechen.html">Wirkungsversprechen</a>
+    <a href="steuerungs-check.html">Steuerungs-Check</a>
+    <a href="fuehrungspfad.html" class="act">Ich führe</a>
+  </div>
+</nav>
+
+<main class="page">
+
+<section>
+  <div class="wrap">
+    <div class="sec-kicker">Für Führung · 5 Minuten</div>
+    <h2>Ich führe.</h2>
+    <p class="lead">Kein Appell an Kulturwandel. Hier steht, was Wirkungsklärung an einem ganz normalen Projektvorschlag verändert, welche drei Fragen den Unterschied machen, und welche drei Beiträge nur Führung leisten kann. Alles davon ist überprüfbar.</p>
+  </div>
+</section>
+
+<section class="tint">
+  <div class="wrap">
+    <div class="sec-kicker">Der Fünf-Minuten-Beweis</div>
+    <h2>Ein Projektvorschlag, zweimal</h2>
+    <p class="lead">Die linke Fassung ist kein Strohmann. Sie hat ein Ziel, Meilensteine, sogar einen Indikator, und sie würde durch die meisten Vorlagenprüfungen kommen. Genau das ist das Problem.</p>
+
+    <div class="chg-chips" id="chgChips">
+      <button class="chip" data-c="1">1 · Zustand statt Ding</button>
+      <button class="chip" data-c="2">2 · Priorisierungsargument</button>
+      <button class="chip" data-c="3">3 · Signale statt Deko</button>
+      <button class="chip" data-c="4">4 · Annahmen sichtbar</button>
+      <button class="chip" data-c="5">5 · Meilensteine unverändert</button>
+    </div>
+    <p class="chg-note">Klick auf eine Änderung: Links siehst du, was wegfällt, rechts, was an seine Stelle tritt. Die Karten darunter erklären das Warum.</p>
+
+    <div class="vn" id="vn">
+      <div class="col vorher">
+        <div class="collabel">Vorher</div>
+        <p><b>Vorhaben: <mark class="chg c1">Digitalisierung des Antragsverfahrens X</mark></b></p>
+        <p>Das Antragsverfahren X wird derzeit papierbasiert abgewickelt. Ziel des Vorhabens ist die <mark class="chg c1">Digitalisierung des Verfahrens einschließlich der Einführung einer Online-Antragsstrecke</mark>. Das Vorhaben <mark class="chg c2">zahlt auf die Digitalstrategie des Hauses ein und leistet einen Beitrag zur Verwaltungsmodernisierung</mark>.</p>
+        <p><mark class="chg c5"><b>Meilensteine:</b> Fachkonzept (Q1), Vergabe (Q2), Umsetzung und Test (Q3), Pilotierung und Go-live (Q4).</mark></p>
+        <p><mark class="chg c3"><b>Erfolgsindikator:</b> Anzahl der digital eingereichten Anträge.</mark></p>
+        <p><b>Ressourcenbedarf:</b> 1,5 VZÄ, Budget für externe Entwicklung.</p>
+        <hr style="border:none; border-top:1px solid var(--line); margin:16px 0;">
+        <p><b>Was du damit nicht kannst:</b></p>
+        <ul>
+          <li><b>Priorisieren.</b> Warum dieses Verfahren und nicht eines der anderen zwölf? "Zahlt auf die Digitalstrategie ein" gilt für alle zwölf.</li>
+          <li><b>Steuern.</b> Meilensteine zeigen, dass gearbeitet wird, nicht, ob es etwas verändert.</li>
+          <li><b>Nachsteuern.</b> Der Indikator startet bei null und kann nur steigen. Er sieht bei jedem Ausgang gut aus. Das ist Dekoration.</li>
+          <li><b>Stoppen.</b> Nirgendwo steht, was das Vorhaben scheitern lassen würde. Also läuft es auch dann weiter, wenn es längst scheitert.</li>
+        </ul>
+      </div>
+      <div class="col nachher">
+        <div class="collabel">Nachher (30 Minuten später)</div>
+        <p><b>Vorhaben: <mark class="chg c1">Antragsverfahren X: Standardfälle digital und ohne Rückfragen</mark></b></p>
+        <p><b>Beitrag:</b> Das Vorhaben trägt dazu bei, dass Bürgerinnen und Bürger Leistungen ohne Behördengang und Papier erhalten, indem es <mark class="chg c2">das antragsstärkste Verfahren des Hauses</mark> vollständig digitalisiert.</p>
+        <p><b>Angestrebte Veränderung:</b> Heute reichen Antragstellende auf Papier ein, rund die Hälfte der Anträge erzeugt Rückfragen (geschätzt), die Bearbeitung dauert Wochen, in denen niemand den Stand kennt. <mark class="chg c1">Künftig reichen die drei häufigsten Fallgruppen vollständig digital ein, ohne typische Rückfragen und mit sichtbarem Bearbeitungsstand.</mark></p>
+        <p><b>Fortschrittssignale:</b></p>
+        <ol>
+          <li>Rückfragenquote bei digitalen Standardfällen. <mark class="chg c4">Annahme: Rückfragen entstehen vor allem durch unklare Formularfelder.</mark> <mark class="chg c3"><b>Wir liegen falsch, wenn</b> die Quote digital genauso hoch ist wie auf Papier: Dann liegt das Problem im Verfahren, nicht im Formular.</mark> Heute liegt das bei: rund 50 Prozent auf Papier (geschätzt, wird im Pilot erhoben).</li>
+          <li>Abbruchquote in der Antragsstrecke ab dem Pilot. <mark class="chg c3"><b>Wir liegen falsch, wenn</b> viele beginnen und wenige abschließen.</mark></li>
+        </ol>
+        <p><b>Liefergegenstände:</b> Antragsstrecke für die drei häufigsten Fallgruppen, Schnittstelle zum Fachverfahren, angepasste Arbeitsanweisung, Statusanzeige.</p>
+        <p><mark class="chg c5"><b>Meilensteine und Ressourcenbedarf:</b> unverändert.</mark></p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:38px;">Was sich geändert hat, und warum es dich interessiert</h3>
+    <div class="cards chg-exp">
+      <div class="card" data-c="1">
+        <div class="cardhead"><span class="num">1</span><h3>Aus einem Ding wurde ein Zustand</h3></div>
+        <p>"Digitalisierung des Verfahrens" ist ein Liefergegenstand. "Standardfälle digital und ohne Rückfragen" ist eine Veränderung, an der man das Vorhaben messen kann und will.</p>
+      </div>
+      <div class="card" data-c="2">
+        <div class="cardhead"><span class="num">2</span><h3>Aus Strategieprosa wurde ein Priorisierungsargument</h3></div>
+        <p>"Antragsstärkstes Verfahren des Hauses" ist vergleichbar. Jetzt kannst du fragen: Und Verfahren Y? Vorher konntest du nur nicken.</p>
+      </div>
+      <div class="card" data-c="3">
+        <div class="cardhead"><span class="num">3</span><h3>Aus Deko wurden Signale, die scheitern können</h3></div>
+        <p>Der wichtigste Satz im ganzen Vorschlag ist "Wir liegen falsch, wenn". Er verwandelt das spätere Reporting von einer Erfolgserzählung in ein Steuerungsgespräch.</p>
+      </div>
+      <div class="card" data-c="4">
+        <div class="cardhead"><span class="num">4</span><h3>Die Annahmen stehen im Text</h3></div>
+        <p>Wenn die Annahme über die Rückfragen fällt, weiß das Haus es nach dem Pilot, nicht nach dem Go-live. Im Vorher-Text gibt es für Annahmen gar keine Stelle: genau das ist das Problem.</p>
+      </div>
+      <div class="card" data-c="5">
+        <div class="cardhead"><span class="num">5</span><h3>Die Meilensteine sind geblieben</h3></div>
+        <p>Wirkungsklärung ersetzt keine Projektplanung und kostet kein einziges Delivery-Artefakt. Sie gibt der Planung eine Richtung und dem Reporting einen Maßstab.</p>
+      </div>
+    </div>
+    <div class="hint">Und der Aufwand für den Unterschied? Kein Beratungsprojekt. Ungefähr 30 Minuten mit den richtigen Fragen.</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-kicker">Wenn du nur eines mitnimmst</div>
+    <h2>Die drei Fragen für den Alltag</h2>
+    <p class="lead">Du brauchst keinen Werkzeugkasten, um anzufangen. Du brauchst diese drei Fragen in der nächsten Vorlagenrunde. Aufklappen zeigt, wie die Rückfrage im Gespräch klingt.</p>
+    <div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+      <details class="card frage">
+        <summary><span class="num">1</span><p>Was soll sich für wen konkret verändern?</p></summary>
+        <div class="mehr">
+          <p>Die Frage trennt Zustand von Ding. Wer sie beantwortet, redet über Menschen und Abläufe statt über Produkte.</p>
+          <div class="bsp"><b>So klingt die Rückfrage</b>Antwort: "Wir bauen eine Plattform." Rückfrage: "Und was machen die Nutzenden damit anders als heute?"</div>
+        </div>
+      </details>
+      <details class="card frage">
+        <summary><span class="num">2</span><p>Woran würden wir das früh erkennen?</p></summary>
+        <div class="mehr">
+          <p>Die Frage holt das Erkennen vor den Abschlussbericht. Frühe Signale gibt es fast immer schon: Prozessdaten, Rückfragen, Beschwerden.</p>
+          <div class="bsp"><b>So klingt die Rückfrage</b>Antwort: "Das sehen wir nach dem Go-live." Rückfrage: "Und was sehen wir schon nach vier Wochen?"</div>
+        </div>
+      </details>
+      <details class="card frage">
+        <summary><span class="num">3</span><p>Was würde uns umstimmen?</p></summary>
+        <div class="mehr">
+          <p>Die ehrlichste der drei. Ein Vorhaben ohne Antwort darauf läuft auch dann weiter, wenn es längst scheitert.</p>
+          <div class="bsp"><b>So klingt die Rückfrage</b>Antwort: Schweigen. Rückfrage: "Welcher Befund müsste auf dem Tisch liegen, damit wir den Zuschnitt ändern?"</div>
+        </div>
+      </details>
+    </div>
+    <div class="hint">Keine neue Methode. Nur die Fragen.</div>
+  </div>
+</section>
+
+<section class="tint">
+  <div class="wrap">
+    <div class="sec-kicker">Für deine Steuerungsrunde</div>
+    <h2>Die sechs Steuerungsfragen</h2>
+    <p class="lead">Ein Termin, der diese Fragen regelmäßig beantwortet, ist ein Steuerungsort. Ein Termin, der sie nie beantwortet, ist ein Wetterbericht: informativ, aber das Wetter ändert sich davon nicht.</p>
+    <div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+      <div class="card sf"><span class="num">1</span><p>Was braucht Aufmerksamkeit?</p></div>
+      <div class="card sf"><span class="num">2</span><p>Was ist blockiert?</p></div>
+      <div class="card sf"><span class="num">3</span><p>Was braucht eine Entscheidung?</p></div>
+      <div class="card sf"><span class="num">4</span><p>Was muss depriorisiert werden?</p></div>
+      <div class="card sf"><span class="num">5</span><p>Wo eskalieren Abhängigkeiten?</p></div>
+      <div class="card sf"><span class="num">6</span><p>Was muss Führung entscheiden, schützen, stoppen oder klären?</p></div>
+    </div>
+    <div class="agenda-ctas">
+      <button class="btn blau" id="agendaPrint">Als Agenda-Vorlage drucken / PDF</button>
+      <button class="btn ghost" id="agendaCopy">Fragen kopieren</button>
+    </div>
+    <div class="hint">Die Vorlage ist eine Seite: sechs Fragen, Platz für den Befund und für "wer bis wann". Zum Mitnehmen in die Runde oder als PDF in die Einladung.</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-kicker">Ohne dich geht es nicht</div>
+    <h2>Die drei Beiträge, die nur Führung leisten kann</h2>
+    <div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+      <div class="card beitrag">
+        <div class="cardhead"><span class="num">1</span><h3>Einen Ort schaffen, an dem entschieden wird</h3></div>
+        <p>Kein Instrument kann an eine Runde andocken, in der nichts entschieden wird. Diesen Ort kann niemand außer dir schaffen.</p>
+        <p class="check"><b>Nächste Woche überprüfbar</b>In welcher Runde wurde zuletzt etwas entschieden, verschoben oder beendet?</p>
+      </div>
+      <div class="card beitrag">
+        <div class="cardhead"><span class="num">2</span><h3>Die Wirkungsfrage stellen. Zweimal.</h3></div>
+        <p>Kein neues Formular, eine Rückfrage: "Was soll sich für wen verändern, und woran merken wir es?" Wer sie zweimal gestellt bekommt, beantwortet sie beim dritten Mal von selbst.</p>
+        <p class="check"><b>Nächste Woche überprüfbar</b>Hast du sie in der letzten Vorlagenrunde gestellt?</p>
+      </div>
+      <div class="card beitrag">
+        <div class="cardhead"><span class="num">3</span><h3>Ehrlichkeit nicht bestrafen</h3></div>
+        <p>Wer vorschlägt, etwas wegzulassen, verweigert keine Leistung. Er steuert. Und wer ehrlich berichtet und dafür bestraft wird, berichtet nie wieder ehrlich.</p>
+        <p class="check"><b>Nächste Woche überprüfbar</b>Was ist beim letzten unbequemen Bericht mit der Überbringerin passiert?</p>
+      </div>
+    </div>
+    <div class="wrap-narrow prose" style="margin-top:26px; margin-inline:0;">
+      <p>Das ist kein Kulturwandel-Programm. Es sind drei Handlungen, und alle drei sind nächste Woche überprüfbar. Konsequenz ist keine Härte, sondern die Währung, in der Steuerung bezahlt wird.</p>
+    </div>
+    <div class="ctas" style="margin-top:30px; display:flex; gap:14px; flex-wrap:wrap;">
+      <a class="btn blau" href="wirkungsversprechen.html">Gib deinen Projektleitungen das Wirkungsversprechen</a>
+      <a class="btn ghost" href="steuerungs-check.html">Oder prüfe zuerst, wo bei euch gesteuert wird</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="inner">
+    <div>Wirkungswerkstatt · Werkstattstand aus der Praxis, kein offizielles Produkt.</div>
+    <div class="flinks">
+      <a href="https://www.okr-werkstatt.org" target="_blank" rel="noopener">Aus derselben Werkstatt: OKR-Werkstatt</a>
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+    </div>
+  </div>
+</footer>
+
+<div id="printout">
+  <div class="po-brand">Wirkungswerkstatt · Steuerungsrunde</div>
+  <h1>Die sechs Steuerungsfragen</h1>
+  <p class="po-meta">Agenda-Vorlage. Ein Termin, der diese Fragen regelmäßig beantwortet, ist ein Steuerungsort.</p>
+  <h2>1 · Was braucht Aufmerksamkeit?</h2>
+  <div class="po-line"></div><div class="po-line"></div>
+  <p class="po-wer">Wer · bis wann: </p>
+  <h2>2 · Was ist blockiert?</h2>
+  <div class="po-line"></div><div class="po-line"></div>
+  <p class="po-wer">Wer · bis wann: </p>
+  <h2>3 · Was braucht eine Entscheidung?</h2>
+  <div class="po-line"></div><div class="po-line"></div>
+  <p class="po-wer">Wer · bis wann: </p>
+  <h2>4 · Was muss depriorisiert werden?</h2>
+  <div class="po-line"></div><div class="po-line"></div>
+  <p class="po-wer">Wer · bis wann: </p>
+  <h2>5 · Wo eskalieren Abhängigkeiten?</h2>
+  <div class="po-line"></div><div class="po-line"></div>
+  <p class="po-wer">Wer · bis wann: </p>
+  <h2>6 · Was muss Führung entscheiden, schützen, stoppen oder klären?</h2>
+  <div class="po-line"></div><div class="po-line"></div>
+  <p class="po-wer">Wer · bis wann: </p>
+  <p class="po-foot">Wirkungswerkstatt · Werkstattstand aus der Praxis. Ein Ergebnis ohne Konsequenz ist Wetterbericht.</p>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* Vorher/Nachher: Änderungen markieren */
+const chips = document.querySelectorAll('.chg-chips .chip');
+const marks = document.querySelectorAll('mark.chg');
+const expCards = document.querySelectorAll('.chg-exp .card');
+let cur = null;
+function setChg(c){
+  chips.forEach(ch => ch.classList.toggle('on', ch.dataset.c === c));
+  marks.forEach(m => m.classList.toggle('on', c !== null && m.classList.contains('c' + c)));
+  expCards.forEach(card => card.classList.toggle('on', c !== null && card.dataset.c === c));
+}
+chips.forEach(ch => ch.onclick = () => { cur = cur === ch.dataset.c ? null : ch.dataset.c; setChg(cur); });
+marks.forEach(m => m.onclick = () => {
+  const cls = [...m.classList].find(x => /^c\d$/.test(x));
+  if (!cls) return;
+  const c = cls.slice(1);
+  cur = cur === c ? null : c;
+  setChg(cur);
+});
+
+/* Sechs Steuerungsfragen: Agenda drucken und kopieren */
+const FRAGEN = [
+  'Was braucht Aufmerksamkeit?',
+  'Was ist blockiert?',
+  'Was braucht eine Entscheidung?',
+  'Was muss depriorisiert werden?',
+  'Wo eskalieren Abhängigkeiten?',
+  'Was muss Führung entscheiden, schützen, stoppen oder klären?'
+];
+document.getElementById('agendaPrint').onclick = () => window.print();
+document.getElementById('agendaCopy').onclick = async (e) => {
+  const txt = 'Die sechs Steuerungsfragen (Wirkungswerkstatt)\n' + FRAGEN.map((f,i) => (i+1) + '. ' + f).join('\n');
+  try {
+    await navigator.clipboard.writeText(txt);
+    e.target.textContent = 'Kopiert!';
+    setTimeout(() => e.target.textContent = 'Fragen kopieren', 1500);
+  } catch(err) { alert('Kopieren nicht möglich. Nutze die Druckvorlage.'); }
+};
+})();
+</script>
+
+</body>
+</html>

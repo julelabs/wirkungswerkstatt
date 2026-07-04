@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Der Steuerungs-Check · Wirkungswerkstatt</title>
+<meta name="description" content="Sechs klickbare Schritte von 'wir haben doch schon Termine' zu einem ehrlichen Befund: Wo wird bei euch tatsächlich gesteuert, und woran kann ein Instrument andocken? Alles bleibt auf deinem Gerät.">
+<style>
+  @font-face {
+    font-family: 'BundesSans';
+    src: url('assets/fonts/BundesSans-Web-Regular.woff2') format('woff2');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  :root {
+    --blau: #36349D; --minze: #4DFFB0; --kirsche: #DB0045;
+    --lavendel: #E3E6F2; --weiss: #FFFFFF; --dunkel: #0D0C2B;
+    --blau-10: #EEEEF9; --blau-20: #C5C4EA; --blau-60: #5957B4;
+    --kirsche-10: #FCEEE3;
+    --fg: var(--dunkel); --fg-2: #4A4869; --fg-muted: #7C7AA8;
+    --line: rgba(54,52,157,0.15);
+    --display: 'Open Sans', system-ui, sans-serif;
+    --body: 'BundesSans', 'Open Sans', system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body { font-family: var(--body); color: var(--fg); background: var(--blau-10); line-height: 1.55; }
+  ::selection { background: var(--minze); color: var(--dunkel); }
+  h1,h2,h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
+
+  header.top { position: relative; background: var(--dunkel); color: var(--weiss); padding: 16px clamp(16px,4vw,40px); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { font-family: var(--display); font-weight: 800; font-size: 16px; }
+  .badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 2px 9px; border: 1.5px solid var(--minze); color: var(--minze); border-radius: 999px; font-size: 11px; font-weight: 700; font-family: var(--display); white-space: nowrap; }
+  @media (max-width: 760px) { .badge { position: static; transform: none; margin-inline: auto; } }
+  #reset { border: none; background: none; color: var(--blau-20); font-family: var(--display); font-size: 12px; font-weight: 700; cursor: pointer; }
+  #reset:hover { color: var(--minze); }
+
+  .progress { display: flex; gap: 6px; padding: 14px clamp(16px,4vw,40px); background: var(--weiss); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; overflow-x: auto; }
+  .pstep { flex: 1; min-width: 64px; border: none; background: none; cursor: pointer; font-family: var(--display); font-size: 11.5px; font-weight: 700; color: var(--fg-muted); padding: 6px 4px 8px; border-top: 3px solid var(--blau-20); text-align: left; white-space: nowrap; }
+  .pstep.act { color: var(--blau); border-top-color: var(--blau); }
+  .pstep.done { border-top-color: var(--minze); }
+  @media (max-width: 640px) {
+    .pstep { min-width: 0; text-align: center; }
+    .pstep .plabel { display: none; }
+    .pstep.act .plabel { display: inline; }
+  }
+
+  main { max-width: 720px; margin: 0 auto; padding: clamp(20px,4vw,36px) clamp(16px,4vw,24px) 100px; }
+  .step { display: none; }
+  .step.act { display: block; animation: fadein .25s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .kicker { font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blau); margin-bottom: 8px; }
+  .step h2 { font-size: clamp(22px,4vw,30px); margin-bottom: 10px; }
+  .step p.lead { color: var(--fg-2); margin-bottom: 20px; font-size: 15.5px; }
+
+  .card { background: var(--weiss); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+  label.lbl { display: block; font-family: var(--display); font-weight: 700; font-size: 13.5px; margin-bottom: 6px; }
+  .sub { font-size: 13px; color: var(--fg-muted); margin: -2px 0 8px; }
+  input[type=text], textarea, select { width: 100%; font-family: var(--body); font-size: 15px; padding: 10px 12px; border: 1.5px solid var(--blau-20); border-radius: 9px; background: var(--weiss); color: var(--fg); }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blau); }
+  textarea { min-height: 72px; resize: vertical; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-family: var(--display); font-size: 13px; font-weight: 600; padding: 8px 14px; border: 1.5px solid var(--blau-20); border-radius: 999px; background: var(--weiss); cursor: pointer; color: var(--fg-2); transition: all .15s; }
+  .chip.sel { background: var(--blau); border-color: var(--blau); color: var(--weiss); }
+
+  .saved { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; }
+  .saved .info { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .saved b { font-family: var(--display); font-size: 15px; overflow-wrap: anywhere; }
+  .saved .meta { color: var(--fg-muted); font-size: 13px; white-space: nowrap; }
+  .saved .actions { flex-shrink: 0; display: flex; gap: 12px; padding-top: 2px; }
+  .saved .actions button { border: none; background: none; font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--blau); cursor: pointer; }
+  .saved .actions button.rm:hover { color: var(--kirsche); }
+
+  .typ { font-family: var(--display); font-size: 11.5px; font-weight: 800; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+  .typ.steuerung { background: var(--minze); color: var(--dunkel); }
+  .typ.koordination { background: var(--blau-20); color: var(--blau); }
+  .typ.bericht { background: var(--lavendel); color: var(--fg-2); }
+  .typ.unklar { background: var(--kirsche-10); color: var(--kirsche); border: 1px solid var(--kirsche); }
+
+  .btn { font-family: var(--display); font-weight: 700; font-size: 14.5px; padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer; }
+  .btn.primary { background: var(--blau); color: var(--weiss); }
+  .btn.primary:hover { background: var(--blau-60); }
+  .btn.minze { background: var(--minze); color: var(--dunkel); }
+  .btn.ghost { background: none; border: 1.5px solid var(--blau-20); color: var(--fg-2); }
+  .btn.ghost:hover { border-color: var(--blau); color: var(--blau); }
+  .savemsg { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--blau); margin-left: 12px; opacity: 0; transition: opacity .3s; }
+  .savemsg.show { opacity: 1; }
+
+  .navbtns { position: fixed; bottom: 0; left: 0; right: 0; background: var(--weiss); border-top: 1px solid var(--line); padding: 12px clamp(16px,4vw,24px); display: flex; justify-content: space-between; gap: 10px; z-index: 6; }
+  .navbtns .inner { max-width: 720px; margin: 0 auto; display: flex; justify-content: space-between; width: 100%; gap: 10px; }
+
+  .hint { background: var(--weiss); border-left: 4px solid var(--minze); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 14px; color: var(--fg-2); margin: 16px 0; }
+  .rcheck { background: var(--kirsche-10); border-left: 4px solid var(--kirsche); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 14px; margin: 12px 0; }
+  .rcheck b { color: var(--kirsche); font-family: var(--display); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 4px; }
+  .privacy { font-size: 13px; color: var(--fg-muted); margin-top: 14px; }
+
+  .toff { margin-bottom: 26px; }
+  .toff .ends { display: flex; justify-content: space-between; font-size: 13.5px; color: var(--fg); font-family: var(--display); font-weight: 700; gap: 12px; margin-bottom: 8px; }
+  .toff .seg { display: flex; justify-content: space-between; align-items: center; position: relative; padding: 0 4px; }
+  .toff .seg::before { content: ''; position: absolute; left: 16px; right: 16px; top: 50%; height: 2px; background: var(--blau-20); z-index: 0; }
+  .segb { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--blau-20); background: var(--weiss); cursor: pointer; z-index: 1; transition: all .15s; }
+  .segb:hover { border-color: var(--blau); }
+  .segb.on { background: var(--blau); border-color: var(--blau); box-shadow: 0 0 0 4px rgba(54,52,157,0.15); }
+  .toffhint { font-size: 13px; color: var(--fg-muted); margin-top: 8px; }
+  .segstate { text-align: center; font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--blau); margin-top: 6px; min-height: 18px; }
+
+  .exportbtns { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 6px; }
+  .mdlink { font-size: 13px; color: var(--fg-muted); }
+  .mdlink a { color: var(--fg-2); cursor: pointer; text-decoration: underline; }
+  .pruefset li { margin: 0 0 8px 18px; font-size: 14.5px; color: var(--fg-2); }
+
+  #printout { display: none; }
+  @media print {
+    header.top, .progress, main, .navbtns { display: none !important; }
+    body { background: #fff; }
+    #printout { display: block; padding: 0; font-family: Georgia, 'Times New Roman', serif; color: #111; font-size: 12.5px; line-height: 1.5; }
+    #printout .po-brand { font-family: Arial, sans-serif; font-weight: bold; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #36349D; margin-bottom: 4px; }
+    #printout h1 { font-family: Arial, sans-serif; font-size: 21px; margin-bottom: 2px; }
+    #printout .po-meta { color: #666; margin-bottom: 18px; font-size: 11.5px; }
+    #printout h2 { font-family: Arial, sans-serif; font-size: 13.5px; margin: 18px 0 6px; padding-bottom: 3px; border-bottom: 1.5px solid #36349D; }
+    #printout table { width: 100%; border-collapse: collapse; margin: 6px 0; }
+    #printout th { font-family: Arial, sans-serif; font-size: 10.5px; text-align: left; padding: 5px 7px; border-bottom: 1.5px solid #999; }
+    #printout td { padding: 5px 7px; border-bottom: 0.5px solid #ccc; font-size: 11.5px; vertical-align: top; }
+    #printout p { margin: 4px 0; }
+    #printout ul { margin: 4px 0 4px 18px; }
+    #printout li { margin-bottom: 4px; }
+    #printout .po-foot { margin-top: 24px; padding-top: 8px; border-top: 0.5px solid #ccc; color: #888; font-size: 10px; }
+  }
+  @page { margin: 2cm; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="brand" href="index.html" style="text-decoration:none; color:inherit;" title="Zur Wirkungswerkstatt">Steuerungs-Check</a>
+  <span class="badge">Wirkungswerkstatt · Werkstattstand</span>
+  <button id="reset">Neu starten</button>
+</header>
+
+<nav class="progress" id="prog"></nav>
+
+<main id="main"></main>
+
+<div class="navbtns"><div class="inner">
+  <button class="btn ghost" id="back">Zurück</button>
+  <button class="btn primary" id="next">Weiter</button>
+</div></div>
+
+<div id="printout"></div>
+
+<script>
+(function(){
+'use strict';
+
+const TAGS = [
+  { id:'ziele',      label:'Über Ziele wird gesprochen' },
+  { id:'fortschritt',label:'Über Fortschritt wird gesprochen' },
+  { id:'koord',      label:'Abhängigkeiten und nächste Schritte werden geklärt' },
+  { id:'entscheid',  label:'Es wird entschieden, was wichtiger ist' },
+  { id:'konflikt',   label:'Zielkonflikte werden sichtbar und bearbeitet' },
+  { id:'ressourcen', label:'Ressourcen oder Prioritäten werden verschoben' },
+  { id:'bericht',    label:'Es wird vor allem Status berichtet' },
+  { id:'unklar',     label:'Ich weiß nicht genau, was dort passiert' }
+];
+const EBENEN = ['Haus','Abteilung','Referat','Programm','Projektportfolio','Team','Schnittstellenraum'];
+const ERFOLG = ['An Zielen','Am Fortschritt der Projekte','An erledigten Aktivitäten','An Stimmung und Politik','Unklar'];
+const ERSATZ = ['Statusberichte','Ampel-Reporting','Themenspeicher und Rückblicke','Zielvereinbarungen','Bilaterale Updates','Noch nichts erkennbar'];
+const TOFFS = [
+  { a:'Beteiligung und Tiefe', b:'Begrenzte Zeit', hint:'Breite Beteiligung macht Ziele besser und den Prozess langsamer. Wie viel Beteiligung könnt ihr euch im Alltag wirklich leisten?' },
+  { a:'Moderative Steuerung', b:'Ownership der Gruppe', hint:'Starke Moderation hält den Prozess stabil, kann aber verhindern, dass die Gruppe ihn je selbst trägt.' },
+  { a:'Saubere Methodik', b:'Anschlussfähige Alltagssprache', hint:'Die reine Methodenlehre ist präzise, klingt aber schnell nach Fremdsprache. Wie viel Reinheit opfert ihr für Anschluss?' },
+  { a:'Ambition', b:'Politische Belastbarkeit', hint:'Mutige Ziele motivieren, können aber politisch verbrennen. Wie viel Ambition hält euer Umfeld aus?' },
+  { a:'Neue Formate schaffen', b:'Bestehende Formate verändern', hint:'Ein neuer Termin ist schnell eingerichtet und schnell tot. Eine bestehende Runde zu verändern ist zäher, aber nachhaltiger.' },
+  { a:'Strategische Ziele', b:'Operative Projektlogik', hint:'Zu strategisch: niemand erkennt die eigene Arbeit wieder. Zu operativ: das Zielsystem wird zur Projektliste.' },
+  { a:'Lokaler Pilot', b:'Anschluss nach oben und zur Seite', hint:'Ein Pilot im eigenen Bereich ist machbar, verpufft aber, wenn oben und daneben niemand mitzieht.' }
+];
+const SEGLABELS = ['klar', 'eher', 'ausgewogen', 'eher', 'klar'];
+const PRUEFSET = [
+  'In welcher Runde würden unsere Ziele und Signale tatsächlich relevant werden?',
+  'Wer müsste dort zuhören oder entscheiden können, damit das Instrument nicht nur Dokumentation bleibt?',
+  'Welche bestehenden Informationen könnten durch das Instrument ersetzt, verdichtet oder besser fokussiert werden?',
+  'Wo würde das Instrument aktuell nur zusätzlich obendrauf kommen?',
+  'Welche eine bestehende Routine könnten wir verändern, statt eine neue zu schaffen?',
+  'Welcher Trade-off müsste bewusst entschieden werden, bevor wir einführen oder ausweiten?',
+  'Welche Ziele oder Wirkungen liegen wirklich im Einflussbereich unseres gewählten Bereichs?',
+  'Wo brauchen wir Anschluss nach oben, zur Seite oder zu Nachbareinheiten, damit es nicht lokal verpufft?'
+];
+const STEPS = ['Bereich','Landkarte','Befund','Andockstelle','Trade-offs','Mitnehmen'];
+
+let S = {
+  bereich: '', bereichName: '',
+  runden: [],
+  dock: -1,
+  erfolg: [], entscheidung: '', wer: '', ersetzt: [], aendern: '',
+  toffs: [2,2,2,2,2,2,2],
+  toffFirst: -1,
+  hyp: '', pruefen: '', schritt: '',
+  cur: 0
+};
+// Draft für das Runden-Formular (nicht persistiert)
+let D = { name:'', rhythmus:'', tags:[], editIndex:-1 };
+
+try {
+  const saved = JSON.parse(localStorage.getItem('steuerungscheck') || 'null');
+  if (saved) {
+    S = Object.assign({}, S, saved);
+    if (!Array.isArray(S.erfolg)) S.erfolg = [];
+    if (!Array.isArray(S.ersetzt)) S.ersetzt = [];
+  }
+} catch(e){}
+function save(){ try { localStorage.setItem('steuerungscheck', JSON.stringify(S)); } catch(e){} }
+function esc(s){ const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+function classify(r){
+  if (r.tags.includes('unklar')) return 'unklar';
+  if (r.tags.includes('entscheid') || r.tags.includes('konflikt') || r.tags.includes('ressourcen')) return 'steuerung';
+  if (r.tags.includes('koord')) return 'koordination';
+  return 'bericht';
+}
+const TYPLABEL = { steuerung:'Steuerungsformat', koordination:'Koordinationsformat', bericht:'Berichtsformat', unklar:'Unklar (selbst ein Befund)' };
+function segText(i){
+  const v = S.toffs[i], t = TOFFS[i];
+  if (v === 2) return 'ausgewogen';
+  return SEGLABELS[v] + ' ' + (v < 2 ? t.a : t.b);
+}
+
+/* ---------- Schritte ---------- */
+const main = document.getElementById('main');
+const prog = document.getElementById('prog');
+
+function renderProgress(){
+  prog.innerHTML = STEPS.map((s,i)=>
+    `<button class="pstep ${i===S.cur?'act':''} ${i<S.cur?'done':''}" data-i="${i}">${i+1}<span class="plabel"> · ${s}</span></button>`).join('');
+  prog.querySelectorAll('.pstep').forEach(b=>b.onclick=()=>{ S.cur=+b.dataset.i; save(); render(); });
+}
+
+function step0(){
+  return `<div class="step act">
+    <div class="kicker">Schritt 1 von 6</div>
+    <h2>Wähle deinen Einflussbereich</h2>
+    <p class="lead">Du willst ein Instrument einführen oder retten: OKR, Wirkungsorientierung, ein besseres Reporting. Dieser Check findet in sechs Schritten heraus, ob es bei euch einen Ort gibt, an dem es andocken kann. Nicht die Ebene, die formal am wichtigsten ist, sondern die, auf der du danach tatsächlich etwas herausfinden, anstoßen oder verändern kannst. Faustregel: Wähle den Bereich, in dem du an die Runden und die Menschen wirklich rankommst.</p>
+    <div class="card">
+      <label class="lbl">Ebene</label>
+      <div class="chips" id="ebenechips">${EBENEN.map(a=>`<span class="chip ${S.bereich===a?'sel':''}" data-a="${a}">${a}</span>`).join('')}</div>
+      <div style="height:14px"></div>
+      <label class="lbl">Welchen Bereich meinst du konkret? (optional)</label>
+      <div class="sub">Nur der Bereich, noch keine einzelne Besprechungsrunde. Die Runden sammelst du im nächsten Schritt.</div>
+      <input type="text" id="bereichName" placeholder="z. B. unsere Abteilung Z, das Programm XY, mein Referat" value="${esc(S.bereichName)}">
+    </div>
+    <div class="hint">Wichtig ist nicht die formale Ebene, sondern ob es dort echte gemeinsame Ziele, regelmäßige Abstimmung und wenigstens etwas Entscheidungsspielraum gibt.</div>
+    <p class="privacy">Übrigens: Alles, was du hier eingibst, bleibt ausschließlich auf deinem Gerät. Kein Server, keine Übertragung, kein Konto. Beim Schließen des Browsers bleibt dein Stand lokal erhalten, mit "Neu starten" oben löschst du ihn.</p>
+  </div>`;
+}
+
+function savedRow(r, i){
+  const typ = classify(r);
+  return `<div class="card saved">
+    <span class="info">
+      <b>${esc(r.name)||'Ohne Namen'}</b>
+      <span class="meta">${esc(r.rhythmus)||''}</span>
+      <span class="typ ${typ}">${TYPLABEL[typ]}</span>
+    </span>
+    <span class="actions">
+      <button data-edit="${i}">bearbeiten</button>
+      <button class="rm" data-del="${i}">entfernen</button>
+    </span>
+  </div>`;
+}
+
+function step1(){
+  const editing = D.editIndex >= 0;
+  return `<div class="step act">
+    <div class="kicker">Schritt 2 von 6</div>
+    <h2>Steuerungslandkarte light</h2>
+    <p class="lead">Sammle die regelmäßigen Runden und Formate in deinem Bereich: Jour fixe, Leitungsrunde, Statusrunde, Portfoliotermin, was es eben gibt. Eine nach der anderen: beschreiben, speichern, nächste.</p>
+    <div class="card" id="rform">
+      <label class="lbl">${editing ? 'Runde bearbeiten' : 'Runde beschreiben'}</label>
+      <input type="text" id="fName" maxlength="48" placeholder="Name der Runde, z. B. AL-Runde" value="${esc(D.name)}">
+      <div style="height:10px"></div>
+      <input type="text" id="fRhythmus" placeholder="Rhythmus, z. B. wöchentlich (optional)" value="${esc(D.rhythmus)}">
+      <div style="height:14px"></div>
+      <label class="lbl">Was passiert dort? (Vermutungen sind erlaubt)</label>
+      <div class="chips">${TAGS.map(t=>`<span class="chip ${D.tags.includes(t.id)?'sel':''}" data-tag="${t.id}">${t.label}</span>`).join('')}</div>
+      <div style="height:16px"></div>
+      <button class="btn minze" id="saveRunde">${editing ? 'Änderungen speichern' : 'Runde speichern'}</button>
+      ${editing ? '<button class="btn ghost" id="cancelEdit" style="margin-left:8px;">Abbrechen</button>' : ''}
+      <span class="savemsg" id="savemsg">Gespeichert.</span>
+    </div>
+    ${S.runden.length ? `<label class="lbl" style="margin:18px 0 8px;">Deine Landkarte (${S.runden.length} ${S.runden.length===1?'Runde':'Runden'})</label>` : ''}
+    <div id="savedlist">${S.runden.map(savedRow).join('')}</div>
+    <div class="hint">Wenn du nicht weißt, was in einer Runde passiert, ist das kein Wissenslücken-Problem, sondern selbst ein Befund. Kreuz es an.</div>
+  </div>`;
+}
+
+function step2(){
+  const cards = S.runden.map((r)=>{
+    const typ = classify(r);
+    const wetter = (typ==='bericht') ? `<div class="rcheck"><b>Wetterbericht-Verdacht</b>Hier wird informiert, aber nichts verändert. Informativ, aber das Wetter ändert sich davon nicht. Als Andockstelle ungeeignet, solange dort nichts entschieden wird.</div>` : '';
+    return `<div class="card"><h3 style="font-size:16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">${esc(r.name)||'Ohne Namen'} <span class="typ ${typ}">${TYPLABEL[typ]}</span></h3>${wetter}</div>`;
+  }).join('');
+  const nSteu = S.runden.filter(r=>classify(r)==='steuerung').length;
+  let fazit;
+  if (!S.runden.length) fazit = 'Noch keine Runden erfasst. Geh einen Schritt zurück.';
+  else if (nSteu>0) fazit = `Es gibt ${nSteu===1?'einen Kandidaten':nSteu+' Kandidaten'} für eine echte Andockstelle. Im nächsten Schritt schaust du genauer hin.`;
+  else fazit = `Kein Steuerungsformat in Sicht. Das ist ein ehrlicher und wertvoller Befund: ein Instrument wie OKR oder Wirkungsorientierung hätte hier aktuell keinen Ort, an dem es Entscheidungen verändern kann. Dann gibt es drei ehrliche Optionen, die man nicht vermischen sollte: eine bestehende Runde gezielt zum Steuerungsformat weiterentwickeln, einen sehr schlanken neuen Rhythmus bewusst etablieren (nur wenn Führung ihn trägt), oder die Einführung verschieben beziehungsweise deutlich verkleinern. Wähle im nächsten Schritt die Runde mit dem größten Entwicklungspotenzial.`;
+  return `<div class="step act">
+    <div class="kicker">Schritt 3 von 6</div>
+    <h2>Dein Befund</h2>
+    <p class="lead">Drei Formattypen: Berichtsformate liefern Status. Koordinationsformate klären Abhängigkeiten. Steuerungsformate verändern Prioritäten, Ressourcen oder Ziele. Nur an Letztere kann ein Steuerungsinstrument wirklich andocken.</p>
+    ${cards}
+    <div class="hint">${fazit}</div>
+  </div>`;
+}
+
+function step3(){
+  const opts = S.runden.map((r,i)=>`<option value="${i}" ${S.dock===i?'selected':''}>${esc(r.name)||'Ohne Namen'} (${TYPLABEL[classify(r)]})</option>`).join('');
+  const dockTyp = (S.dock>=0 && S.runden[S.dock]) ? classify(S.runden[S.dock]) : null;
+  const dockHint = (dockTyp && dockTyp!=='steuerung')
+    ? `<div class="hint">Du hast ein ${TYPLABEL[dockTyp]} gewählt. Das kann bewusst sein: Dann ist deine Aufgabe, diese Runde weiterzuentwickeln, nicht nur anzudocken.</div>` : '';
+  const nichtsErkennbar = S.ersetzt.includes('Noch nichts erkennbar');
+  return `<div class="step act">
+    <div class="kicker">Schritt 4 von 6</div>
+    <h2>Anschlussdiagnose</h2>
+    <p class="lead">Wähle die vielversprechendste Andockstelle und prüfe sie. Kurz und ehrlich, Stichworte reichen.</p>
+    <div class="card">
+      <label class="lbl">Meine Andockstellen-Kandidatin</label>
+      <select id="dockSel"><option value="-1">Bitte wählen</option>${opts}</select>
+    </div>
+    ${dockHint}
+    <div class="card">
+      <label class="lbl">Woran wird dort Erfolg festgemacht?</label>
+      <div class="sub">Was zählt in dieser Runde tatsächlich als "läuft gut"? Mehrfachauswahl möglich.</div>
+      <div class="chips" id="erfolgchips">${ERFOLG.map(e=>`<span class="chip ${S.erfolg.includes(e)?'sel':''}" data-e="${e}">${e}</span>`).join('')}</div>
+    </div>
+    <div class="card">
+      <label class="lbl">Welche Entscheidung wurde dort zuletzt tatsächlich getroffen?</label>
+      <div class="sub">Getroffen, nicht besprochen. Wenn dir nichts einfällt, schreib das hin, auch das ist ein Befund.</div>
+      <textarea id="entscheidung" placeholder="z. B. Vorhaben X wurde auf Q2 verschoben, um Y freizuräumen">${esc(S.entscheidung)}</textarea>
+    </div>
+    <div class="card">
+      <label class="lbl">Wer müsste zuhören oder mitentscheiden, damit euer Instrument dort mehr ist als Dokumentation?</label>
+      <textarea id="wer" placeholder="z. B. die Abteilungsleitung, nicht nur die Stabsstelle">${esc(S.wer)}</textarea>
+    </div>
+    <div class="card">
+      <label class="lbl">Was könnte das Instrument dort ersetzen oder verkürzen?</label>
+      <div class="sub">Ein neues Instrument muss etwas Bestehendes ablösen oder schärfen, sonst kommt es obendrauf. Mehrfachauswahl möglich.</div>
+      <div class="chips" id="ersatzchips">${ERSATZ.map(e=>`<span class="chip ${S.ersetzt.includes(e)?'sel':''}" data-e="${e}">${e}</span>`).join('')}</div>
+      ${nichtsErkennbar ? `<div class="rcheck" style="margin-top:12px;"><b>Achtung</b>Wenn das Instrument nichts ersetzt, kommt es obendrauf. Genau so entsteht die Wahrnehmung "noch ein Format". Das ist der wichtigste Punkt, den du als Erstes klären solltest.</div>` : ''}
+    </div>
+    <div class="card">
+      <label class="lbl">Was müsste sich ändern, damit ein Steuerungsinstrument dort nützlich wäre?</label>
+      <textarea id="aendern" placeholder="z. B. die Agenda braucht einen festen Entscheidungspunkt statt reiner Berichte">${esc(S.aendern)}</textarea>
+    </div>
+  </div>`;
+}
+
+function step4(){
+  return `<div class="step act">
+    <div class="kicker">Schritt 5 von 6</div>
+    <h2>Trade-off-Mapping</h2>
+    <p class="lead">Kein Rollout ohne Zielkonflikte. Markiere pro Zeile, wohin ihr in der Praxis tendieren werdet, nicht wohin es schön wäre. Die Mitte heißt: bewusst ausgewogen.</p>
+    <div class="card">
+      ${TOFFS.map((t,i)=>`<div class="toff">
+        <div class="ends"><span>${t.a}</span><span>${t.b}</span></div>
+        <div class="seg" data-toff="${i}">${[0,1,2,3,4].map(k=>`<button class="segb ${S.toffs[i]===k?'on':''}" data-k="${k}" title="${k===2?'ausgewogen':(SEGLABELS[k]+' '+(k<2?t.a:t.b))}"></button>`).join('')}</div>
+        <div class="segstate" id="segstate-${i}">${segText(i)}</div>
+        <div class="toffhint">${t.hint}</div>
+      </div>`).join('')}
+    </div>
+    <div class="card">
+      <label class="lbl">Welcher Trade-off muss bei euch zuerst bewusst entschieden werden?</label>
+      <select id="toffFirst"><option value="-1">Bitte wählen</option>${TOFFS.map((t,i)=>`<option value="${i}" ${S.toffFirst===i?'selected':''}>${t.a} vs. ${t.b}</option>`).join('')}</select>
+    </div>
+  </div>`;
+}
+
+function step5(){
+  const dockName = (S.dock>=0 && S.runden[S.dock]) ? (S.runden[S.dock].name || 'meiner Andockstelle') : '';
+  if (!S.hyp && dockName) S.hyp = `Ein Steuerungsinstrument könnte bei uns an ${dockName} andocken, wenn `;
+  return `<div class="step act">
+    <div class="kicker">Schritt 6 von 6</div>
+    <h2>Mitnehmen</h2>
+    <p class="lead">Drei Sätze, dann bist du fertig. Kein Rollout-Plan, sondern eine Hypothese und ein erster Prüfschritt.</p>
+    <div class="card"><label class="lbl">Meine Anschluss-Hypothese</label>
+      <div class="sub">Der Satzanfang ist vorbereitet, vervollständige das "wenn".</div>
+      <textarea id="hyp">${esc(S.hyp)}</textarea></div>
+    <div class="card"><label class="lbl">Das muss ich zuerst überprüfen</label>
+      <textarea id="pruefen" placeholder="z. B. Welche Entscheidung wurde in dieser Runde zuletzt tatsächlich getroffen?">${esc(S.pruefen)}</textarea></div>
+    <div class="card"><label class="lbl">Mein kleinster nächster Schritt</label>
+      <textarea id="schritt" placeholder="z. B. Nächste AL-Runde beobachten: Wird dort entschieden oder berichtet?">${esc(S.schritt)}</textarea></div>
+    <div class="exportbtns">
+      <button class="btn primary" id="prt">Drucken / PDF</button>
+      <button class="btn minze" id="dlDoc">Als Word-Datei speichern</button>
+      <button class="btn ghost" id="cp">Formatiert kopieren</button>
+    </div>
+    <p class="mdlink">Für Textdateien-Fans: <a id="dlMd">als Markdown (.md) speichern</a></p>
+    <p class="privacy">Alles bleibt auf deinem Gerät. Kein Server, keine Übertragung, kein Konto.</p>
+    <div class="card" style="margin-top:20px;"><label class="lbl">Dein Prüf-Set für die nächsten zwei Wochen (ist im Export enthalten)</label>
+      <ol class="pruefset">${PRUEFSET.map(q=>`<li>${q}</li>`).join('')}</ol></div>
+    <div class="hint">Du weißt jetzt, wo gesteuert wird. Das <a href="wirkungsversprechen.html">Wirkungsversprechen</a> klärt, was dort auf den Tisch gehört.</div>
+  </div>`;
+}
+
+/* ---------- Export ---------- */
+function summaryHTML(){
+  const datum = new Date().toLocaleDateString('de-DE', { year:'numeric', month:'long', day:'numeric' });
+  let h = '<div class="po-brand">Wirkungswerkstatt · Steuerungs-Check</div>';
+  h += '<h1>Mein Steuerungs-Befund</h1>';
+  h += '<p class="po-meta">Steuerungs-Check der Wirkungswerkstatt, Stand ' + datum + '</p>';
+  h += '<h2>Mein Einflussbereich</h2><p>' + esc(S.bereich || 'nicht gewählt') + (S.bereichName ? ' (' + esc(S.bereichName) + ')' : '') + '</p>';
+  h += '<h2>Steuerungslandkarte</h2><table><tr><th>Runde</th><th>Rhythmus</th><th>Typ</th><th>Was dort passiert</th></tr>';
+  S.runden.forEach(r=>{
+    const tl = r.tags.map(t=>{ const f = TAGS.find(x=>x.id===t); return f ? f.label : t; }).join('; ');
+    h += '<tr><td>' + esc(r.name||'Ohne Namen') + '</td><td>' + esc(r.rhythmus||'') + '</td><td>' + TYPLABEL[classify(r)] + '</td><td>' + esc(tl) + '</td></tr>';
+  });
+  h += '</table>';
+  if (S.dock >= 0 && S.runden[S.dock]) {
+    h += '<h2>Anschlussdiagnose: ' + esc(S.runden[S.dock].name || '') + '</h2>';
+    if (S.erfolg.length) h += '<p><strong>Erfolg wird festgemacht:</strong> ' + esc(S.erfolg.join(', ')) + '</p>';
+    if (S.entscheidung) h += '<p><strong>Letzte tatsächliche Entscheidung:</strong> ' + esc(S.entscheidung) + '</p>';
+    if (S.wer) h += '<p><strong>Wer müsste zuhören oder mitentscheiden:</strong> ' + esc(S.wer) + '</p>';
+    if (S.ersetzt.length) h += '<p><strong>Könnte ersetzen oder verkürzen:</strong> ' + esc(S.ersetzt.join(', ')) + '</p>';
+    if (S.aendern) h += '<p><strong>Das müsste sich ändern:</strong> ' + esc(S.aendern) + '</p>';
+  }
+  h += '<h2>Trade-offs</h2><ul>';
+  TOFFS.forEach((t,i)=>{ h += '<li>' + t.a + ' vs. ' + t.b + ': <strong>' + segText(i) + '</strong></li>'; });
+  h += '</ul>';
+  if (S.toffFirst >= 0) h += '<p><strong>Zuerst bewusst entscheiden:</strong> ' + TOFFS[S.toffFirst].a + ' vs. ' + TOFFS[S.toffFirst].b + '</p>';
+  h += '<h2>Mitnehmen</h2>';
+  h += '<p><strong>Anschluss-Hypothese:</strong> ' + esc(S.hyp) + '</p>';
+  h += '<p><strong>Zuerst überprüfen:</strong> ' + esc(S.pruefen) + '</p>';
+  h += '<p><strong>Kleinster nächster Schritt:</strong> ' + esc(S.schritt) + '</p>';
+  h += '<h2>Prüf-Set für die nächsten zwei Wochen</h2><ul>';
+  PRUEFSET.forEach(q=>{ h += '<li>' + q + '</li>'; });
+  h += '</ul>';
+  h += '<p class="po-foot">Erstellt mit dem Steuerungs-Check der Wirkungswerkstatt (Werkstattstand). Alles lokal erstellt, nichts wurde übertragen.</p>';
+  return h;
+}
+
+const DOC_CSS = 'body{font-family:Arial,Helvetica,sans-serif;font-size:11pt;color:#111;line-height:1.45;}h1{font-size:17pt;margin:0 0 2pt;}h2{font-size:12pt;color:#36349D;border-bottom:1pt solid #36349D;padding-bottom:2pt;margin:14pt 0 5pt;}table{border-collapse:collapse;width:100%;}th,td{border:0.5pt solid #999;padding:4pt 6pt;text-align:left;font-size:10pt;vertical-align:top;}th{background:#EEEEF9;}p{margin:3pt 0;}ul{margin:3pt 0 3pt 16pt;}li{margin-bottom:3pt;}.po-brand{font-weight:bold;font-size:9pt;letter-spacing:1pt;color:#36349D;text-transform:uppercase;}.po-meta{color:#666;font-size:9pt;margin-bottom:10pt;}.po-foot{margin-top:16pt;border-top:0.5pt solid #ccc;padding-top:4pt;color:#888;font-size:8pt;}';
+
+function fullDoc(){
+  return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Steuerungs-Check: Mein Befund</title><style>' + DOC_CSS + '</style></head><body>' + summaryHTML() + '</body></html>';
+}
+
+function plainText(){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = summaryHTML();
+  const out = [];
+  tmp.childNodes.forEach(n=>{
+    if (n.nodeType !== 1) return;
+    const tag = n.tagName;
+    if (tag === 'H1') out.push(n.textContent.toUpperCase(), '');
+    else if (tag === 'H2') out.push('', n.textContent.toUpperCase());
+    else if (tag === 'UL') n.querySelectorAll('li').forEach(li=>out.push('  • ' + li.textContent));
+    else if (tag === 'TABLE') n.querySelectorAll('tr').forEach((tr,i)=>{ if(i===0) return; const c = [...tr.children].map(td=>td.textContent); out.push('  • ' + c[0] + (c[1]?' ('+c[1]+')':'') + ': ' + c[2] + (c[3]?' ['+c[3]+']':'')); });
+    else out.push(n.textContent);
+  });
+  return out.join('\n');
+}
+
+function buildMd(){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = summaryHTML();
+  const out = [];
+  tmp.childNodes.forEach(n=>{
+    if (n.nodeType !== 1) return;
+    const tag = n.tagName;
+    if (tag === 'H1') out.push('# ' + n.textContent, '');
+    else if (tag === 'H2') out.push('', '## ' + n.textContent, '');
+    else if (tag === 'UL') n.querySelectorAll('li').forEach(li=>out.push('- ' + li.textContent));
+    else if (tag === 'TABLE') {
+      out.push('| Runde | Rhythmus | Typ | Was dort passiert |', '|---|---|---|---|');
+      n.querySelectorAll('tr').forEach((tr,i)=>{ if(i===0) return; out.push('| ' + [...tr.children].map(td=>td.textContent).join(' | ') + ' |'); });
+    }
+    else out.push(n.textContent);
+  });
+  return out.join('\n');
+}
+
+function download(content, name, type){
+  const blob = new Blob([content], { type: type });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---------- Events ---------- */
+function bind(){
+  const q = sel => main.querySelector(sel);
+  const qa = sel => main.querySelectorAll(sel);
+
+  if (S.cur === 0){
+    qa('#ebenechips .chip').forEach(c=>c.onclick=()=>{ S.bereich = c.dataset.a; save(); render(); });
+    q('#bereichName').oninput = e=>{ S.bereichName = e.target.value; save(); };
+  }
+  if (S.cur === 1){
+    qa('#rform .chip[data-tag]').forEach(c=>c.onclick=()=>{
+      const t = c.dataset.tag;
+      const ix = D.tags.indexOf(t);
+      if (ix >= 0) D.tags.splice(ix,1); else D.tags.push(t);
+      c.classList.toggle('sel');
+    });
+    const syncDraft = ()=>{ D.name = q('#fName').value.trim(); D.rhythmus = q('#fRhythmus').value.trim(); };
+    q('#fName').oninput = syncDraft;
+    q('#fRhythmus').oninput = syncDraft;
+    q('#saveRunde').onclick = ()=>{
+      syncDraft();
+      if (!D.name) { q('#fName').focus(); return; }
+      const entry = { name: D.name, rhythmus: D.rhythmus, tags: D.tags.slice() };
+      if (D.editIndex >= 0) S.runden[D.editIndex] = entry; else S.runden.push(entry);
+      D = { name:'', rhythmus:'', tags:[], editIndex:-1 };
+      save(); render();
+      const msg = main.querySelector('#savemsg');
+      if (msg) { msg.classList.add('show'); setTimeout(()=>msg.classList.remove('show'), 1800); }
+    };
+    const cancel = q('#cancelEdit');
+    if (cancel) cancel.onclick = ()=>{ D = { name:'', rhythmus:'', tags:[], editIndex:-1 }; render(); };
+    qa('[data-edit]').forEach(b=>b.onclick=()=>{
+      const i = +b.dataset.edit;
+      const r = S.runden[i];
+      D = { name: r.name, rhythmus: r.rhythmus, tags: r.tags.slice(), editIndex: i };
+      render();
+      main.querySelector('#rform').scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+    qa('[data-del]').forEach(b=>b.onclick=()=>{
+      S.runden.splice(+b.dataset.del,1);
+      if (S.dock >= S.runden.length) S.dock = -1;
+      save(); render();
+    });
+  }
+  if (S.cur === 3){
+    q('#dockSel').onchange = e=>{ S.dock = +e.target.value; save(); render(); };
+    qa('#erfolgchips .chip').forEach(c=>c.onclick=()=>{
+      const e = c.dataset.e; const ix = S.erfolg.indexOf(e);
+      if (ix >= 0) S.erfolg.splice(ix,1); else S.erfolg.push(e);
+      save(); c.classList.toggle('sel');
+    });
+    qa('#ersatzchips .chip').forEach(c=>c.onclick=()=>{
+      const e = c.dataset.e; const ix = S.ersetzt.indexOf(e);
+      if (ix >= 0) S.ersetzt.splice(ix,1); else S.ersetzt.push(e);
+      save(); render();
+    });
+    q('#entscheidung').oninput = e=>{ S.entscheidung = e.target.value; save(); };
+    q('#wer').oninput = e=>{ S.wer = e.target.value; save(); };
+    q('#aendern').oninput = e=>{ S.aendern = e.target.value; save(); };
+  }
+  if (S.cur === 4){
+    qa('.seg').forEach(seg=>{
+      const i = +seg.dataset.toff;
+      seg.querySelectorAll('.segb').forEach(b=>b.onclick=()=>{
+        S.toffs[i] = +b.dataset.k; save();
+        seg.querySelectorAll('.segb').forEach(x=>x.classList.toggle('on', +x.dataset.k === S.toffs[i]));
+        const st = document.getElementById('segstate-' + i);
+        if (st) st.textContent = segText(i);
+      });
+    });
+    q('#toffFirst').onchange = e=>{ S.toffFirst = +e.target.value; save(); };
+  }
+  if (S.cur === 5){
+    save(); // ggf. vorausgefüllte Hypothese sichern
+    q('#hyp').oninput = e=>{ S.hyp = e.target.value; save(); };
+    q('#pruefen').oninput = e=>{ S.pruefen = e.target.value; save(); };
+    q('#schritt').oninput = e=>{ S.schritt = e.target.value; save(); };
+    q('#prt').onclick = ()=>{ document.getElementById('printout').innerHTML = summaryHTML(); window.print(); };
+    q('#dlDoc').onclick = ()=>{ download(fullDoc(), 'steuerungs-check-befund.doc', 'application/msword'); };
+    q('#dlMd').onclick = ()=>{ download(buildMd(), 'steuerungs-check-befund.md', 'text/markdown;charset=utf-8'); };
+    q('#cp').onclick = async (e)=>{
+      const ok = ()=>{ e.target.textContent = 'Kopiert!'; setTimeout(()=>e.target.textContent='Formatiert kopieren', 1500); };
+      try {
+        const item = new ClipboardItem({
+          'text/html': new Blob(['<style>' + DOC_CSS + '</style>' + summaryHTML()], { type:'text/html' }),
+          'text/plain': new Blob([plainText()], { type:'text/plain' })
+        });
+        await navigator.clipboard.write([item]); ok();
+      } catch(err) {
+        try { await navigator.clipboard.writeText(plainText()); ok(); }
+        catch(err2) { alert('Kopieren nicht möglich. Nutze "Als Word-Datei speichern".'); }
+      }
+    };
+  }
+}
+
+function render(){
+  renderProgress();
+  const steps = [step0, step1, step2, step3, step4, step5];
+  main.innerHTML = steps[S.cur]();
+  bind();
+  document.getElementById('back').style.visibility = S.cur === 0 ? 'hidden' : 'visible';
+  document.getElementById('next').textContent = S.cur === STEPS.length - 1 ? 'Fertig · zur Werkstatt' : 'Weiter';
+}
+
+document.getElementById('reset').onclick = ()=>{
+  if (confirm('Alles löschen und von vorn beginnen?')) {
+    try { localStorage.removeItem('steuerungscheck'); } catch(e){}
+    location.reload();
+  }
+};
+document.getElementById('back').onclick = ()=>{ if (S.cur > 0){ S.cur--; save(); render(); window.scrollTo({top:0}); } };
+document.getElementById('next').onclick = ()=>{
+  if (S.cur < STEPS.length - 1) { S.cur++; save(); render(); window.scrollTo({top:0}); }
+  else { location.href = 'index.html'; }
+};
+
+render();
+})();
+</script>
+</body>
+</html>
