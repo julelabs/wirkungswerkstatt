@@ -221,13 +221,18 @@ function sorted(){
 function agendaParts(){
   const haupt = sorted().filter(t => t.typ !== 'info');
   const infos = S.tops.filter(t => t.typ === 'info');
-  const mins = S.tops.reduce((a,t) => a + (parseInt(t.min,10) || 0), 0);
-  return { haupt, infos, mins };
+  const mins = haupt.reduce((a,t) => a + (parseInt(t.min,10) || 0), 0);
+  const missingMins = haupt.some(t => !parseInt(t.min,10));
+  return { haupt, infos, mins, missingMins };
+}
+function timeMeta(mins, missingMins){
+  if (!mins) return missingMins ? ' · Zeit offen + Schlussfrage' : '';
+  return missingMins ? ' · mind. ' + mins + ' Min + Schlussfrage (nicht alle TOPs geschätzt)' : ' · ca. ' + mins + ' Min + Schlussfrage';
 }
 function agendaHTML(){
-  const { haupt, infos, mins } = agendaParts();
+  const { haupt, infos, mins, missingMins } = agendaParts();
   const datum = new Date().toLocaleDateString('de-DE', { year:'numeric', month:'long', day:'numeric' });
-  let h = '<h3>Steuerungsagenda' + (S.runde ? ' · ' + esc(S.runde) : '') + ' · ' + datum + (mins ? ' · ca. ' + mins + ' Min + Schlussfrage' : '') + '</h3>';
+  let h = '<h3>Steuerungsagenda' + (S.runde ? ' · ' + esc(S.runde) : '') + ' · ' + datum + timeMeta(mins, missingMins) + '</h3>';
   if (haupt.length){
     h += '<ol>';
     haupt.forEach(t => {
@@ -250,10 +255,10 @@ function agendaHTML(){
   return h;
 }
 function agendaText(){
-  const { haupt, infos, mins } = agendaParts();
+  const { haupt, infos, mins, missingMins } = agendaParts();
   const datum = new Date().toLocaleDateString('de-DE', { year:'numeric', month:'long', day:'numeric' });
   const out = [];
-  out.push('STEUERUNGSAGENDA' + (S.runde ? ' · ' + S.runde : '') + ' · ' + datum + (mins ? ' · ca. ' + mins + ' Min + Schlussfrage' : ''), '');
+  out.push('STEUERUNGSAGENDA' + (S.runde ? ' · ' + S.runde : '') + ' · ' + datum + timeMeta(mins, missingMins), '');
   haupt.forEach((t,i) => {
     const ty = TYPEN[t.typ];
     out.push((i+1) + '. ' + t.punkt + ' · ' + ty.label + (t.min ? ' (' + t.min + ' Min)' : ''));
@@ -268,11 +273,11 @@ function agendaText(){
   return out.join('\n');
 }
 function printHTML(){
-  const { haupt, infos, mins } = agendaParts();
+  const { haupt, infos, mins, missingMins } = agendaParts();
   const datum = new Date().toLocaleDateString('de-DE', { year:'numeric', month:'long', day:'numeric' });
   let h = '<div class="po-brand">Wirkungswerkstatt · TOP-Triage</div>';
   h += '<h1>Steuerungsagenda' + (S.runde ? ': ' + esc(S.runde) : '') + '</h1>';
-  h += '<p class="po-meta">Stand ' + datum + (mins ? ' · ca. ' + mins + ' Min + Schlussfrage' : '') + '</p>';
+  h += '<p class="po-meta">Stand ' + datum + timeMeta(mins, missingMins) + '</p>';
   h += '<h2>Tagesordnung</h2><ol>';
   haupt.forEach(t => {
     const ty = TYPEN[t.typ];
