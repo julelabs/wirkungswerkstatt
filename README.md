@@ -22,6 +22,7 @@ http://localhost:8080
 - `wirkungsversprechen.html` - interaktives Werkzeug mit lokaler Speicherung im Browser
 - `steuerungs-check.html` - interaktives Werkzeug mit lokaler Speicherung im Browser
 - `fuehrungspfad.html` - Fuehrungspfad mit Druck-/Kopierfunktionen
+- `top-triage.html` - TOP-Triage fuer Steuerungsagenden mit lokaler Speicherung im Browser
 - `impressum.html` und `datenschutz.html` - Rechtliches, vor Veroeffentlichung pruefen
 - `shared/style.css` - gemeinsames Stylesheet fuer die statischen Inhaltsseiten
 - `assets/fonts/` - lokal eingebundene Schriften
@@ -43,7 +44,7 @@ Ohne GitHub Actions geht es auch: Unter `Settings -> Pages` als Source `Deploy f
 
 1. Inhalt lokal in den HTML-Dateien bearbeiten.
 2. Lokal mit `python3 -m http.server 8080` testen.
-3. Jede Seite kurz anklicken: Startseite, Wirkungsversprechen, Steuerungs-Check, Fuehrungspfad, Impressum, Datenschutz.
+3. Jede Seite kurz anklicken: Startseite, Wirkungsversprechen, Steuerungs-Check, Fuehrungspfad, TOP-Triage, Impressum, Datenschutz.
 4. Aenderungen committen und pushen. GitHub Pages veroeffentlicht danach automatisch.
 
 ## Vor Veroeffentlichung klaeren

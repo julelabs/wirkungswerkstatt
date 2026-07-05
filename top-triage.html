@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOP-Triage · Vom Status zur Entscheidung · Wirkungswerkstatt</title>
+<meta name="description" content="Die TOP-Triage macht aus gesammelten Agendapunkten eine Steuerungsagenda: Entscheidungen nach vorn, Eskalationen sichtbar, Infos zum Lesen statt Vorlesen. Tabelle einfügen, sortieren, fertig. Alles bleibt auf deinem Gerät.">
+<style>
+  @font-face {
+    font-family: 'BundesSans';
+    src: url('assets/fonts/BundesSans-Web-Regular.woff2') format('woff2');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  :root {
+    --blau: #36349D; --minze: #4DFFB0; --kirsche: #DB0045;
+    --lavendel: #E3E6F2; --weiss: #FFFFFF; --dunkel: #0D0C2B;
+    --blau-10: #EEEEF9; --blau-20: #C5C4EA; --blau-60: #5957B4;
+    --kirsche-10: #FCEEE3; --minze-20: #C9FFF0;
+    --fg: var(--dunkel); --fg-2: #4A4869; --fg-muted: #7C7AA8;
+    --line: rgba(54,52,157,0.15);
+    --display: 'Open Sans', system-ui, sans-serif;
+    --body: 'BundesSans', 'Open Sans', system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body { font-family: var(--body); color: var(--fg); background: var(--blau-10); line-height: 1.55; }
+  ::selection { background: var(--minze); color: var(--dunkel); }
+  h1,h2,h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
+
+  header.top { position: relative; background: var(--dunkel); color: var(--weiss); padding: 16px clamp(16px,4vw,40px); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { font-family: var(--display); font-weight: 800; font-size: 16px; }
+  .badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 2px 9px; border: 1.5px solid var(--minze); color: var(--minze); border-radius: 999px; font-size: 11px; font-weight: 700; font-family: var(--display); white-space: nowrap; }
+  @media (max-width: 760px) { .badge { position: static; transform: none; margin-inline: auto; } }
+  #reset { border: none; background: none; color: var(--blau-20); font-family: var(--display); font-size: 12px; font-weight: 700; cursor: pointer; }
+  #reset:hover { color: var(--minze); }
+
+  .tabs { display: flex; gap: 6px; padding: 14px clamp(16px,4vw,40px); background: var(--weiss); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; overflow-x: auto; }
+  .tab { border: none; background: none; cursor: pointer; font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--fg-muted); padding: 8px 12px 10px; border-top: 3px solid var(--blau-20); text-align: left; white-space: nowrap; flex: 1; min-width: 0; }
+  .tab.act { color: var(--blau); border-top-color: var(--blau); }
+
+  main { max-width: 760px; margin: 0 auto; padding: clamp(20px,4vw,36px) clamp(16px,4vw,24px) 80px; }
+  .pane { display: none; }
+  .pane.act { display: block; animation: fadein .25s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .kicker { font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blau); margin-bottom: 8px; }
+  h2 { font-size: clamp(22px,4vw,30px); margin-bottom: 10px; }
+  p.lead { color: var(--fg-2); margin-bottom: 20px; font-size: 15.5px; }
+
+  .card { background: var(--weiss); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+  label.lbl { display: block; font-family: var(--display); font-weight: 700; font-size: 13.5px; margin-bottom: 6px; }
+  .sub { font-size: 13px; color: var(--fg-muted); margin: -2px 0 8px; }
+  input[type=text], textarea { width: 100%; font-family: var(--body); font-size: 15px; padding: 10px 12px; border: 1.5px solid var(--blau-20); border-radius: 9px; background: var(--weiss); color: var(--fg); }
+  input:focus, textarea:focus { outline: none; border-color: var(--blau); }
+  textarea { min-height: 72px; resize: vertical; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-family: var(--display); font-size: 13px; font-weight: 600; padding: 8px 14px; border: 1.5px solid var(--blau-20); border-radius: 999px; background: var(--weiss); cursor: pointer; color: var(--fg-2); transition: all .15s; }
+  .chip.sel { background: var(--blau); border-color: var(--blau); color: var(--weiss); }
+  .chips.mini .chip { font-size: 11.5px; padding: 4px 10px; }
+
+  .typ { font-family: var(--display); font-size: 11.5px; font-weight: 800; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+  .typ.entscheidung { background: var(--minze); color: var(--dunkel); }
+  .typ.eskalation { background: var(--kirsche); color: var(--weiss); }
+  .typ.diskussion { background: var(--blau-20); color: var(--blau); }
+  .typ.info { background: var(--lavendel); color: var(--fg-2); }
+  .typ.unklar { background: var(--kirsche-10); color: var(--kirsche); border: 1px solid var(--kirsche); }
+
+  .btn { font-family: var(--display); font-weight: 700; font-size: 14.5px; padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer; }
+  .btn.primary { background: var(--blau); color: var(--weiss); }
+  .btn.primary:hover { background: var(--blau-60); }
+  .btn.minze { background: var(--minze); color: var(--dunkel); }
+  .btn.ghost { background: none; border: 1.5px solid var(--blau-20); color: var(--fg-2); }
+  .btn.ghost:hover { border-color: var(--blau); color: var(--blau); }
+  .btn.sm { font-size: 13px; padding: 9px 14px; }
+
+  .hint { background: var(--weiss); border-left: 4px solid var(--minze); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 14px; color: var(--fg-2); margin: 16px 0; }
+  .rcheck { background: var(--kirsche-10); border-left: 4px solid var(--kirsche); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 14px; margin: 16px 0; }
+  .rcheck b { color: var(--kirsche); font-family: var(--display); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 4px; }
+  .privacy { font-size: 13px; color: var(--fg-muted); margin-top: 14px; }
+
+  .topcard { position: relative; padding: 14px 16px; }
+  .topcard .head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .topcard .head b { font-family: var(--display); font-size: 15px; overflow-wrap: anywhere; }
+  .topcard .head .min { color: var(--fg-muted); font-size: 12.5px; font-family: var(--display); font-weight: 700; white-space: nowrap; }
+  .topcard .satz { font-size: 13.5px; color: var(--fg-2); margin-top: 5px; }
+  .topcard .nudge { font-size: 13px; color: var(--kirsche); margin-top: 5px; }
+  .topcard .actions { margin-top: 8px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .topcard .actions button { border: none; background: none; font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--blau); cursor: pointer; }
+  .topcard .actions button.rm:hover { color: var(--kirsche); }
+
+  .agenda { background: var(--weiss); border: 1px solid var(--blau); border-radius: 14px; padding: 20px; margin: 14px 0; box-shadow: 0 14px 34px rgba(13,12,43,0.07); }
+  .agenda h3 { font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blau); margin-bottom: 12px; }
+  .agenda ol { margin: 0 0 0 22px; }
+  .agenda li { margin-bottom: 10px; font-size: 14.5px; }
+  .agenda li .zu { color: var(--fg-2); display: block; font-size: 13.5px; }
+  .agenda .lese { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .agenda .lese .lt { font-family: var(--display); font-weight: 700; font-size: 12.5px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .agenda .lese p { font-size: 13.5px; color: var(--fg-2); margin: 4px 0; }
+  .agenda .schluss { margin-top: 12px; font-size: 13.5px; color: var(--fg-2); font-style: italic; }
+  .exportbtns { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 6px; }
+
+  table.vorlage { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13.5px; background: var(--weiss); }
+  table.vorlage th { font-family: var(--display); font-size: 12.5px; text-align: left; padding: 8px 10px; border: 1px solid var(--blau-20); background: var(--blau-10); color: var(--blau); }
+  table.vorlage td { padding: 8px 10px; border: 1px solid var(--blau-20); vertical-align: top; }
+  table.vorlage td.hilfe { color: var(--fg-muted); font-size: 12.5px; font-style: italic; }
+  table.vorlage td.leer { height: 30px; }
+
+  .spielregel { background: var(--weiss); border: 1px dashed var(--blau-20); border-radius: 10px; padding: 14px 16px; font-size: 14.5px; }
+  .spielregel ol { margin: 6px 0 0 20px; }
+  .spielregel li { margin-bottom: 6px; }
+
+  .rowpreview { margin-top: 12px; }
+
+  #printout { display: none; }
+  @media print {
+    header.top, .tabs, main { display: none !important; }
+    body { background: #fff; }
+    #printout { display: block; font-family: Georgia, 'Times New Roman', serif; color: #111; font-size: 12.5px; line-height: 1.5; }
+    #printout .po-brand { font-family: Arial, sans-serif; font-weight: bold; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #36349D; margin-bottom: 4px; }
+    #printout h1 { font-family: Arial, sans-serif; font-size: 21px; margin-bottom: 2px; }
+    #printout .po-meta { color: #666; margin-bottom: 18px; font-size: 11.5px; }
+    #printout h2 { font-family: Arial, sans-serif; font-size: 13.5px; margin: 18px 0 6px; padding-bottom: 3px; border-bottom: 1.5px solid #36349D; }
+    #printout ol { margin: 4px 0 4px 18px; }
+    #printout li { margin-bottom: 8px; }
+    #printout p { margin: 4px 0; }
+    #printout .po-foot { margin-top: 24px; padding-top: 8px; border-top: 0.5px solid #ccc; color: #888; font-size: 10px; }
+  }
+  @page { margin: 2cm; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="brand" href="index.html" style="text-decoration:none; color:inherit;" title="Zur Wirkungswerkstatt">TOP-Triage</a>
+  <span class="badge">Wirkungswerkstatt · Werkstattstand</span>
+  <button id="reset">Neu starten</button>
+</header>
+
+<nav class="tabs" id="tabs"></nav>
+
+<main id="main"></main>
+
+<div id="printout"></div>
+
+<script>
+(function(){
+'use strict';
+
+const TABS = ['Agenda bauen', 'Punkt einreichen', 'Vorlage & Spielregel'];
+
+const TYPEN = {
+  entscheidung: { label:'Entscheidung', frage:'Welche Entscheidung, zwischen welchen Optionen?', ph:'z. B. Pilot ausweiten: jetzt, erst nach Klärung der Rückfragegründe, oder gar nicht', out:'Zu entscheiden' },
+  eskalation:   { label:'Eskalation', frage:'Was ist blockiert, und wer kann es lösen?', ph:'z. B. Schnittstelle wartet seit vier Wochen auf Freigabe durch Referat Z', out:'Blockiert' },
+  diskussion:   { label:'Diskussion / Feedback', frage:'Zu welcher Frage willst du Rückmeldungen?', ph:'z. B. Reicht die Pilotgruppe, oder brauchen wir einen zweiten Standort?', out:'Frage' },
+  info:         { label:'Info', frage:'Schreib den Punkt so, dass ihn niemand vorlesen muss.', ph:'z. B. Go-live Verfahren X am 12.08., Anleitung folgt per Mail, keine Aktion nötig', out:'' },
+  unklar:       { label:'Noch unklar', frage:'', ph:'', out:'' }
+};
+const SORTORDER = ['entscheidung','eskalation','diskussion','unklar','info'];
+const TYPKEYS = ['info','entscheidung','diskussion','eskalation'];
+
+const SPIELREGEL = 'So kommt ein Punkt bei uns auf die Agenda:\n1. In die Sammel-Tabelle eintragen: Punkt, Typ, ein Satz dazu (die Tabelle sagt dir, welcher).\n2. Infopunkte werden gelesen, nicht vorgelesen. Schreib sie so, dass Lesen reicht.\n3. Ohne Typ kein TOP. Faustregel bei Unsicherheit: Was soll nach dem Punkt anders sein? Nichts? Dann ist es eine Info.';
+
+let S = {
+  tab: 0,
+  runde: '',
+  tops: [],
+  sub: { punkt:'', typ:'', satz:'', min:'' }
+};
+// Formular-Entwurf im Bauen-Tab (nicht persistiert)
+let D = { punkt:'', typ:'', satz:'', min:'', editIndex:-1 };
+
+try {
+  const saved = JSON.parse(localStorage.getItem('toptriage') || 'null');
+  if (saved) { S = Object.assign({}, S, saved); if (!Array.isArray(S.tops)) S.tops = []; if (!S.sub) S.sub = { punkt:'', typ:'', satz:'', min:'' }; }
+} catch(e){}
+function save(){ try { localStorage.setItem('toptriage', JSON.stringify(S)); } catch(e){} }
+function esc(s){ const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+const main = document.getElementById('main');
+const tabsEl = document.getElementById('tabs');
+
+/* ---------- Einfüge-Import ---------- */
+function guessTyp(s){
+  s = (s || '').toLowerCase();
+  if (/entscheid/.test(s)) return 'entscheidung';
+  if (/eskal|block/.test(s)) return 'eskalation';
+  if (/disk|feedback|rückmeld|rueckmeld/.test(s)) return 'diskussion';
+  if (/info|bericht|status|kenntnis/.test(s)) return 'info';
+  return null;
+}
+function parsePaste(text){
+  const items = [];
+  text.split(/\r?\n/).forEach(line => {
+    line = line.trim();
+    if (!line) return;
+    const cells = line.split('\t').map(c => c.trim());
+    const low = line.toLowerCase();
+    if (cells.length >= 2 && low.includes('punkt') && low.includes('typ')) return; // Kopfzeile
+    if (cells.length >= 2 && /lesbar ausformuliert/.test(low)) return; // Hilfezeile der Vorlage
+    if (cells.filter(Boolean).length === 0) return;
+    let punkt = cells[0], typ = null, satz = '', min = '';
+    if (cells.length >= 2){
+      typ = guessTyp(cells[1]);
+      const rest = cells.slice(typ ? 2 : 1).filter(Boolean);
+      const minIx = rest.findIndex(c => /^\d{1,3}\s*(min\.?|minuten)?$/i.test(c));
+      if (minIx >= 0) { min = rest.splice(minIx, 1)[0].replace(/[^\d]/g, ''); }
+      satz = rest.join(' · ');
+    }
+    if (!punkt) { punkt = satz; satz = ''; }
+    if (!punkt) return;
+    items.push({ punkt, typ: typ || 'unklar', satz, min });
+  });
+  return items;
+}
+
+/* ---------- Agenda-Ausgabe ---------- */
+function sorted(){
+  return SORTORDER.flatMap(t => S.tops.filter(x => x.typ === t));
+}
+function agendaParts(){
+  const haupt = sorted().filter(t => t.typ !== 'info');
+  const infos = S.tops.filter(t => t.typ === 'info');
+  const mins = S.tops.reduce((a,t) => a + (parseInt(t.min,10) || 0), 0);
+  return { haupt, infos, mins };
+}
+function agendaHTML(){
+  const { haupt, infos, mins } = agendaParts();
+  const datum = new Date().toLocaleDateString('de-DE', { year:'numeric', month:'long', day:'numeric' });
+  let h = '<h3>Steuerungsagenda' + (S.runde ? ' · ' + esc(S.runde) : '') + ' · ' + datum + (mins ? ' · ca. ' + mins + ' Min + Schlussfrage' : '') + '</h3>';
+  if (haupt.length){
+    h += '<ol>';
+    haupt.forEach(t => {
+      const ty = TYPEN[t.typ];
+      h += '<li><b>' + esc(t.punkt) + '</b> · ' + ty.label + (t.min ? ' (' + esc(t.min) + ' Min)' : '');
+      if (t.typ === 'unklar') h += '<span class="zu">Noch unklassifiziert: bitte vorab klären, was dieser Punkt braucht.</span>';
+      else if (t.satz) h += '<span class="zu">' + ty.out + ': ' + esc(t.satz) + '</span>';
+      h += '</li>';
+    });
+    h += '</ol>';
+  } else {
+    h += '<p style="color:var(--fg-muted); font-size:14px;">Noch keine Punkte für den Termin.</p>';
+  }
+  if (infos.length){
+    h += '<div class="lese"><div class="lt">Zum Lesen vorab · wird nicht vorgelesen</div>';
+    infos.forEach(t => { h += '<p><b>' + esc(t.punkt) + ':</b> ' + (esc(t.satz) || '<i>noch nicht lesbar ausformuliert</i>') + '</p>'; });
+    h += '</div>';
+  }
+  h += '<div class="schluss">Letzter Punkt, immer: Was muss Führung entscheiden, schützen, stoppen oder klären? (5 Min)</div>';
+  return h;
+}
+function agendaText(){
+  const { haupt, infos, mins } = agendaParts();
+  const datum = new Date().toLocaleDateString('de-DE', { year:'numeric', month:'long', day:'numeric' });
+  const out = [];
+  out.push('STEUERUNGSAGENDA' + (S.runde ? ' · ' + S.runde : '') + ' · ' + datum + (mins ? ' · ca. ' + mins + ' Min + Schlussfrage' : ''), '');
+  haupt.forEach((t,i) => {
+    const ty = TYPEN[t.typ];
+    out.push((i+1) + '. ' + t.punkt + ' · ' + ty.label + (t.min ? ' (' + t.min + ' Min)' : ''));
+    if (t.typ === 'unklar') out.push('   Noch unklassifiziert: bitte vorab klären, was dieser Punkt braucht.');
+    else if (t.satz) out.push('   ' + ty.out + ': ' + t.satz);
+  });
+  if (infos.length){
+    out.push('', 'ZUM LESEN VORAB (wird nicht vorgelesen):');
+    infos.forEach(t => out.push('- ' + t.punkt + (t.satz ? ': ' + t.satz : '')));
+  }
+  out.push('', 'Letzter Punkt, immer: Was muss Führung entscheiden, schützen, stoppen oder klären? (5 Min)');
+  return out.join('\n');
+}
+function printHTML(){
+  const { haupt, infos, mins } = agendaParts();
+  const datum = new Date().toLocaleDateString('de-DE', { year:'numeric', month:'long', day:'numeric' });
+  let h = '<div class="po-brand">Wirkungswerkstatt · TOP-Triage</div>';
+  h += '<h1>Steuerungsagenda' + (S.runde ? ': ' + esc(S.runde) : '') + '</h1>';
+  h += '<p class="po-meta">Stand ' + datum + (mins ? ' · ca. ' + mins + ' Min + Schlussfrage' : '') + '</p>';
+  h += '<h2>Tagesordnung</h2><ol>';
+  haupt.forEach(t => {
+    const ty = TYPEN[t.typ];
+    h += '<li><strong>' + esc(t.punkt) + '</strong> · ' + ty.label + (t.min ? ' (' + esc(t.min) + ' Min)' : '');
+    if (t.typ !== 'unklar' && t.satz) h += '<br>' + ty.out + ': ' + esc(t.satz);
+    h += '</li>';
+  });
+  h += '</ol>';
+  if (infos.length){
+    h += '<h2>Zum Lesen vorab (wird nicht vorgelesen)</h2>';
+    infos.forEach(t => { h += '<p><strong>' + esc(t.punkt) + ':</strong> ' + esc(t.satz) + '</p>'; });
+  }
+  h += '<p><em>Letzter Punkt, immer: Was muss Führung entscheiden, schützen, stoppen oder klären? (5 Min)</em></p>';
+  h += '<p class="po-foot">Erstellt mit der TOP-Triage der Wirkungswerkstatt (Werkstattstand). Alles lokal erstellt, nichts wurde übertragen.</p>';
+  return h;
+}
+
+/* ---------- Realitätscheck ---------- */
+function realitaet(){
+  const n = S.tops.length;
+  if (!n) return '';
+  const ne = S.tops.filter(t => t.typ === 'entscheidung' || t.typ === 'eskalation').length;
+  const ni = S.tops.filter(t => t.typ === 'info').length;
+  if (n >= 2 && ne === 0) return '<div class="rcheck"><b>Wetterbericht-Verdacht</b>Keine einzige Entscheidung, keine Eskalation. Diese Runde informiert, aber steuert nicht. Entweder fehlt den Punkten die Zuspitzung, oder dem Termin reicht eine Mail.</div>';
+  if (n >= 3 && ni / n > 0.6) return '<div class="rcheck"><b>Realitätscheck</b>Mehr als die Hälfte Info. Das ist keine Agenda, das ist ein Newsletter. Verschick den Lese-Block vorab und nutze den Termin für die Punkte, die ihn brauchen.</div>';
+  return '';
+}
+
+/* ---------- Karten ---------- */
+function topCard(t, i){
+  const ty = TYPEN[t.typ];
+  let inner = '<div class="head"><b>' + (esc(t.punkt) || 'Ohne Titel') + '</b><span class="typ ' + t.typ + '">' + ty.label + '</span>' + (t.min ? '<span class="min">' + esc(t.min) + ' Min</span>' : '') + '</div>';
+  if (t.typ === 'unklar'){
+    inner += '<div class="nudge">Was braucht dieser Punkt?</div><div class="chips mini" style="margin-top:6px;">' + TYPKEYS.map(k => '<span class="chip" data-settyp="' + k + '" data-i="' + i + '">' + TYPEN[k].label + '</span>').join('') + '</div>';
+  } else if (t.satz){
+    inner += '<div class="satz">' + (ty.out ? ty.out + ': ' : '') + esc(t.satz) + '</div>';
+  } else {
+    inner += '<div class="nudge">' + ty.frage + ' (bearbeiten und ergänzen)</div>';
+  }
+  inner += '<div class="actions"><button data-edit="' + i + '">bearbeiten</button><button class="rm" data-del="' + i + '">entfernen</button></div>';
+  return '<div class="card topcard">' + inner + '</div>';
+}
+
+/* ---------- Tab 1: Agenda bauen ---------- */
+function pane0(){
+  const editing = D.editIndex >= 0;
+  return `<div class="pane act">
+    <div class="kicker">Vom Status zur Entscheidung</div>
+    <h2>Agenda bauen</h2>
+    <p class="lead">Schluss mit Tischabfrage: Sammelt eure Punkte wie bisher (OneNote, Mail, Zettel), füge sie hier ein, und die Triage sortiert sie zu einer Steuerungsagenda. Entscheidungen nach vorn, Eskalationen sichtbar, Infos zum Lesen statt Vorlesen.</p>
+    <div class="card">
+      <label class="lbl">Punkte einfügen</label>
+      <div class="sub">Tabelle aus OneNote, Word oder Outlook markieren, kopieren, hier einfügen (die <a href="#" id="zurVorlage">Sammelvorlage</a> passt genau). Einfache Stichwortlisten gehen auch: eine Zeile pro Punkt, Typ klärst du danach per Klick.</div>
+      <textarea id="paste" placeholder="z. B.&#10;Antragsverfahren X&#9;Entscheidung&#9;Pilot ausweiten: jetzt oder nach Klärung der Rückfragegründe&#9;15&#10;Projekt Y&#9;Info&#9;Go-live am 12.08., keine Aktion nötig"></textarea>
+      <div style="height:12px"></div>
+      <button class="btn primary" id="einlesen">Punkte einlesen</button>
+    </div>
+    <div class="card">
+      <label class="lbl">${editing ? 'Punkt bearbeiten' : 'Punkt von Hand hinzufügen'}</label>
+      <input type="text" id="fPunkt" maxlength="90" placeholder="Worum geht es? z. B. Antragsverfahren X" value="${esc(D.punkt)}">
+      <div style="height:12px"></div>
+      <label class="lbl">Was braucht der Punkt?</label>
+      <div class="chips" id="ftypchips">${TYPKEYS.map(k => `<span class="chip ${D.typ === k ? 'sel' : ''}" data-typ="${k}">${TYPEN[k].label}</span>`).join('')}</div>
+      <div style="height:12px"></div>
+      <div id="fsatzwrap" ${D.typ ? '' : 'style="display:none;"'}>
+        <label class="lbl" id="fsatzlbl">${D.typ ? TYPEN[D.typ].frage : ''}</label>
+        <input type="text" id="fSatz" placeholder="${D.typ ? TYPEN[D.typ].ph : ''}" value="${esc(D.satz)}">
+        <div style="height:12px"></div>
+      </div>
+      <label class="lbl">Minuten (optional)</label>
+      <input type="text" id="fMin" style="max-width:120px;" placeholder="z. B. 10" value="${esc(D.min)}">
+      <div style="height:14px"></div>
+      <button class="btn minze" id="fAdd">${editing ? 'Änderungen speichern' : 'Zur Agenda hinzufügen'}</button>
+      ${editing ? '<button class="btn ghost" id="fCancel" style="margin-left:8px;">Abbrechen</button>' : ''}
+    </div>
+    ${S.tops.length ? `<label class="lbl" style="margin:18px 0 8px;">Deine Punkte (${S.tops.length})</label>` : ''}
+    <div>${S.tops.map(topCard).join('')}</div>
+    ${realitaet()}
+    ${S.tops.length ? `
+    <div class="card">
+      <label class="lbl">Name der Runde (optional, für die Überschrift)</label>
+      <input type="text" id="runde" maxlength="60" placeholder="z. B. Referatsrunde KW 29" value="${esc(S.runde)}">
+    </div>
+    <div class="agenda" id="agenda">${agendaHTML()}</div>
+    <div class="exportbtns">
+      <button class="btn primary" id="cp">Für die Einladung kopieren</button>
+      <button class="btn ghost" id="prt">Drucken / PDF</button>
+    </div>` : ''}
+    <p class="privacy">Alles, was du hier eingibst, bleibt ausschließlich auf deinem Gerät. Kein Server, keine Übertragung, kein Konto. Mit "Neu starten" oben löschst du deinen lokalen Stand.</p>
+  </div>`;
+}
+
+/* ---------- Tab 2: Punkt einreichen ---------- */
+function subRowPreview(){
+  const t = S.sub;
+  if (!t.punkt && !t.satz) return '';
+  const typLabel = t.typ ? TYPEN[t.typ].label : '';
+  return `<table class="vorlage rowpreview"><tr><td>${esc(t.punkt) || '…'}</td><td>${typLabel || '…'}</td><td>${esc(t.satz) || '…'}</td><td>${esc(t.min)}</td></tr></table>`;
+}
+function pane1(){
+  const t = S.sub;
+  return `<div class="pane act">
+    <div class="kicker">Für alle, die einen Punkt mitbringen</div>
+    <h2>Punkt einreichen</h2>
+    <p class="lead">Ein Punkt, ein Typ, ein Satz. Das Ergebnis ist eine fertige Zeile für eure Sammelseite, egal ob OneNote, Mail oder Kanban-Karte.</p>
+    <div class="card">
+      <label class="lbl">Worum geht es?</label>
+      <input type="text" id="sPunkt" maxlength="90" placeholder="z. B. Antragsverfahren X" value="${esc(t.punkt)}">
+      <div style="height:12px"></div>
+      <label class="lbl">Was braucht dein Punkt?</label>
+      <div class="sub">Faustregel bei Unsicherheit: Was soll nach dem Punkt anders sein? Nichts? Dann ist es eine Info.</div>
+      <div class="chips" id="stypchips">${TYPKEYS.map(k => `<span class="chip ${t.typ === k ? 'sel' : ''}" data-typ="${k}">${TYPEN[k].label}</span>`).join('')}</div>
+      <div style="height:12px"></div>
+      <div id="ssatzwrap" ${t.typ ? '' : 'style="display:none;"'}>
+        <label class="lbl" id="ssatzlbl">${t.typ ? TYPEN[t.typ].frage : ''}</label>
+        <input type="text" id="sSatz" placeholder="${t.typ ? TYPEN[t.typ].ph : ''}" value="${esc(t.satz)}">
+        <div style="height:12px"></div>
+      </div>
+      <label class="lbl">Minuten (optional)</label>
+      <input type="text" id="sMin" style="max-width:120px;" placeholder="z. B. 10" value="${esc(t.min)}">
+      <div id="rowpreview">${subRowPreview()}</div>
+      <div class="exportbtns">
+        <button class="btn minze" id="sCopy">Zeile kopieren (für eure Sammelseite)</button>
+        <button class="btn ghost" id="sHier">Direkt in die Agenda hier übernehmen</button>
+      </div>
+    </div>
+    ${t.typ === 'info' ? '<div class="rcheck"><b>Realitätscheck</b>Wenn zu deinem Punkt jemand etwas entscheiden müsste, ist es keine Info. Und wenn nicht: Schreib ihn so, dass Lesen reicht. Infopunkte werden nicht vorgelesen.</div>' : ''}
+    ${t.typ === 'diskussion' ? '<div class="hint">Prüffrage: Was soll nach der Diskussion anders sein? Wenn darauf keine Antwort kommt, ist es eine verkleidete Info.</div>' : ''}
+    <p class="privacy">Alles bleibt auf deinem Gerät. Kein Server, keine Übertragung, kein Konto.</p>
+  </div>`;
+}
+
+/* ---------- Tab 3: Vorlage & Spielregel ---------- */
+function vorlageHTML(){
+  return `<table class="vorlage" id="vtab">
+    <tr><th>Punkt</th><th>Typ</th><th>Ein Satz dazu</th><th>Min</th></tr>
+    <tr>
+      <td class="hilfe">kurz und konkret</td>
+      <td class="hilfe">Info · Entscheidung · Diskussion · Eskalation</td>
+      <td class="hilfe">Info: lesbar ausformuliert. Entscheidung: welche, zwischen welchen Optionen. Diskussion: zu welcher Frage. Eskalation: was blockiert, wer kann es lösen.</td>
+      <td class="hilfe">optional</td>
+    </tr>
+    <tr><td>Antragsverfahren X</td><td>Entscheidung</td><td>Pilot ausweiten: jetzt, erst nach Klärung der Rückfragegründe, oder gar nicht</td><td>15</td></tr>
+    <tr><td class="leer"></td><td></td><td></td><td></td></tr>
+    <tr><td class="leer"></td><td></td><td></td><td></td></tr>
+    <tr><td class="leer"></td><td></td><td></td><td></td></tr>
+  </table>`;
+}
+function pane2(){
+  return `<div class="pane act">
+    <div class="kicker">Damit es ohne Extra-Tool funktioniert</div>
+    <h2>Vorlage &amp; Spielregel</h2>
+    <p class="lead">Dein Team braucht diese Seite nicht. Es braucht eine Tabelle dort, wo ihr sowieso sammelt: OneNote, Word, die Mail an die Assistenz. Diese Vorlage bringt Typ und Anstups-Frage gleich mit, und die fertige Tabelle kannst du später direkt in "Agenda bauen" einfügen.</p>
+    <div class="card">
+      <label class="lbl">Die Sammelvorlage</label>
+      ${vorlageHTML()}
+      <div class="exportbtns">
+        <button class="btn minze" id="vCopy">Vorlage kopieren (für OneNote, Word oder Mail)</button>
+      </div>
+    </div>
+    <div class="card">
+      <label class="lbl">Die Spielregel fürs Team</label>
+      <div class="sub">Drei Zeilen zum Weiterschicken. Die Disziplin kommt nicht vom Werkzeug, sondern davon, dass du sie einforderst.</div>
+      <div class="spielregel">
+        <b>So kommt ein Punkt bei uns auf die Agenda:</b>
+        <ol>
+          <li>In die Sammel-Tabelle eintragen: Punkt, Typ, ein Satz dazu (die Tabelle sagt dir, welcher).</li>
+          <li>Infopunkte werden gelesen, nicht vorgelesen. Schreib sie so, dass Lesen reicht.</li>
+          <li>Ohne Typ kein TOP. Faustregel bei Unsicherheit: Was soll nach dem Punkt anders sein? Nichts? Dann ist es eine Info.</li>
+        </ol>
+      </div>
+      <div class="exportbtns">
+        <button class="btn ghost" id="rCopy">Spielregel kopieren</button>
+      </div>
+    </div>
+    <div class="hint">Übrigens: Diese Seite ist eine einzelne HTML-Datei ohne Server. Wenn das Behördennetz den Aufruf blockiert, kannst du sie speichern und lokal oder im Hausnetz ablegen. Sie funktioniert dann weiter, nur mit Systemschriften statt BundesSans.</div>
+  </div>`;
+}
+
+/* ---------- Kopieren ---------- */
+async function copyRich(html, plain, btn, done){
+  const ok = () => { const t = btn.textContent; btn.textContent = 'Kopiert!'; setTimeout(() => btn.textContent = done, 1500); };
+  try {
+    const item = new ClipboardItem({
+      'text/html': new Blob([html], { type:'text/html' }),
+      'text/plain': new Blob([plain], { type:'text/plain' })
+    });
+    await navigator.clipboard.write([item]); ok();
+  } catch(err) {
+    try { await navigator.clipboard.writeText(plain); ok(); }
+    catch(err2) { alert('Kopieren nicht möglich. Nutze Drucken / PDF.'); }
+  }
+}
+const TABLE_CSS = 'border-collapse:collapse;width:100%;';
+const CELL_CSS = 'border:1pt solid #8B89CF;padding:4pt 6pt;font-size:10pt;vertical-align:top;';
+function vorlageExportHTML(){
+  const th = c => '<th style="' + CELL_CSS + 'background:#EEEEF9;text-align:left;">' + c + '</th>';
+  const td = c => '<td style="' + CELL_CSS + '">' + c + '</td>';
+  let h = '<table style="' + TABLE_CSS + '">';
+  h += '<tr>' + th('Punkt') + th('Typ') + th('Ein Satz dazu') + th('Min') + '</tr>';
+  h += '<tr>' + td('<i>kurz und konkret</i>') + td('<i>Info · Entscheidung · Diskussion · Eskalation</i>') + td('<i>Info: lesbar ausformuliert. Entscheidung: welche, zwischen welchen Optionen. Diskussion: zu welcher Frage. Eskalation: was blockiert, wer kann es lösen.</i>') + td('<i>optional</i>') + '</tr>';
+  h += '<tr>' + td('Antragsverfahren X') + td('Entscheidung') + td('Pilot ausweiten: jetzt, erst nach Klärung der Rückfragegründe, oder gar nicht') + td('15') + '</tr>';
+  for (let i = 0; i < 3; i++) h += '<tr>' + td('&nbsp;') + td('&nbsp;') + td('&nbsp;') + td('&nbsp;') + '</tr>';
+  return h + '</table>';
+}
+function vorlageExportText(){
+  return ['Punkt\tTyp\tEin Satz dazu\tMin',
+    'Antragsverfahren X\tEntscheidung\tPilot ausweiten: jetzt, erst nach Klärung der Rückfragegründe, oder gar nicht\t15',
+    '\t\t\t', '\t\t\t', '\t\t\t'].join('\n');
+}
+
+/* ---------- Events ---------- */
+function bind(){
+  const q = sel => main.querySelector(sel);
+  const qa = sel => main.querySelectorAll(sel);
+
+  if (S.tab === 0){
+    const zv = q('#zurVorlage');
+    if (zv) zv.onclick = e => { e.preventDefault(); S.tab = 2; save(); render(); };
+    q('#einlesen').onclick = () => {
+      const items = parsePaste(q('#paste').value);
+      if (!items.length) { q('#paste').focus(); return; }
+      S.tops = S.tops.concat(items);
+      save(); render();
+    };
+    // Hand-Formular
+    const syncD = () => { D.punkt = q('#fPunkt').value; D.satz = q('#fSatz') ? q('#fSatz').value : D.satz; D.min = q('#fMin').value; };
+    q('#fPunkt').oninput = syncD;
+    if (q('#fSatz')) q('#fSatz').oninput = syncD;
+    q('#fMin').oninput = syncD;
+    qa('#ftypchips .chip').forEach(c => c.onclick = () => { syncD(); D.typ = c.dataset.typ; render(); });
+    q('#fAdd').onclick = () => {
+      syncD();
+      if (!D.punkt.trim()) { q('#fPunkt').focus(); return; }
+      const entry = { punkt: D.punkt.trim(), typ: D.typ || 'unklar', satz: D.satz.trim(), min: D.min.replace(/[^\d]/g, '') };
+      if (D.editIndex >= 0) S.tops[D.editIndex] = entry; else S.tops.push(entry);
+      D = { punkt:'', typ:'', satz:'', min:'', editIndex:-1 };
+      save(); render();
+    };
+    const fc = q('#fCancel');
+    if (fc) fc.onclick = () => { D = { punkt:'', typ:'', satz:'', min:'', editIndex:-1 }; render(); };
+    // Karten
+    qa('[data-edit]').forEach(b => b.onclick = () => {
+      const i = +b.dataset.edit, t = S.tops[i];
+      D = { punkt: t.punkt, typ: t.typ === 'unklar' ? '' : t.typ, satz: t.satz, min: t.min, editIndex: i };
+      render();
+      main.querySelector('#fPunkt').scrollIntoView({ behavior:'smooth', block:'center' });
+    });
+    qa('[data-del]').forEach(b => b.onclick = () => { S.tops.splice(+b.dataset.del, 1); save(); render(); });
+    qa('[data-settyp]').forEach(c => c.onclick = () => { S.tops[+c.dataset.i].typ = c.dataset.settyp; save(); render(); });
+    // Agenda
+    const ru = q('#runde');
+    if (ru) ru.oninput = e => { S.runde = e.target.value; save(); const ag = q('#agenda'); if (ag) ag.innerHTML = agendaHTML(); };
+    const cp = q('#cp');
+    if (cp) cp.onclick = e => copyRich(document.getElementById('agenda') ? '<div style="font-family:Arial,sans-serif;font-size:11pt;">' + agendaHTML().replace(/class="[^"]*"/g,'') + '</div>' : '', agendaText(), e.target, 'Für die Einladung kopieren');
+    const prt = q('#prt');
+    if (prt) prt.onclick = () => { document.getElementById('printout').innerHTML = printHTML(); window.print(); };
+  }
+
+  if (S.tab === 1){
+    const upd = () => { const el = q('#rowpreview'); if (el) el.innerHTML = subRowPreview(); };
+    q('#sPunkt').oninput = e => { S.sub.punkt = e.target.value; save(); upd(); };
+    if (q('#sSatz')) q('#sSatz').oninput = e => { S.sub.satz = e.target.value; save(); upd(); };
+    q('#sMin').oninput = e => { S.sub.min = e.target.value.replace(/[^\d]/g, ''); save(); upd(); };
+    qa('#stypchips .chip').forEach(c => c.onclick = () => { S.sub.typ = c.dataset.typ; save(); render(); });
+    q('#sCopy').onclick = e => {
+      const t = S.sub;
+      if (!t.punkt.trim()) { q('#sPunkt').focus(); return; }
+      const typLabel = t.typ ? TYPEN[t.typ].label : '';
+      const plain = [t.punkt, typLabel, t.satz, t.min].join('\t');
+      const td = c => '<td style="' + CELL_CSS + '">' + esc(c) + '</td>';
+      const html = '<table style="' + TABLE_CSS + '"><tr>' + td(t.punkt) + td(typLabel) + td(t.satz) + td(t.min) + '</tr></table>';
+      copyRich(html, plain, e.target, 'Zeile kopieren (für eure Sammelseite)');
+    };
+    q('#sHier').onclick = () => {
+      const t = S.sub;
+      if (!t.punkt.trim()) { q('#sPunkt').focus(); return; }
+      S.tops.push({ punkt: t.punkt.trim(), typ: t.typ || 'unklar', satz: t.satz.trim(), min: t.min });
+      S.sub = { punkt:'', typ:'', satz:'', min:'' };
+      S.tab = 0;
+      save(); render(); window.scrollTo({ top: 0 });
+    };
+  }
+
+  if (S.tab === 2){
+    q('#vCopy').onclick = e => copyRich(vorlageExportHTML(), vorlageExportText(), e.target, 'Vorlage kopieren (für OneNote, Word oder Mail)');
+    q('#rCopy').onclick = e => copyRich('<p style="font-family:Arial,sans-serif;font-size:11pt;">' + esc(SPIELREGEL).replace(/\n/g, '<br>') + '</p>', SPIELREGEL, e.target, 'Spielregel kopieren');
+  }
+}
+
+function render(){
+  tabsEl.innerHTML = TABS.map((t,i) => `<button class="tab ${i === S.tab ? 'act' : ''}" data-i="${i}">${t}</button>`).join('');
+  tabsEl.querySelectorAll('.tab').forEach(b => b.onclick = () => { S.tab = +b.dataset.i; save(); render(); window.scrollTo({ top: 0 }); });
+  const panes = [pane0, pane1, pane2];
+  main.innerHTML = panes[S.tab]();
+  bind();
+}
+
+document.getElementById('reset').onclick = () => {
+  if (confirm('Alles löschen und von vorn beginnen?')) {
+    try { localStorage.removeItem('toptriage'); } catch(e){}
+    location.reload();
+  }
+};
+
+render();
+})();
+</script>
+</body>
+</html>
