@@ -29,8 +29,9 @@
 
   header.top { position: relative; background: var(--dunkel); color: var(--weiss); padding: 16px clamp(16px,4vw,40px); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .brand { font-family: var(--display); font-weight: 800; font-size: 16px; }
-  .badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 2px 9px; border: 1.5px solid var(--minze); color: var(--minze); border-radius: 999px; font-size: 11px; font-weight: 700; font-family: var(--display); white-space: nowrap; }
-  @media (max-width: 760px) { .badge { position: static; transform: none; margin-inline: auto; } }
+  .brand a { color: inherit; text-decoration: none; }
+  .brand a:hover { color: var(--minze); }
+  .brand .pg { color: var(--blau-20); font-weight: 600; }
   #reset { border: none; background: none; color: var(--blau-20); font-family: var(--display); font-size: 12px; font-weight: 700; cursor: pointer; }
   #reset:hover { color: var(--minze); }
 
@@ -82,7 +83,6 @@
   .topcard { position: relative; padding: 14px 16px; }
   .topcard .head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .topcard .head b { font-family: var(--display); font-size: 15px; overflow-wrap: anywhere; }
-  .topcard .head .min { color: var(--fg-muted); font-size: 12.5px; font-family: var(--display); font-weight: 700; white-space: nowrap; }
   .topcard .satz { font-size: 13.5px; color: var(--fg-2); margin-top: 5px; }
   .topcard .nudge { font-size: 13px; color: var(--kirsche); margin-top: 5px; }
   .topcard .actions { margin-top: 8px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
@@ -132,8 +132,7 @@
 <body>
 
 <header class="top">
-  <a class="brand" href="index.html" style="text-decoration:none; color:inherit;" title="Zur Wirkungswerkstatt">TOP-Triage</a>
-  <span class="badge">Wirkungswerkstatt · Werkstattstand</span>
+  <div class="brand"><a href="index.html" title="Zur Startseite">Wirkungswerkstatt</a><span class="pg"> · TOP-Triage</span></div>
   <button id="reset">Neu starten</button>
 </header>
 
@@ -165,14 +164,14 @@ let S = {
   tab: 0,
   runde: '',
   tops: [],
-  sub: { punkt:'', typ:'', satz:'', min:'' }
+  sub: { punkt:'', typ:'', satz:'' }
 };
 // Formular-Entwurf im Bauen-Tab (nicht persistiert)
-let D = { punkt:'', typ:'', satz:'', min:'', editIndex:-1 };
+let D = { punkt:'', typ:'', satz:'', editIndex:-1 };
 
 try {
   const saved = JSON.parse(localStorage.getItem('toptriage') || 'null');
-  if (saved) { S = Object.assign({}, S, saved); if (!Array.isArray(S.tops)) S.tops = []; if (!S.sub) S.sub = { punkt:'', typ:'', satz:'', min:'' }; }
+  if (saved) { S = Object.assign({}, S, saved); if (!Array.isArray(S.tops)) S.tops = []; if (!S.sub) S.sub = { punkt:'', typ:'', satz:'' }; }
 } catch(e){}
 function save(){ try { localStorage.setItem('toptriage', JSON.stringify(S)); } catch(e){} }
 function esc(s){ const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
@@ -199,17 +198,17 @@ function parsePaste(text){
     if (cells.length >= 2 && low.includes('punkt') && low.includes('typ')) return; // Kopfzeile
     if (cells.length >= 2 && /lesbar ausformuliert/.test(low)) return; // Hilfezeile der Vorlage
     if (cells.filter(Boolean).length === 0) return;
-    let punkt = cells[0], typ = null, satz = '', min = '';
+    let punkt = cells[0], typ = null, satz = '';
     if (cells.length >= 2){
       typ = guessTyp(cells[1]);
       const rest = cells.slice(typ ? 2 : 1).filter(Boolean);
       const minIx = rest.findIndex(c => /^\d{1,3}\s*(min\.?|minuten)?$/i.test(c));
-      if (minIx >= 0) { min = rest.splice(minIx, 1)[0].replace(/[^\d]/g, ''); }
+      if (minIx >= 0) rest.splice(minIx, 1);
       satz = rest.join(' · ');
     }
     if (!punkt) { punkt = satz; satz = ''; }
     if (!punkt) return;
-    items.push({ punkt, typ: typ || 'unklar', satz, min });
+    items.push({ punkt, typ: typ || 'unklar', satz });
   });
   return items;
 }
@@ -221,23 +220,17 @@ function sorted(){
 function agendaParts(){
   const haupt = sorted().filter(t => t.typ !== 'info');
   const infos = S.tops.filter(t => t.typ === 'info');
-  const mins = haupt.reduce((a,t) => a + (parseInt(t.min,10) || 0), 0);
-  const missingMins = haupt.some(t => !parseInt(t.min,10));
-  return { haupt, infos, mins, missingMins };
-}
-function timeMeta(mins, missingMins){
-  if (!mins) return missingMins ? ' · Zeit offen + Schlussfrage' : '';
-  return missingMins ? ' · mind. ' + mins + ' Min + Schlussfrage (nicht alle TOPs geschätzt)' : ' · ca. ' + mins + ' Min + Schlussfrage';
+  return { haupt, infos };
 }
 function agendaHTML(){
-  const { haupt, infos, mins, missingMins } = agendaParts();
+  const { haupt, infos } = agendaParts();
   const datum = new Date().toLocaleDateString('de-DE', { year:'numeric', month:'long', day:'numeric' });
-  let h = '<h3>Steuerungsagenda' + (S.runde ? ' · ' + esc(S.runde) : '') + ' · ' + datum + timeMeta(mins, missingMins) + '</h3>';
+  let h = '<h3>Steuerungsagenda' + (S.runde ? ' · ' + esc(S.runde) : '') + ' · ' + datum + '</h3>';
   if (haupt.length){
     h += '<ol>';
     haupt.forEach(t => {
       const ty = TYPEN[t.typ];
-      h += '<li><b>' + esc(t.punkt) + '</b> · ' + ty.label + (t.min ? ' (' + esc(t.min) + ' Min)' : '');
+      h += '<li><b>' + esc(t.punkt) + '</b> · ' + ty.label;
       if (t.typ === 'unklar') h += '<span class="zu">Noch unklassifiziert: bitte vorab klären, was dieser Punkt braucht.</span>';
       else if (t.satz) h += '<span class="zu">' + ty.out + ': ' + esc(t.satz) + '</span>';
       h += '</li>';
@@ -251,17 +244,17 @@ function agendaHTML(){
     infos.forEach(t => { h += '<p><b>' + esc(t.punkt) + ':</b> ' + (esc(t.satz) || '<i>noch nicht lesbar ausformuliert</i>') + '</p>'; });
     h += '</div>';
   }
-  h += '<div class="schluss">Letzter Punkt, immer: Was muss Führung entscheiden, schützen, stoppen oder klären? (5 Min)</div>';
+  h += '<div class="schluss">Letzter Punkt, immer: Was muss Führung entscheiden, schützen, stoppen oder klären?</div>';
   return h;
 }
 function agendaText(){
-  const { haupt, infos, mins, missingMins } = agendaParts();
+  const { haupt, infos } = agendaParts();
   const datum = new Date().toLocaleDateString('de-DE', { year:'numeric', month:'long', day:'numeric' });
   const out = [];
-  out.push('STEUERUNGSAGENDA' + (S.runde ? ' · ' + S.runde : '') + ' · ' + datum + timeMeta(mins, missingMins), '');
+  out.push('STEUERUNGSAGENDA' + (S.runde ? ' · ' + S.runde : '') + ' · ' + datum, '');
   haupt.forEach((t,i) => {
     const ty = TYPEN[t.typ];
-    out.push((i+1) + '. ' + t.punkt + ' · ' + ty.label + (t.min ? ' (' + t.min + ' Min)' : ''));
+    out.push((i+1) + '. ' + t.punkt + ' · ' + ty.label);
     if (t.typ === 'unklar') out.push('   Noch unklassifiziert: bitte vorab klären, was dieser Punkt braucht.');
     else if (t.satz) out.push('   ' + ty.out + ': ' + t.satz);
   });
@@ -269,19 +262,19 @@ function agendaText(){
     out.push('', 'ZUM LESEN VORAB (wird nicht vorgelesen):');
     infos.forEach(t => out.push('- ' + t.punkt + (t.satz ? ': ' + t.satz : '')));
   }
-  out.push('', 'Letzter Punkt, immer: Was muss Führung entscheiden, schützen, stoppen oder klären? (5 Min)');
+  out.push('', 'Letzter Punkt, immer: Was muss Führung entscheiden, schützen, stoppen oder klären?');
   return out.join('\n');
 }
 function printHTML(){
-  const { haupt, infos, mins, missingMins } = agendaParts();
+  const { haupt, infos } = agendaParts();
   const datum = new Date().toLocaleDateString('de-DE', { year:'numeric', month:'long', day:'numeric' });
   let h = '<div class="po-brand">Wirkungswerkstatt · TOP-Triage</div>';
   h += '<h1>Steuerungsagenda' + (S.runde ? ': ' + esc(S.runde) : '') + '</h1>';
-  h += '<p class="po-meta">Stand ' + datum + timeMeta(mins, missingMins) + '</p>';
+  h += '<p class="po-meta">Stand ' + datum + '</p>';
   h += '<h2>Tagesordnung</h2><ol>';
   haupt.forEach(t => {
     const ty = TYPEN[t.typ];
-    h += '<li><strong>' + esc(t.punkt) + '</strong> · ' + ty.label + (t.min ? ' (' + esc(t.min) + ' Min)' : '');
+    h += '<li><strong>' + esc(t.punkt) + '</strong> · ' + ty.label;
     if (t.typ !== 'unklar' && t.satz) h += '<br>' + ty.out + ': ' + esc(t.satz);
     h += '</li>';
   });
@@ -290,7 +283,7 @@ function printHTML(){
     h += '<h2>Zum Lesen vorab (wird nicht vorgelesen)</h2>';
     infos.forEach(t => { h += '<p><strong>' + esc(t.punkt) + ':</strong> ' + esc(t.satz) + '</p>'; });
   }
-  h += '<p><em>Letzter Punkt, immer: Was muss Führung entscheiden, schützen, stoppen oder klären? (5 Min)</em></p>';
+  h += '<p><em>Letzter Punkt, immer: Was muss Führung entscheiden, schützen, stoppen oder klären?</em></p>';
   h += '<p class="po-foot">Erstellt mit der TOP-Triage der Wirkungswerkstatt (Werkstattstand). Alles lokal erstellt, nichts wurde übertragen.</p>';
   return h;
 }
@@ -309,7 +302,7 @@ function realitaet(){
 /* ---------- Karten ---------- */
 function topCard(t, i){
   const ty = TYPEN[t.typ];
-  let inner = '<div class="head"><b>' + (esc(t.punkt) || 'Ohne Titel') + '</b><span class="typ ' + t.typ + '">' + ty.label + '</span>' + (t.min ? '<span class="min">' + esc(t.min) + ' Min</span>' : '') + '</div>';
+  let inner = '<div class="head"><b>' + (esc(t.punkt) || 'Ohne Titel') + '</b><span class="typ ' + t.typ + '">' + ty.label + '</span></div>';
   if (t.typ === 'unklar'){
     inner += '<div class="nudge">Was braucht dieser Punkt?</div><div class="chips mini" style="margin-top:6px;">' + TYPKEYS.map(k => '<span class="chip" data-settyp="' + k + '" data-i="' + i + '">' + TYPEN[k].label + '</span>').join('') + '</div>';
   } else if (t.satz){
@@ -347,8 +340,6 @@ function pane0(){
         <input type="text" id="fSatz" placeholder="${D.typ ? TYPEN[D.typ].ph : ''}" value="${esc(D.satz)}">
         <div style="height:12px"></div>
       </div>
-      <label class="lbl">Minuten (optional)</label>
-      <input type="text" id="fMin" style="max-width:120px;" placeholder="z. B. 10" value="${esc(D.min)}">
       <div style="height:14px"></div>
       <button class="btn minze" id="fAdd">${editing ? 'Änderungen speichern' : 'Zur Agenda hinzufügen'}</button>
       ${editing ? '<button class="btn ghost" id="fCancel" style="margin-left:8px;">Abbrechen</button>' : ''}
@@ -375,7 +366,7 @@ function subRowPreview(){
   const t = S.sub;
   if (!t.punkt && !t.satz) return '';
   const typLabel = t.typ ? TYPEN[t.typ].label : '';
-  return `<table class="vorlage rowpreview"><tr><td>${esc(t.punkt) || '…'}</td><td>${typLabel || '…'}</td><td>${esc(t.satz) || '…'}</td><td>${esc(t.min)}</td></tr></table>`;
+  return `<table class="vorlage rowpreview"><tr><td>${esc(t.punkt) || '…'}</td><td>${typLabel || '…'}</td><td>${esc(t.satz) || '…'}</td></tr></table>`;
 }
 function pane1(){
   const t = S.sub;
@@ -396,8 +387,6 @@ function pane1(){
         <input type="text" id="sSatz" placeholder="${t.typ ? TYPEN[t.typ].ph : ''}" value="${esc(t.satz)}">
         <div style="height:12px"></div>
       </div>
-      <label class="lbl">Minuten (optional)</label>
-      <input type="text" id="sMin" style="max-width:120px;" placeholder="z. B. 10" value="${esc(t.min)}">
       <div id="rowpreview">${subRowPreview()}</div>
       <div class="exportbtns">
         <button class="btn minze" id="sCopy">Zeile kopieren (für eure Sammelseite)</button>
@@ -413,17 +402,16 @@ function pane1(){
 /* ---------- Tab 3: Vorlage & Spielregel ---------- */
 function vorlageHTML(){
   return `<table class="vorlage" id="vtab">
-    <tr><th>Punkt</th><th>Typ</th><th>Ein Satz dazu</th><th>Min</th></tr>
+    <tr><th>Punkt</th><th>Typ</th><th>Ein Satz dazu</th></tr>
     <tr>
       <td class="hilfe">kurz und konkret</td>
       <td class="hilfe">Info · Entscheidung · Diskussion · Eskalation</td>
       <td class="hilfe">Info: lesbar ausformuliert. Entscheidung: welche, zwischen welchen Optionen. Diskussion: zu welcher Frage. Eskalation: was blockiert, wer kann es lösen.</td>
-      <td class="hilfe">optional</td>
     </tr>
-    <tr><td>Antragsverfahren X</td><td>Entscheidung</td><td>Pilot ausweiten: jetzt, erst nach Klärung der Rückfragegründe, oder gar nicht</td><td>15</td></tr>
-    <tr><td class="leer"></td><td></td><td></td><td></td></tr>
-    <tr><td class="leer"></td><td></td><td></td><td></td></tr>
-    <tr><td class="leer"></td><td></td><td></td><td></td></tr>
+    <tr><td>Antragsverfahren X</td><td>Entscheidung</td><td>Pilot ausweiten: jetzt, erst nach Klärung der Rückfragegründe, oder gar nicht</td></tr>
+    <tr><td class="leer"></td><td></td><td></td></tr>
+    <tr><td class="leer"></td><td></td><td></td></tr>
+    <tr><td class="leer"></td><td></td><td></td></tr>
   </table>`;
 }
 function pane2(){
@@ -477,16 +465,16 @@ function vorlageExportHTML(){
   const th = c => '<th style="' + CELL_CSS + 'background:#EEEEF9;text-align:left;">' + c + '</th>';
   const td = c => '<td style="' + CELL_CSS + '">' + c + '</td>';
   let h = '<table style="' + TABLE_CSS + '">';
-  h += '<tr>' + th('Punkt') + th('Typ') + th('Ein Satz dazu') + th('Min') + '</tr>';
-  h += '<tr>' + td('<i>kurz und konkret</i>') + td('<i>Info · Entscheidung · Diskussion · Eskalation</i>') + td('<i>Info: lesbar ausformuliert. Entscheidung: welche, zwischen welchen Optionen. Diskussion: zu welcher Frage. Eskalation: was blockiert, wer kann es lösen.</i>') + td('<i>optional</i>') + '</tr>';
-  h += '<tr>' + td('Antragsverfahren X') + td('Entscheidung') + td('Pilot ausweiten: jetzt, erst nach Klärung der Rückfragegründe, oder gar nicht') + td('15') + '</tr>';
-  for (let i = 0; i < 3; i++) h += '<tr>' + td('&nbsp;') + td('&nbsp;') + td('&nbsp;') + td('&nbsp;') + '</tr>';
+  h += '<tr>' + th('Punkt') + th('Typ') + th('Ein Satz dazu') + '</tr>';
+  h += '<tr>' + td('<i>kurz und konkret</i>') + td('<i>Info · Entscheidung · Diskussion · Eskalation</i>') + td('<i>Info: lesbar ausformuliert. Entscheidung: welche, zwischen welchen Optionen. Diskussion: zu welcher Frage. Eskalation: was blockiert, wer kann es lösen.</i>') + '</tr>';
+  h += '<tr>' + td('Antragsverfahren X') + td('Entscheidung') + td('Pilot ausweiten: jetzt, erst nach Klärung der Rückfragegründe, oder gar nicht') + '</tr>';
+  for (let i = 0; i < 3; i++) h += '<tr>' + td('&nbsp;') + td('&nbsp;') + td('&nbsp;') + '</tr>';
   return h + '</table>';
 }
 function vorlageExportText(){
-  return ['Punkt\tTyp\tEin Satz dazu\tMin',
-    'Antragsverfahren X\tEntscheidung\tPilot ausweiten: jetzt, erst nach Klärung der Rückfragegründe, oder gar nicht\t15',
-    '\t\t\t', '\t\t\t', '\t\t\t'].join('\n');
+  return ['Punkt\tTyp\tEin Satz dazu',
+    'Antragsverfahren X\tEntscheidung\tPilot ausweiten: jetzt, erst nach Klärung der Rückfragegründe, oder gar nicht',
+    '\t\t', '\t\t', '\t\t'].join('\n');
 }
 
 /* ---------- Events ---------- */
@@ -504,25 +492,24 @@ function bind(){
       save(); render();
     };
     // Hand-Formular
-    const syncD = () => { D.punkt = q('#fPunkt').value; D.satz = q('#fSatz') ? q('#fSatz').value : D.satz; D.min = q('#fMin').value; };
+    const syncD = () => { D.punkt = q('#fPunkt').value; D.satz = q('#fSatz') ? q('#fSatz').value : D.satz; };
     q('#fPunkt').oninput = syncD;
     if (q('#fSatz')) q('#fSatz').oninput = syncD;
-    q('#fMin').oninput = syncD;
     qa('#ftypchips .chip').forEach(c => c.onclick = () => { syncD(); D.typ = c.dataset.typ; render(); });
     q('#fAdd').onclick = () => {
       syncD();
       if (!D.punkt.trim()) { q('#fPunkt').focus(); return; }
-      const entry = { punkt: D.punkt.trim(), typ: D.typ || 'unklar', satz: D.satz.trim(), min: D.min.replace(/[^\d]/g, '') };
+      const entry = { punkt: D.punkt.trim(), typ: D.typ || 'unklar', satz: D.satz.trim() };
       if (D.editIndex >= 0) S.tops[D.editIndex] = entry; else S.tops.push(entry);
-      D = { punkt:'', typ:'', satz:'', min:'', editIndex:-1 };
+      D = { punkt:'', typ:'', satz:'', editIndex:-1 };
       save(); render();
     };
     const fc = q('#fCancel');
-    if (fc) fc.onclick = () => { D = { punkt:'', typ:'', satz:'', min:'', editIndex:-1 }; render(); };
+    if (fc) fc.onclick = () => { D = { punkt:'', typ:'', satz:'', editIndex:-1 }; render(); };
     // Karten
     qa('[data-edit]').forEach(b => b.onclick = () => {
       const i = +b.dataset.edit, t = S.tops[i];
-      D = { punkt: t.punkt, typ: t.typ === 'unklar' ? '' : t.typ, satz: t.satz, min: t.min, editIndex: i };
+      D = { punkt: t.punkt, typ: t.typ === 'unklar' ? '' : t.typ, satz: t.satz, editIndex: i };
       render();
       main.querySelector('#fPunkt').scrollIntoView({ behavior:'smooth', block:'center' });
     });
@@ -541,22 +528,21 @@ function bind(){
     const upd = () => { const el = q('#rowpreview'); if (el) el.innerHTML = subRowPreview(); };
     q('#sPunkt').oninput = e => { S.sub.punkt = e.target.value; save(); upd(); };
     if (q('#sSatz')) q('#sSatz').oninput = e => { S.sub.satz = e.target.value; save(); upd(); };
-    q('#sMin').oninput = e => { S.sub.min = e.target.value.replace(/[^\d]/g, ''); save(); upd(); };
     qa('#stypchips .chip').forEach(c => c.onclick = () => { S.sub.typ = c.dataset.typ; save(); render(); });
     q('#sCopy').onclick = e => {
       const t = S.sub;
       if (!t.punkt.trim()) { q('#sPunkt').focus(); return; }
       const typLabel = t.typ ? TYPEN[t.typ].label : '';
-      const plain = [t.punkt, typLabel, t.satz, t.min].join('\t');
+      const plain = [t.punkt, typLabel, t.satz].join('\t');
       const td = c => '<td style="' + CELL_CSS + '">' + esc(c) + '</td>';
-      const html = '<table style="' + TABLE_CSS + '"><tr>' + td(t.punkt) + td(typLabel) + td(t.satz) + td(t.min) + '</tr></table>';
+      const html = '<table style="' + TABLE_CSS + '"><tr>' + td(t.punkt) + td(typLabel) + td(t.satz) + '</tr></table>';
       copyRich(html, plain, e.target, 'Zeile kopieren (für eure Sammelseite)');
     };
     q('#sHier').onclick = () => {
       const t = S.sub;
       if (!t.punkt.trim()) { q('#sPunkt').focus(); return; }
-      S.tops.push({ punkt: t.punkt.trim(), typ: t.typ || 'unklar', satz: t.satz.trim(), min: t.min });
-      S.sub = { punkt:'', typ:'', satz:'', min:'' };
+      S.tops.push({ punkt: t.punkt.trim(), typ: t.typ || 'unklar', satz: t.satz.trim() });
+      S.sub = { punkt:'', typ:'', satz:'' };
       S.tab = 0;
       save(); render(); window.scrollTo({ top: 0 });
     };
