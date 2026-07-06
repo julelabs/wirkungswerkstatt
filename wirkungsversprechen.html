@@ -28,8 +28,9 @@
 
   header.top { position: relative; background: var(--dunkel); color: var(--weiss); padding: 16px clamp(16px,4vw,40px); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .brand { font-family: var(--display); font-weight: 800; font-size: 16px; }
-  .badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 2px 9px; border: 1.5px solid var(--minze); color: var(--minze); border-radius: 999px; font-size: 11px; font-weight: 700; font-family: var(--display); white-space: nowrap; }
-  @media (max-width: 760px) { .badge { position: static; transform: none; margin-inline: auto; } }
+  .brand a { color: inherit; text-decoration: none; }
+  .brand a:hover { color: var(--minze); }
+  .brand .pg { color: var(--blau-20); font-weight: 600; }
   #reset { border: none; background: none; color: var(--blau-20); font-family: var(--display); font-size: 12px; font-weight: 700; cursor: pointer; }
   #reset:hover { color: var(--minze); }
 
@@ -74,6 +75,7 @@
   .hint { background: var(--weiss); border-left: 4px solid var(--minze); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 14px; color: var(--fg-2); margin: 16px 0; }
   .rcheck { background: var(--kirsche-10); border-left: 4px solid var(--kirsche); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 14px; margin: 16px 0; }
   .rcheck b { color: var(--kirsche); font-family: var(--display); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 4px; }
+  .rcheck a { color: var(--kirsche); }
   .privacy { font-size: 13px; color: var(--fg-muted); margin-top: 14px; }
 
   .satz { background: var(--blau-10); border-radius: 10px; padding: 12px 16px; font-size: 15.5px; margin-top: 12px; color: var(--fg); }
@@ -100,6 +102,27 @@
   .qc input[type=checkbox] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--blau); flex-shrink: 0; cursor: pointer; }
   .qc span { font-size: 15px; }
 
+  .markwrap { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .markrow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .markrow .sub { margin: 0; }
+  .markwrap input[type=text] { margin-top: 10px; }
+  .btn.ghost.on { background: var(--kirsche); color: var(--weiss); border-color: var(--kirsche); }
+  .btn.ghost.on:hover { background: var(--kirsche); color: var(--weiss); border-color: var(--kirsche); }
+
+  .sparcard h3 { font-size: 19px; margin-bottom: 8px; }
+  .sparcard p.sub { margin: 0 0 10px; }
+  .sparcard .spartext { font-size: 15px; color: var(--fg-2); margin-bottom: 10px; }
+  .sparcard .spardisclaimer { font-size: 13.5px; color: var(--fg-muted); margin-bottom: 14px; }
+  .sparcard .sparresult { margin-top: 16px; }
+  .sparcard .exportbtns { margin-top: 0; }
+  .sparcard .gptlink { font-size: 13px; color: var(--fg-2); align-self: center; text-decoration: underline; }
+  .sparcard textarea.promptbox { min-height: 260px; max-height: 260px; overflow: auto; font-family: monospace; font-size: 13px; }
+  @media (max-width: 480px) {
+    .sparcard .exportbtns { flex-direction: column; align-items: stretch; }
+    .sparcard .exportbtns .btn { text-align: center; }
+    .sparcard .gptlink { align-self: flex-start; }
+  }
+
   .exportbtns { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 6px; }
   .mdlink { font-size: 13px; color: var(--fg-muted); }
   .mdlink a { color: var(--fg-2); cursor: pointer; text-decoration: underline; }
@@ -124,8 +147,7 @@
 <body>
 
 <header class="top">
-  <a class="brand" href="index.html" style="text-decoration:none; color:inherit;" title="Zur Wirkungswerkstatt">Wirkungsversprechen</a>
-  <span class="badge">Wirkungswerkstatt · Werkstattstand</span>
+  <div class="brand"><a href="index.html" title="Zur Startseite">Wirkungswerkstatt</a><span class="pg"> · Wirkungsversprechen</span></div>
   <button id="reset">Neu starten</button>
 </header>
 
@@ -146,6 +168,7 @@
 
 const STEPS = ['Vorhaben','Beitrag','Veränderung','Signale','Liefergegenstände','Check'];
 const ZEIT = ['2 Minuten','ca. 5 Minuten','ca. 10 Minuten','ca. 10 Minuten','ca. 5 Minuten','2 Minuten'];
+const GPT_URL = '#';
 const QC = [
   'In meinem Künftig-Satz steht ein Zustand, kein Ding.',
   'Mindestens ein "Wir liegen falsch, wenn"-Satz tut ein bisschen weh.',
@@ -160,7 +183,14 @@ const BSP = {
   liefer: 'Komponentenkatalog mit Dokumentation, Integrationsleitfaden, Support-Kanal, Aufnahme- und Qualitätsprozess für neue Komponenten.'
 };
 
-function emptySignal(){ return { beob:'', ausgang:'', schluss:'', annahme:'', falsch:'' }; }
+function emptySignal(){ return { beob:'', ausgang:'', schluss:'', annahme:'', falsch:'', unsicher: false, unsicherNote: '' }; }
+function emptyMarks(){
+  return {
+    beitrag: { on: false, note: '' },
+    veraenderung: { on: false, note: '' },
+    liefer: { on: false, note: '' }
+  };
+}
 
 let S = {
   vorhaben: '', kontext: '',
@@ -168,6 +198,7 @@ let S = {
   heute: '', kuenftig: '',
   signale: [ emptySignal() ],
   liefer: '',
+  marks: emptyMarks(),
   checks: [false,false,false,false,false],
   cur: 0
 };
@@ -175,6 +206,10 @@ try {
   const saved = JSON.parse(localStorage.getItem('wirkungsversprechen') || 'null');
   if (saved) { S = Object.assign({}, S, saved); if (!Array.isArray(S.signale) || !S.signale.length) S.signale = [ emptySignal() ]; }
 } catch(e){}
+S.marks = Object.assign(emptyMarks(), S.marks || {});
+S.signale = S.signale.map(sig => Object.assign(emptySignal(), sig || {}));
+let sparringPrompt = '';
+let sparringError = '';
 function save(){ try { localStorage.setItem('wirkungsversprechen', JSON.stringify(S)); } catch(e){} }
 function esc(s){ const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 function clean(s){ return (s || '').trim().replace(/[.\s]+$/, ''); }
@@ -190,6 +225,29 @@ function renderProgress(){
 function kicker(i){ return `<div class="kicker">Schritt ${i+1} von 6 · ${ZEIT[i]}</div>`; }
 function bsp(key, titel){
   return `<details class="bsp"><summary>${titel || 'Beispiel ansehen (Komponentenplattform)'}</summary><div>${BSP[key]}</div></details>`;
+}
+
+function markControl(key){
+  const mark = S.marks[key] || { on: false, note: '' };
+  const active = !!mark.on;
+  return `<div class="markwrap">
+    <div class="markrow">
+      <button type="button" class="btn ghost${active ? ' on' : ''}" data-mark-toggle="${key}">Hier bin ich unsicher</button>
+      <span class="sub">Unsicher ist eine valide Antwort. Markierte Punkte kannst du am Ende ins KI-Sparring mitnehmen.</span>
+    </div>
+    ${active ? `<input type="text" data-mark-note="${key}" placeholder="Woran hakt es? (optional)" value="${esc(mark.note)}">` : ''}
+  </div>`;
+}
+
+function signalMarkControl(sig, i){
+  const active = !!sig.unsicher;
+  return `<div class="markwrap">
+    <div class="markrow">
+      <button type="button" class="btn ghost${active ? ' on' : ''}" data-sigmark-toggle="${i}">Hier bin ich unsicher</button>
+      <span class="sub">Unsicher ist eine valide Antwort. Markierte Punkte kannst du am Ende ins KI-Sparring mitnehmen.</span>
+    </div>
+    ${active ? `<input type="text" data-sigmark-note="${i}" placeholder="Woran hakt es? (optional)" value="${esc(sig.unsicherNote)}">` : ''}
+  </div>`;
 }
 
 function step0(){
@@ -211,6 +269,7 @@ function step0(){
       <label class="lbl">Worum geht es, in einem Satz? (optional)</label>
       <input type="text" id="kontext" placeholder="z. B. Der Antrag soll digital werden" value="${esc(S.kontext)}">
     </div>
+    <div class="hint">Trage keine personenbezogenen oder eingestuften Informationen ein. Das Tool speichert nur lokal in deinem Browser.</div>
     <div class="hint">Dieses Blatt ersetzt die Freitext-Kurzbeschreibung deines Vorhabens (im Vorschlag, im Steckbrief, auf der ersten Folie). Wenn du es zusätzlich zu allem anderen ausfüllst, läuft etwas falsch.</div>
     <p class="privacy">Alles, was du hier eingibst, bleibt ausschließlich auf deinem Gerät. Kein Server, keine Übertragung, kein Konto. Mit "Neu starten" oben löschst du deinen lokalen Stand.</p>
   </div>`;
@@ -245,6 +304,7 @@ function step1(){
       <input type="text" id="beitragIndem" placeholder="z. B. den häufigsten Antragsprozess vollständig digitalisiert" value="${esc(S.beitragIndem)}">
       <div class="satz" id="bsatz">${satzPreview()}</div>
       ${bsp('beitrag')}
+      ${markControl('beitrag')}
     </div>
     <div class="hint">Prüffrage: Würde deine Hausleitung diesen Satz unterschreiben, ohne vorher bei dir anzurufen?</div>
   </div>`;
@@ -265,6 +325,7 @@ function step2(){
       <textarea id="kuenftig" placeholder="z. B. werden die häufigsten Fälle vollständig digital und ohne Rückfragen eingereicht und schneller entschieden">${esc(S.kuenftig)}</textarea>
       <div class="satz" id="vsatz">${vSatzPreview()}</div>
       ${bsp('heute')}
+      ${markControl('veraenderung')}
     </div>
     <div class="rcheck"><b>Realitätscheck</b>Steht in deinem Künftig-Satz ein Ding? "Es gibt eine Plattform" ist keine Veränderung, das ist ein Liefergegenstand, und der gehört in Schritt 5. Die Veränderung ist das, was Menschen mit dem Ding anders machen als heute.</div>
   </div>`;
@@ -301,6 +362,7 @@ function sigCard(sig, i){
       <input type="text" data-sig="${i}" data-f="ausgang" placeholder="z. B. geschätzt unter 10 Prozent" value="${esc(sig.ausgang)}">
     </div>
     <div class="satz" id="sigsatz-${i}">${sigSatz(sig)}</div>
+    ${signalMarkControl(sig, i)}
   </div>`;
 }
 
@@ -325,6 +387,7 @@ function step4(){
       <label class="lbl">Dafür muss entstehen:</label>
       <textarea id="liefer" style="min-height:110px;" placeholder="z. B.&#10;- Online-Antragsstrecke für die drei häufigsten Fallgruppen&#10;- Schnittstelle zum Fachverfahren&#10;- geänderte Arbeitsanweisung für die Sachbearbeitung">${esc(S.liefer)}</textarea>
       ${bsp('liefer')}
+      ${markControl('liefer')}
     </div>
   </div>`;
 }
@@ -347,6 +410,137 @@ function recapHTML(){
   return '<div class="card recap">' + h + '</div>';
 }
 
+function markCount(){
+  return (S.marks.beitrag.on ? 1 : 0) +
+    (S.marks.veraenderung.on ? 1 : 0) +
+    (S.marks.liefer.on ? 1 : 0) +
+    S.signale.filter(sig => sig.unsicher).length;
+}
+
+function sparringCard(){
+  const n = markCount();
+  const nText = n === 1 ? 'Du hast 1 Punkt als unsicher markiert.' : 'Du hast ' + n + ' Punkte als unsicher markiert.';
+  return `<div class="card sparcard">
+    <h3>Sparring statt Schönschreiben</h3>
+    <p class="sub">${n ? nText : 'Nichts markiert? Dann ist das Sparring der Härtetest.'}</p>
+    <p class="spartext">Dieses Tool erzeugt dir einen Prompt: eine strukturierte Arbeitsanweisung mit deinen Angaben. Den kopierst du selbst in das KI-System, das dein Haus zugelassen hat. Die KI stellt Rückfragen, sie schreibt dein Versprechen nicht.</p>
+    <p class="spardisclaimer">Das ist ein Denkwerkzeug, kein Prüfverfahren und keine Vorgabe des Hauses.</p>
+    <button class="btn primary" id="makePrompt">Sparring-Prompt erzeugen</button>
+    ${sparringError ? `<div class="rcheck"><b>Hinweis</b>${sparringError} <a href="#" data-go-step="0">Zu Schritt 1</a></div>` : ''}
+    ${sparringPrompt ? `<div class="sparresult">
+      <div class="exportbtns">
+        <button class="btn primary" id="copyPrompt">Prompt kopieren</button>
+        <a href="${GPT_URL}" target="_blank" rel="noopener" class="gptlink">Zum Custom GPT</a>
+      </div>
+      <textarea readonly class="promptbox">${esc(sparringPrompt)}</textarea>
+      <div class="hint">Diese Seite sendet nichts. Der Prompt ist ein Stück Text in deiner Zwischenablage: Du entscheidest, ob und wo du ihn einfügst. Nutze das KI-System, das in deinem Haus zugelassen ist, und trage keine personenbezogenen oder eingestuften Informationen ins Formular ein.</div>
+      <p class="privacy">Was das Sparring ergibt, trägst du selbst ins Formular zurück. Übernimm nur, was du vor deiner Leitung vertreten kannst.</p>
+    </div>` : ''}
+  </div>`;
+}
+
+function promptValue(s){
+  return (s || '').trim() ? s : '(noch leer)';
+}
+function prefixedPromptValue(prefix, s){
+  return (s || '').trim() ? prefix + ' ' + s : '(noch leer)';
+}
+
+function promptSignal(sig, i){
+  return `Signal ${i+1}:
+- Wir beobachten: ${promptValue(sig.beob)}
+- Daraus schließen wir: ${promptValue(sig.schluss)}
+- Weil wir annehmen: ${promptValue(sig.annahme)}
+- Wir liegen falsch, wenn: ${promptValue(sig.falsch)}
+- Heute liegt das bei: ${promptValue(sig.ausgang)}`;
+}
+
+function promptMark(label, note){
+  return note.trim() ? `- ${label} (Notiz: "${note}")` : `- ${label}`;
+}
+
+function buildSparringPrompt(){
+  const marks = [];
+  if (S.marks.beitrag.on) marks.push(promptMark('Beitrag', S.marks.beitrag.note || ''));
+  if (S.marks.veraenderung.on) marks.push(promptMark('Veränderung', S.marks.veraenderung.note || ''));
+  S.signale.forEach((sig, i)=>{ if (sig.unsicher) marks.push(promptMark('Signal ' + (i+1), sig.unsicherNote || '')); });
+  if (S.marks.liefer.on) marks.push(promptMark('Liefergegenstände', S.marks.liefer.note || ''));
+  const unsure = marks.length ? `
+
+## Hier bin ich unsicher (bitte zuerst hier sparren)
+${marks.join('\n')}` : '';
+  const point3 = marks.length
+    ? `3. Danach: die markierten Punkte einzeln, je Punkt erst Rückfrage, dann
+   Vorschlag in zwei Varianten.`
+    : `3. Danach: die schwächsten Stellen, die du im Ebenen-Check findest.`;
+
+  return `Du bist mein Sparringspartner für Wirkungsorientierung in der öffentlichen
+Verwaltung. Ich habe mit dem Werkzeug "Wirkungsversprechen" einen Entwurf für
+mein Vorhaben erarbeitet. Deine Aufgabe ist Sparring: Du hilfst mir, meinen
+Entwurf zu schärfen. Du schreibst ihn nicht neu, du bewertest ihn nicht mit
+Noten oder Scores, und du erfindest nichts dazu.
+
+## Arbeitsregeln
+1. Beginne mit Rückfragen, nicht mit Text. Maximal drei Fragen auf einmal,
+   die wichtigste zuerst.
+2. Erfinde keine Fakten, Zahlen, Zuständigkeiten oder Kausalzusammenhänge.
+   Wenn dir eine Information fehlt, frag mich. Wenn ich sie nicht habe,
+   bleibt die Stelle offen und du führst sie unter "Offene Punkte".
+3. Halte die vier Ebenen (unten) auseinander. Wenn ich sie vermische, sag es
+   mir direkt und ordne meine Formulierung der richtigen Ebene zu.
+4. Benenne vage Formulierungen ("verbessern", "stärken", "ganzheitlich")
+   und schlage beobachtbare Alternativen vor. Konkret schlägt elegant:
+   Eine Formulierung, die gut klingt, aber nichts Beobachtbares behauptet,
+   ist eine Verschlechterung.
+5. Vorschläge machst du in zwei Varianten und kennzeichnest sie als
+   Vorschlag. Ich entscheide, was übernommen wird.
+6. Ausgangswerte schätzt du nie. Fehlt einer, heißt die Antwort
+   "Ausgangswert offen, muss erhoben werden".
+
+## Die vier Ebenen (Referenz)
+- Beitrag: Wozu das Vorhaben beiträgt, das größere Ziel hinter dem Vorhaben.
+- Angestrebte Veränderung: Was bei wem anders ist, wenn es gelingt.
+  Ein Zustand, kein Ding.
+- Fortschrittssignale: Woran man unterwegs erkennen würde, dass die
+  Veränderung eintritt oder ausbleibt. Jedes Signal muss scheitern können.
+- Liefergegenstände: Was das Projekt herstellt und übergibt. Dinge, keine
+  Zustände.
+
+## Mein Entwurf
+
+Vorhaben: ${promptValue(S.vorhaben)}
+Worum geht es: ${promptValue(S.kontext)}
+
+Beitrag: Das Vorhaben trägt dazu bei, dass ${promptValue(S.beitragDass)}, indem es ${promptValue(S.beitragIndem)}.
+
+Veränderung heute: ${prefixedPromptValue('Heute', S.heute)}
+Veränderung künftig: ${prefixedPromptValue('Künftig', S.kuenftig)}
+
+${S.signale.map(promptSignal).join('\n\n')}
+
+Liefergegenstände: ${promptValue(S.liefer)}${unsure}
+
+## Ablauf
+1. Stelle zuerst deine Verständnisfragen.
+2. Danach: Ebenen-Check über den ganzen Entwurf. Wo vermische ich Ebenen?
+   (Hinweis: Prüfe auch meine Liefergegenstände.)
+${point3}
+4. Zum Schluss zwei Listen:
+   - "Zum Zurücktragen ins Formular": geschärfte Formulierungen, die ich
+     übernehmen kann, wenn ich sie vertreten kann.
+   - "Offene Punkte": was ungeklärt bleibt, und was davon Wissen aus
+     meinem Haus braucht statt weiteres KI-Sparring.
+   Ein Sparring ohne offene Punkte ist verdächtig.
+
+## Formate (nur auf ausdrückliche Anforderung)
+Erst wenn ich danach frage, nicht vorher, erzeugst du auf Basis des
+geklärten Stands einzelne Formate: Kurzbeschreibung des Vorhabens,
+Pressemitteilung von übermorgen mit FAQ (als Realitätstest, nicht zur
+Veröffentlichung), Projektsteckbrief. Alles Ungeklärte erscheint darin
+als [offen: …], nicht als glatte Behauptung. Das Wirkungsversprechen
+selbst entsteht im Formular, nicht hier.`;
+}
+
 function step5(){
   const done = S.checks.filter(Boolean).length;
   return `<div class="step act">
@@ -358,6 +552,7 @@ function step5(){
       ${QC.map((q,i)=>`<label class="qc"><input type="checkbox" data-qc="${i}" ${S.checks[i]?'checked':''}><span>${q}</span></label>`).join('')}
     </div>
     <div class="hint" id="qchint">${qcHint(done)}</div>
+    ${sparringCard()}
     <div class="exportbtns">
       <button class="btn primary" id="prt">Drucken / PDF</button>
       <button class="btn minze" id="dlDoc">Als Word-Datei speichern</button>
@@ -437,11 +632,51 @@ function download(content, name, type){
   a.click();
   URL.revokeObjectURL(a.href);
 }
+async function copyText(text){
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch(err) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { return document.execCommand('copy'); }
+    finally { document.body.removeChild(ta); }
+  }
+}
 
 /* ---------- Events ---------- */
 function bind(){
   const q = sel => main.querySelector(sel);
   const qa = sel => main.querySelectorAll(sel);
+
+  qa('[data-mark-toggle]').forEach(b=>b.onclick = ()=>{
+    const key = b.dataset.markToggle;
+    S.marks[key].on = !S.marks[key].on;
+    if (!S.marks[key].on) S.marks[key].note = '';
+    save(); render();
+  });
+  qa('[data-mark-note]').forEach(inp=>inp.oninput = e=>{
+    S.marks[inp.dataset.markNote].note = e.target.value; save();
+  });
+  qa('[data-sigmark-toggle]').forEach(b=>b.onclick = ()=>{
+    const i = +b.dataset.sigmarkToggle;
+    S.signale[i].unsicher = !S.signale[i].unsicher;
+    if (!S.signale[i].unsicher) S.signale[i].unsicherNote = '';
+    save(); render();
+  });
+  qa('[data-sigmark-note]').forEach(inp=>inp.oninput = e=>{
+    S.signale[+inp.dataset.sigmarkNote].unsicherNote = e.target.value; save();
+  });
+  qa('[data-go-step]').forEach(a=>a.onclick = e=>{
+    e.preventDefault();
+    S.cur = +a.dataset.goStep;
+    save(); render(); window.scrollTo({top:0});
+  });
 
   if (S.cur === 0){
     q('#vorhaben').oninput = e=>{ S.vorhaben = e.target.value; save(); };
@@ -480,6 +715,27 @@ function bind(){
     q('#prt').onclick = ()=>{ document.getElementById('printout').innerHTML = summaryHTML(); window.print(); };
     q('#dlDoc').onclick = ()=>{ download(fullDoc(), 'wirkungsversprechen.doc', 'application/msword'); };
     q('#dlMd').onclick = ()=>{ download(buildMd(), 'wirkungsversprechen.md', 'text/markdown;charset=utf-8'); };
+    q('#makePrompt').onclick = ()=>{
+      if (!S.vorhaben.trim()) {
+        sparringPrompt = '';
+        sparringError = 'Erst kurz sagen, worum es geht. Ein leeres Formular ergibt kein Sparring, sondern ein Diktat.';
+      } else {
+        sparringError = '';
+        sparringPrompt = buildSparringPrompt();
+      }
+      render();
+    };
+    const copyPrompt = q('#copyPrompt');
+    if (copyPrompt) copyPrompt.onclick = async e=>{
+      try {
+        const ok = await copyText(sparringPrompt);
+        if (!ok) throw new Error('copy failed');
+        e.target.textContent = 'Kopiert!';
+        setTimeout(()=>e.target.textContent='Prompt kopieren', 1500);
+      } catch(err) {
+        alert('Kopieren nicht möglich. Markiere den Prompt und kopiere ihn manuell.');
+      }
+    };
     q('#cp').onclick = async (e)=>{
       const ok = ()=>{ e.target.textContent = 'Kopiert!'; setTimeout(()=>e.target.textContent='Formatiert kopieren', 1500); };
       try {

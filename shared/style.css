@@ -45,13 +45,13 @@ body { font-family: var(--body); color: var(--fg); background: var(--weiss); lin
 h1,h2,h3,h4 { font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
 a { color: inherit; }
 
-/* ---------- Navigation ---------- */
-nav.top { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px clamp(18px,4vw,48px); border-bottom: 1px solid var(--line); flex-wrap: wrap; background: var(--weiss); }
-nav.top .brand { font-family: var(--display); font-weight: 800; font-size: 18px; letter-spacing: -0.02em; color: var(--blau); text-decoration: none; }
-nav.top .badge { padding: 3px 10px; border: 1.5px solid var(--kirsche); color: var(--kirsche); border-radius: 999px; font-size: 11.5px; font-weight: 700; font-family: var(--display); white-space: nowrap; }
-nav.top .links { display: flex; gap: 20px; font-family: var(--display); font-size: 14px; font-weight: 600; color: var(--fg-2); flex-wrap: wrap; }
-nav.top .links a { text-decoration: none; }
-nav.top .links a:hover, nav.top .links a.act { color: var(--blau); }
+/* ---------- Navigation (dunkel, auf allen Seiten) ---------- */
+nav.top { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px clamp(18px,4vw,48px); background: var(--dunkel); border-bottom: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; }
+nav.top .brand { font-family: var(--display); font-weight: 800; font-size: 18px; letter-spacing: -0.02em; color: var(--weiss); text-decoration: none; }
+nav.top .brand:hover { color: var(--minze); }
+nav.top .links { display: flex; gap: 20px; font-family: var(--display); font-size: 14px; font-weight: 600; color: var(--blau-20); flex-wrap: wrap; }
+nav.top .links a { text-decoration: none; color: var(--blau-20); }
+nav.top .links a:hover, nav.top .links a.act { color: var(--minze); }
 
 /* ---------- Seitenraster ---------- */
 main.page { display: block; }
