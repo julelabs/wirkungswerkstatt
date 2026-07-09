@@ -171,7 +171,7 @@ const ZEIT = ['2 Minuten','ca. 5 Minuten','ca. 10 Minuten','ca. 10 Minuten','ca.
 const GPT_URL = 'https://chatgpt.com/g/g-6a4bcf92ddac8191862fdb8aaa6b511c-wirkungssparring3000';
 const QC = [
   'In meinem Künftig-Satz steht ein Zustand, kein Ding.',
-  'Mindestens ein "Wir liegen falsch, wenn"-Satz tut ein bisschen weh.',
+  'Mindestens ein Warnzeichen würde euch wirklich zum Umdenken bringen.',
   'Jedes Signal hat einen Ausgangswert, notfalls geschätzt.',
   'Eine Person, die das Vorhaben nicht kennt, versteht nach dem Lesen, warum es Ressourcen verdient.',
   'Beitrag und Veränderung wiederholen nicht nur mit anderen Worten die Liefergegenstände.'
@@ -179,11 +179,11 @@ const QC = [
 const BSP = {
   beitrag: 'Das Vorhaben trägt dazu bei, dass <b>Digitalvorhaben der Verwaltung schneller und wirtschaftlicher umgesetzt werden</b>, indem es <b>Basisfunktionen einmal entwickelt und vielfach wiederverwendbar macht</b>.',
   heute: '<b>Heute</b> entwickeln Projekte Standardfunktionen (Formulare, Identifizierung, Bezahldienste) parallel und mehrfach; jede Eigenentwicklung kostet Zeit, Geld und dauerhafte Wartung.<br><b>Künftig</b> setzen neue Digitalvorhaben für Standardfunktionen auf geprüfte Komponenten aus der Plattform und verwenden ihre Kapazität auf das Fachliche.',
-  signal: '<b>Wir beobachten:</b> den Anteil neuer Digitalvorhaben, die mindestens eine Komponente produktiv einsetzen (nicht: Downloads).<br><b>Daraus schließen wir,</b> dass die Plattform Doppelarbeit ersetzt, <b>weil wir annehmen:</b> Produktiver Einsatz passiert nur, wenn Integration günstiger ist als Eigenbau.<br><b>Wir liegen falsch, wenn:</b> Komponenten zwar abgerufen, aber nach zwei Quartalen in keinem zweiten Vorhaben produktiv eingesetzt werden.<br><b>Heute liegt das bei:</b> Ausgangswert unbekannt, wird im ersten Quartal einmalig erhoben, bis dahin geschätzt niedrig.',
+  signal: '<b>Woran würden wir Fortschritt erkennen?</b> Anteil neuer Digitalvorhaben, die mindestens eine Komponente produktiv einsetzen (nicht: Downloads).<br><b>Wo stehen wir heute?</b> Ausgangswert unbekannt, wird im ersten Quartal einmalig erhoben.<br><b>Was wäre ein guter Stand bis wann?</b> Bis Ende Q4 setzen drei weitere Vorhaben mindestens eine Komponente produktiv ein.<br><b>Was wäre ein Warnzeichen?</b> Die Komponente wird zwar abgerufen, aber nach zwei Quartalen in keinem zweiten Vorhaben produktiv eingesetzt.',
   liefer: 'Komponentenkatalog mit Dokumentation, Integrationsleitfaden, Support-Kanal, Aufnahme- und Qualitätsprozess für neue Komponenten.'
 };
 
-function emptySignal(){ return { beob:'', ausgang:'', schluss:'', annahme:'', falsch:'', unsicher: false, unsicherNote: '' }; }
+function emptySignal(){ return { erkennt:'', ausgang:'', ziel:'', warn:'', beob:'', schluss:'', annahme:'', falsch:'', unsicher: false, unsicherNote: '' }; }
 function emptyMarks(){
   return {
     beitrag: { on: false, note: '' },
@@ -207,7 +207,13 @@ try {
   if (saved) { S = Object.assign({}, S, saved); if (!Array.isArray(S.signale) || !S.signale.length) S.signale = [ emptySignal() ]; }
 } catch(e){}
 S.marks = Object.assign(emptyMarks(), S.marks || {});
-S.signale = S.signale.map(sig => Object.assign(emptySignal(), sig || {}));
+S.signale = S.signale.map(sig => {
+  const next = Object.assign(emptySignal(), sig || {});
+  if (!next.erkennt && next.beob) next.erkennt = next.beob;
+  if (!next.ziel && next.schluss) next.ziel = next.schluss;
+  if (!next.warn && next.falsch) next.warn = next.falsch;
+  return next;
+});
 let sparringPrompt = '';
 let sparringError = '';
 function save(){ try { localStorage.setItem('wirkungsversprechen', JSON.stringify(S)); } catch(e){} }
@@ -287,8 +293,8 @@ function vSatzPreview(){
 
 function sigSatz(sig){
   const ph = t => `<span class="ph">[${t}]</span>`;
-  const b = clean(sig.beob), s = clean(sig.schluss), a = clean(sig.annahme), f = clean(sig.falsch), g = clean(sig.ausgang);
-  return `Wir beobachten: ${b ? esc(b) : ph('was')}. Daraus schließen wir, ${s ? esc(s) : ph('welchen Schluss')}, weil wir annehmen: ${a ? esc(a) : ph('welche Annahme')}. Wir liegen falsch, wenn ${f ? esc(f) : ph('welcher Ausgang')}.${g ? ' Heute liegt das bei: ' + esc(g) + '.' : ''}`;
+  const e = clean(sig.erkennt), g = clean(sig.ausgang), z = clean(sig.ziel), w = clean(sig.warn);
+  return `Wir erkennen Fortschritt an: ${e ? esc(e) : ph('Messgröße, Beobachtung oder konkreter Hinweis')}. Heute: ${g ? esc(g) : ph('Ausgangswert, Schätzung oder offen')}. Ein guter Stand wäre: ${z ? esc(z) : ph('Zielwert, Richtung oder Zustand bis Zeitpunkt')}. Warnzeichen: ${w ? esc(w) : ph('woran wir merken, dass es nur auf dem Papier gut aussieht')}.`;
 }
 
 function step1(){
@@ -337,29 +343,24 @@ function sigCard(sig, i){
     <div class="signum">Signal ${i+1}</div>
     ${rm}
     <div class="frow">
-      <label class="lbl">Wir beobachten:</label>
-      <div class="sub">Was genau, aus welcher Quelle? Das ist der Anker: Alles Weitere bezieht sich auf diese Beobachtung.</div>
-      <input type="text" data-sig="${i}" data-f="beob" placeholder="z. B. Anteil digital eingereichter Standardfälle" value="${esc(sig.beob)}">
+      <label class="lbl">Woran würden wir Fortschritt erkennen?</label>
+      <div class="sub">Messgröße, Beobachtung oder konkreter Hinweis. Das muss keine perfekte Kennzahl sein, aber jemand müsste später wieder hinschauen können.</div>
+      <input type="text" data-sig="${i}" data-f="erkennt" placeholder="z. B. Anteil vollständiger digitaler Anträge, Rückfragen im Servicepostfach, Bearbeitungszeit" value="${esc(sig.erkennt)}">
     </div>
     <div class="frow">
-      <label class="lbl">Daraus schließen wir …</label>
-      <div class="sub">Wenn sich die Beobachtung bewegt: Was heißt das für eure Veränderung?</div>
-      <input type="text" data-sig="${i}" data-f="schluss" placeholder="z. B. dass der digitale Weg für Normalfälle funktioniert" value="${esc(sig.schluss)}">
+      <label class="lbl">Wo stehen wir heute?</label>
+      <div class="sub">Ausgangswert, Schätzung oder offen. Wenn ihr es noch nicht wisst, schreib genau das.</div>
+      <input type="text" data-sig="${i}" data-f="ausgang" placeholder="z. B. geschätzt unter 10 Prozent oder Ausgangswert offen" value="${esc(sig.ausgang)}">
     </div>
     <div class="frow">
-      <label class="lbl">… weil wir annehmen:</label>
-      <div class="sub">Die Annahme, die Beobachtung und Veränderung verbindet.</div>
-      <input type="text" data-sig="${i}" data-f="annahme" placeholder="z. B. dass Menschen den digitalen Weg wählen, sobald er einfacher ist als Papier" value="${esc(sig.annahme)}">
+      <label class="lbl">Was wäre ein guter Stand bis wann?</label>
+      <div class="sub">Zielwert, Richtung oder Zustand, mit Zeitpunkt, wenn möglich.</div>
+      <input type="text" data-sig="${i}" data-f="ziel" placeholder="z. B. bis Ende Q2 kommt die Hälfte der Standardfälle vollständig digital rein" value="${esc(sig.ziel)}">
     </div>
     <div class="frow">
-      <label class="lbl">Wir liegen falsch, wenn:</label>
-      <div class="sub">Welcher Ausgang würde eure Annahme erschüttern? Ohne diese Zeile ist das Signal Deko.</div>
-      <input type="text" data-sig="${i}" data-f="falsch" placeholder="z. B. die Abbruchquote im digitalen Antrag über Monate hoch bleibt" value="${esc(sig.falsch)}">
-    </div>
-    <div class="frow" style="margin-bottom:0;">
-      <label class="lbl">Und heute liegt das bei:</label>
-      <div class="sub">Der Ausgangswert, gegen den ihr später vergleicht. Grobe Schätzung ist erlaubt, dann schreib "geschätzt" dazu.</div>
-      <input type="text" data-sig="${i}" data-f="ausgang" placeholder="z. B. geschätzt unter 10 Prozent" value="${esc(sig.ausgang)}">
+      <label class="lbl">Was wäre ein Warnzeichen?</label>
+      <div class="sub">Woran würden wir merken: Der Fortschritt sieht gut aus, aber die Veränderung tritt nicht ein? Zum Beispiel, wenn der Zielwert steigt, aber Rückfragen, Aufwand oder Umgehungslösungen mitsteigen.</div>
+      <input type="text" data-sig="${i}" data-f="warn" placeholder="z. B. die Quote steigt, aber Rückfragen und Nachbearbeitung steigen mit" value="${esc(sig.warn)}">
     </div>
     <div class="satz" id="sigsatz-${i}">${sigSatz(sig)}</div>
     ${signalMarkControl(sig, i)}
@@ -370,11 +371,11 @@ function step3(){
   return `<div class="step act">
     ${kicker(3)}
     <h2>Fortschrittssignale</h2>
-    <p class="lead">Woran würdet ihr erkennen, dass sich die Veränderung andeutet? Zwei bis drei Signale, nicht mehr. Suche zuerst nach Signalen, die es schon gibt (Prozessdaten, Nutzungszahlen, Rückfragen, Beschwerden), bevor du neue Erhebungen erfindest.</p>
+    <p class="lead">Wenn ihr mit OKR arbeitet: Denk hier wie bei einem Key Result, nur vorsichtiger. Nicht alles muss numerisch messbar sein. Es reicht, wenn es konkret genug ist, dass ihr später wieder hinschauen könnt: Verhalten, Rückfragen, Bearbeitungszeit, Abbrüche, Beschwerden, Nutzung oder Qualität von Unterlagen.</p>
     ${S.signale.map(sigCard).join('')}
     ${S.signale.length < 3 ? '<button class="btn add" id="addSig">+ Weiteres Signal (maximal 3)</button>' : ''}
     ${bsp('signal', 'Beispiel für ein komplettes Signal ansehen')}
-    <div class="rcheck"><b>Realitätscheck</b>Sieht dein Signal bei jedem Ausgang gut aus? (Mehr Beratungsgespräche: "große Nachfrage!" Weniger: "läuft ja alles!") Dann hast du kein Signal, du hast Deko.</div>
+    <div class="rcheck"><b>Realitätscheck</b>Sieht dein Signal bei jedem Ausgang gut aus? Mehr Beratungsgespräche: "große Nachfrage!" Weniger: "läuft ja alles!" Dann hast du kein Signal, du hast Deko.</div>
   </div>`;
 }
 
@@ -404,7 +405,7 @@ function recapHTML(){
   h += '<div class="rlbl">Beitrag</div><p>' + ((S.beitragDass.trim() || S.beitragIndem.trim()) ? satzPreview() : leer) + '</p>';
   h += '<div class="rlbl">Angestrebte Veränderung</div><p>' + ((S.heute.trim() || S.kuenftig.trim()) ? vSatzPreview() : leer) + '</p>';
   h += '<div class="rlbl">Fortschrittssignale</div>';
-  const sigs = S.signale.filter(s => s.beob || s.schluss || s.annahme || s.falsch || s.ausgang);
+  const sigs = S.signale.filter(s => s.erkennt || s.ziel || s.warn || s.ausgang);
   h += sigs.length ? sigs.map((s,i)=>'<p><b>'+(i+1)+'.</b> '+sigSatz(s)+'</p>').join('') : '<p>' + leer + '</p>';
   h += '<div class="rlbl">Liefergegenstände</div><p>' + (S.liefer.trim() ? esc(S.liefer).replace(/\n/g,'<br>') : leer) + '</p>';
   return '<div class="card recap">' + h + '</div>';
@@ -448,11 +449,10 @@ function prefixedPromptValue(prefix, s){
 
 function promptSignal(sig, i){
   return `Signal ${i+1}:
-- Wir beobachten: ${promptValue(sig.beob)}
-- Daraus schließen wir: ${promptValue(sig.schluss)}
-- Weil wir annehmen: ${promptValue(sig.annahme)}
-- Wir liegen falsch, wenn: ${promptValue(sig.falsch)}
-- Heute liegt das bei: ${promptValue(sig.ausgang)}`;
+- Woran würden wir Fortschritt erkennen: ${promptValue(sig.erkennt)}
+- Wo stehen wir heute: ${promptValue(sig.ausgang)}
+- Was wäre ein guter Stand bis wann: ${promptValue(sig.ziel)}
+- Was wäre ein Warnzeichen: ${promptValue(sig.warn)}`;
 }
 
 function promptMark(label, note){
@@ -502,7 +502,7 @@ Noten oder Scores, und du erfindest nichts dazu.
 - Angestrebte Veränderung: Was bei wem anders ist, wenn es gelingt.
   Ein Zustand, kein Ding.
 - Fortschrittssignale: Woran man unterwegs erkennen würde, dass die
-  Veränderung eintritt oder ausbleibt. Jedes Signal muss scheitern können.
+  Veränderung eintritt oder ausbleibt. Jedes Signal braucht ein Warnzeichen.
 - Liefergegenstände: Was das Projekt herstellt und übergibt. Dinge, keine
   Zustände.
 
@@ -576,11 +576,11 @@ function summaryHTML(){
   h += '<p><strong>Künftig:</strong> ' + (esc(S.kuenftig)||'…') + '</p>';
   h += '<h2>Fortschrittssignale</h2><ol>';
   S.signale.forEach(sig=>{
-    if (!(sig.beob || sig.falsch || sig.schluss)) return;
-    h += '<li><strong>Wir beobachten:</strong> ' + esc(sig.beob) +
-         (sig.schluss || sig.annahme ? '<br><strong>Daraus schließen wir</strong> ' + esc(sig.schluss) + (sig.annahme ? ', <strong>weil wir annehmen:</strong> ' + esc(sig.annahme) : '') : '') +
-         (sig.falsch ? '<br><strong>Wir liegen falsch, wenn:</strong> ' + esc(sig.falsch) : '') +
-         (sig.ausgang ? '<br><strong>Heute liegt das bei:</strong> ' + esc(sig.ausgang) : '') + '</li>';
+    if (!(sig.erkennt || sig.warn || sig.ziel || sig.ausgang)) return;
+    h += '<li><strong>Woran würden wir Fortschritt erkennen?</strong> ' + esc(sig.erkennt) +
+         (sig.ausgang ? '<br><strong>Wo stehen wir heute?</strong> ' + esc(sig.ausgang) : '') +
+         (sig.ziel ? '<br><strong>Was wäre ein guter Stand bis wann?</strong> ' + esc(sig.ziel) : '') +
+         (sig.warn ? '<br><strong>Was wäre ein Warnzeichen?</strong> ' + esc(sig.warn) : '') + '</li>';
   });
   h += '</ol>';
   h += '<h2>Liefergegenstände</h2><p>' + (esc(S.liefer)||'…').replace(/\n/g,'<br>') + '</p>';
