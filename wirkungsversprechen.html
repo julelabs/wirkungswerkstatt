@@ -34,26 +34,37 @@
   #reset { border: none; background: none; color: var(--blau-20); font-family: var(--display); font-size: 12px; font-weight: 700; cursor: pointer; }
   #reset:hover { color: var(--minze); }
 
-  .progress { display: flex; gap: 6px; padding: 14px clamp(16px,4vw,40px); background: var(--weiss); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; overflow-x: auto; }
-  .pstep { flex: 1; min-width: 64px; border: none; background: none; cursor: pointer; font-family: var(--display); font-size: 11.5px; font-weight: 700; color: var(--fg-muted); padding: 6px 4px 8px; border-top: 3px solid var(--blau-20); text-align: left; white-space: nowrap; }
-  .pstep.act { color: var(--blau); border-top-color: var(--blau); }
-  .pstep.done { border-top-color: var(--minze); }
-  @media (max-width: 640px) {
-    .pstep { min-width: 0; text-align: center; }
-    .pstep .plabel { display: none; }
-    .pstep.act .plabel { display: inline; }
-  }
-
-  main { max-width: 720px; margin: 0 auto; padding: clamp(20px,4vw,36px) clamp(16px,4vw,24px) 100px; }
-  .step { display: none; }
-  .step.act { display: block; animation: fadein .25s ease; }
+  .progress { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 14px clamp(16px,4vw,40px); background: var(--weiss); border-bottom: 1px solid var(--line); }
+  .progtext { font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg-2); }
+  .progtext .unsure { color: var(--kirsche); }
+  .toggleAll { border: none; background: none; color: var(--blau); font-family: var(--display); font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .toggleAll:hover { color: var(--blau-60); text-decoration: underline; }
+  main { max-width: 860px; margin: 0 auto; padding: clamp(20px,4vw,36px) clamp(16px,4vw,24px) 70px; }
   @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .intro { margin-bottom: 18px; }
+  .intro h2 { font-size: clamp(23px,4vw,32px); margin-bottom: 8px; }
+  .intro .lead { color: var(--fg-2); font-size: 15.5px; margin-bottom: 10px; }
+  .intro ul { margin: 0 0 12px 18px; color: var(--fg-2); font-size: 14.5px; display: grid; gap: 3px; }
+  .intro .introhint { display: grid; gap: 6px; font-size: 13px; color: var(--fg-muted); }
+  .sections { display: grid; gap: 10px; }
+  details.section { background: var(--weiss); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  details.section[open] { box-shadow: 0 10px 26px rgba(13,12,43,0.06); }
+  details.section summary { list-style: none; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 16px; cursor: pointer; }
+  details.section summary::-webkit-details-marker { display: none; }
+  .sec-title { font-family: var(--display); font-weight: 800; color: var(--blau); white-space: nowrap; }
+  .sec-line { min-width: 0; display: flex; gap: 8px; align-items: baseline; }
+  .sec-summary { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg-2); font-size: 14px; }
+  .sec-summary.empty { color: var(--fg-muted); }
+  .sec-time { color: var(--fg-muted); font-size: 12.5px; white-space: nowrap; }
+  .status-chip { font-family: var(--display); font-size: 12px; font-weight: 800; padding: 4px 9px; border-radius: 999px; white-space: nowrap; background: var(--blau-10); color: var(--fg-muted); }
+  .status-chip.done { background: var(--minze); color: var(--dunkel); }
+  .status-chip.unsure { background: var(--kirsche); color: var(--weiss); }
+  .sec-body { border-top: 1px solid var(--line); padding: 16px; animation: fadein .2s ease; }
+  .sec-body h2 { font-size: clamp(21px,3.2vw,27px); margin-bottom: 8px; }
+  .sec-body p.lead { color: var(--fg-2); margin-bottom: 16px; font-size: 15px; }
+  .section-next { margin-top: 14px; display: flex; justify-content: flex-end; }
 
-  .kicker { font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blau); margin-bottom: 8px; }
-  .step h2 { font-size: clamp(22px,4vw,30px); margin-bottom: 10px; }
-  .step p.lead { color: var(--fg-2); margin-bottom: 20px; font-size: 15.5px; }
-
-  .card { background: var(--weiss); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+  .card { background: var(--weiss); border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin-bottom: 14px; }
   label.lbl { display: block; font-family: var(--display); font-weight: 700; font-size: 13.5px; margin-bottom: 6px; }
   .sub { font-size: 13px; color: var(--fg-muted); margin: -2px 0 8px; }
   input[type=text], textarea { width: 100%; font-family: var(--body); font-size: 15px; padding: 10px 12px; border: 1.5px solid var(--blau-20); border-radius: 9px; background: var(--weiss); color: var(--fg); }
@@ -68,9 +79,6 @@
   .btn.ghost:hover { border-color: var(--blau); color: var(--blau); }
   .btn.add { width: 100%; border: 1.5px dashed var(--blau-20); background: none; color: var(--blau); padding: 13px; }
   .btn.add:hover { border-color: var(--blau); background: var(--weiss); }
-
-  .navbtns { position: fixed; bottom: 0; left: 0; right: 0; background: var(--weiss); border-top: 1px solid var(--line); padding: 12px clamp(16px,4vw,24px); display: flex; justify-content: space-between; gap: 10px; z-index: 6; }
-  .navbtns .inner { max-width: 720px; margin: 0 auto; display: flex; justify-content: space-between; width: 100%; gap: 10px; }
 
   .hint { background: var(--weiss); border-left: 4px solid var(--minze); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 14px; color: var(--fg-2); margin: 16px 0; }
   .rcheck { background: var(--kirsche-10); border-left: 4px solid var(--kirsche); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 14px; margin: 16px 0; }
@@ -106,6 +114,7 @@
   .markrow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .markrow .sub { margin: 0; }
   .markwrap input[type=text] { margin-top: 10px; }
+  .markhint { display: block; color: var(--fg-muted); font-size: 12.5px; margin-top: 8px; }
   .btn.ghost.on { background: var(--kirsche); color: var(--weiss); border-color: var(--kirsche); }
   .btn.ghost.on:hover { background: var(--kirsche); color: var(--weiss); border-color: var(--kirsche); }
 
@@ -116,8 +125,15 @@
   .sparcard .sparresult { margin-top: 16px; }
   .sparcard .exportbtns { margin-top: 0; }
   .sparcard .gptlink { font-size: 13px; color: var(--fg-2); align-self: center; text-decoration: underline; }
+  .sparcard .markopen { font-size: 13px; color: var(--blau); align-self: center; text-decoration: underline; cursor: pointer; }
   .sparcard textarea.promptbox { min-height: 260px; max-height: 260px; overflow: auto; font-family: monospace; font-size: 13px; }
   @media (max-width: 480px) {
+    .progress { align-items: flex-start; }
+    details.section summary { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 12px; }
+    .sec-title { grid-column: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .sec-line { grid-column: 1 / -1; grid-row: 2; }
+    .status-chip { grid-column: 2; grid-row: 1; }
+    .sec-body { padding: 14px 12px; }
     .sparcard .exportbtns { flex-direction: column; align-items: stretch; }
     .sparcard .exportbtns .btn { text-align: center; }
     .sparcard .gptlink { align-self: flex-start; }
@@ -129,7 +145,7 @@
 
   #printout { display: none; }
   @media print {
-    header.top, .progress, main, .navbtns { display: none !important; }
+    header.top, .progress, main { display: none !important; }
     body { background: #fff; }
     #printout { display: block; padding: 0; font-family: Georgia, 'Times New Roman', serif; color: #111; font-size: 12.5px; line-height: 1.5; }
     #printout .po-brand { font-family: Arial, sans-serif; font-weight: bold; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #36349D; margin-bottom: 4px; }
@@ -155,19 +171,21 @@
 
 <main id="main"></main>
 
-<div class="navbtns"><div class="inner">
-  <button class="btn ghost" id="back">Zurück</button>
-  <button class="btn primary" id="next">Weiter</button>
-</div></div>
-
 <div id="printout"></div>
 
 <script>
 (function(){
 'use strict';
 
-const STEPS = ['Vorhaben','Beitrag','Veränderung','Signale','Liefergegenstände','Check'];
-const ZEIT = ['2 Minuten','ca. 5 Minuten','ca. 10 Minuten','ca. 10 Minuten','ca. 5 Minuten','2 Minuten'];
+const STEPS = ['Vorhaben','Beitrag','Veränderung','Signale','Liefergegenstände'];
+const ZEIT = ['2 Minuten','ca. 5 Minuten','ca. 10 Minuten','ca. 10 Minuten','ca. 5 Minuten'];
+const LEITFRAGEN = [
+  'Worum geht es?',
+  'Wozu trägt es über sich hinaus bei?',
+  'Was soll sich für wen verändern?',
+  'Woran würden wir Fortschritt erkennen?',
+  'Was muss das Vorhaben dafür hervorbringen?'
+];
 const GPT_URL = 'https://chatgpt.com/g/g-6a4bcf92ddac8191862fdb8aaa6b511c-wirkungssparring3000';
 const QC = [
   'In meinem Künftig-Satz steht ein Zustand, kein Ding.',
@@ -197,6 +215,7 @@ let S = {
   beitragDass: '', beitragIndem: '',
   heute: '', kuenftig: '',
   signale: [ emptySignal() ],
+  konsequenz: '',
   liefer: '',
   marks: emptyMarks(),
   checks: [false,false,false,false,false],
@@ -207,6 +226,9 @@ try {
   if (saved) { S = Object.assign({}, S, saved); if (!Array.isArray(S.signale) || !S.signale.length) S.signale = [ emptySignal() ]; }
 } catch(e){}
 S.marks = Object.assign(emptyMarks(), S.marks || {});
+S.marks.beitrag = Object.assign({ on: false, note: '' }, S.marks.beitrag || {});
+S.marks.veraenderung = Object.assign({ on: false, note: '' }, S.marks.veraenderung || {});
+S.marks.liefer = Object.assign({ on: false, note: '' }, S.marks.liefer || {});
 S.signale = S.signale.map(sig => {
   const next = Object.assign(emptySignal(), sig || {});
   if (!next.erkennt && next.beob) next.erkennt = next.beob;
@@ -219,16 +241,27 @@ let sparringError = '';
 function save(){ try { localStorage.setItem('wirkungsversprechen', JSON.stringify(S)); } catch(e){} }
 function esc(s){ const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 function clean(s){ return (s || '').trim().replace(/[.\s]+$/, ''); }
+function plain(s){ const d = document.createElement('div'); d.innerHTML = s || ''; return d.textContent || ''; }
 
 const main = document.getElementById('main');
 const prog = document.getElementById('prog');
+let openSections = initialOpenSections();
 
-function renderProgress(){
-  prog.innerHTML = STEPS.map((s,i)=>
-    `<button class="pstep ${i===S.cur?'act':''} ${i<S.cur?'done':''}" data-i="${i}">${i+1}<span class="plabel"> · ${s}</span></button>`).join('');
-  prog.querySelectorAll('.pstep').forEach(b=>b.onclick=()=>{ S.cur=+b.dataset.i; save(); render(); });
+function answeredCount(){ return [0,1,2,3,4].filter(i => sectionFilled(i)).length; }
+function progressText(){
+  const marks = markCount();
+  return `${answeredCount()} von 5 beantwortet${marks ? ` <span class="unsure">· ${marks} unsicher markiert</span>` : ''}`;
 }
-function kicker(i){ return `<div class="kicker">Schritt ${i+1} von 6 · ${ZEIT[i]}</div>`; }
+function renderProgress(){
+  const allOpen = openSections.every(Boolean);
+  prog.innerHTML = `<div class="progtext" id="progressText">${progressText()}</div>
+    <button type="button" class="toggleAll" id="toggleAll">${allOpen ? 'Alles zuklappen' : 'Alles aufklappen'}</button>`;
+  document.getElementById('toggleAll').onclick = ()=>{
+    const next = !openSections.every(Boolean);
+    openSections = openSections.map(()=>next);
+    render();
+  };
+}
 function bsp(key, titel){
   return `<details class="bsp"><summary>${titel || 'Beispiel ansehen (Komponentenplattform)'}</summary><div>${BSP[key]}</div></details>`;
 }
@@ -242,6 +275,7 @@ function markControl(key){
       <span class="sub">Unsicher ist eine valide Antwort. Markierte Punkte kannst du am Ende ins KI-Sparring mitnehmen.</span>
     </div>
     ${active ? `<input type="text" data-mark-note="${key}" placeholder="Woran hakt es? (optional)" value="${esc(mark.note)}">` : ''}
+    ${active ? '<span class="markhint">Geklärt? Nimm die Markierung raus, dann klappt der Punkt zu.</span>' : ''}
   </div>`;
 }
 
@@ -253,21 +287,31 @@ function signalMarkControl(sig, i){
       <span class="sub">Unsicher ist eine valide Antwort. Markierte Punkte kannst du am Ende ins KI-Sparring mitnehmen.</span>
     </div>
     ${active ? `<input type="text" data-sigmark-note="${i}" placeholder="Woran hakt es? (optional)" value="${esc(sig.unsicherNote)}">` : ''}
+    ${active ? '<span class="markhint">Geklärt? Nimm die Markierung raus, dann klappt der Punkt zu.</span>' : ''}
   </div>`;
 }
 
-function step0(){
-  return `<div class="step act">
-    ${kicker(0)}
+function introHTML(){
+  return `<section class="intro">
     <h2>Dein Wirkungsversprechen in 30 Minuten</h2>
-    <p class="lead">Vier kurze Antworten, die zusammen erklären, warum es dein Vorhaben geben soll, was sich dadurch ändert und woran man das merken würde. Kein Formular für den Aktenordner, sondern ein Schutzinstrument:</p>
-    <div class="card">
-      <ul style="margin-left:18px; font-size:15px; color:var(--fg-2);">
-        <li style="margin-bottom:8px;">Du kommst schneller durch die Priorisierung, weil Leitung sofort versteht, wofür das Vorhaben da ist.</li>
-        <li style="margin-bottom:8px;">Du wehrst dich leichter gegen Kennzahlen, die dir jemand überstülpt: Du hast schon bessere.</li>
-        <li>Du kannst Nein mit Argument sagen: Anforderungen, die auf keine der vier Antworten einzahlen, sind verhandelbar.</li>
-      </ul>
+    <p class="lead">Vier kurze Antworten, die zusammen erklären, warum es dein Vorhaben geben soll, was sich dadurch ändert und woran man das merken würde. Kein Formular für den Aktenordner, sondern ein Schutzinstrument.</p>
+    <ul>
+      <li>Leitung versteht schneller, wofür das Vorhaben da ist.</li>
+      <li>Du hast bessere Kennzahlen, bevor dir jemand schwächere überstülpt.</li>
+      <li>Anforderungen ohne Bezug auf das Versprechen werden verhandelbar.</li>
+    </ul>
+    <div class="introhint">
+      <span>Trage keine personenbezogenen oder eingestuften Informationen ein. Das Tool speichert nur lokal in deinem Browser.</span>
+      <span>Dieses Blatt ersetzt die Freitext-Kurzbeschreibung deines Vorhabens, es kommt nicht obendrauf.</span>
+      <span>Unsicher ist eine valide Antwort: Markiere solche Punkte, am Ende kannst du sie ins KI-Sparring mitnehmen.</span>
     </div>
+  </section>`;
+}
+
+function section0Body(){
+  return `<div>
+    <h2>Vorhaben</h2>
+    <p class="lead">Gib dem Vorhaben einen Namen und, wenn hilfreich, einen kurzen Kontext.</p>
     <div class="card">
       <label class="lbl">Wie heißt dein Vorhaben?</label>
       <input type="text" id="vorhaben" maxlength="80" placeholder="z. B. Digitaler Antragsprozess Wohngeld" value="${esc(S.vorhaben)}">
@@ -275,8 +319,6 @@ function step0(){
       <label class="lbl">Worum geht es, in einem Satz? (optional)</label>
       <input type="text" id="kontext" placeholder="z. B. Der Antrag soll digital werden" value="${esc(S.kontext)}">
     </div>
-    <div class="hint">Trage keine personenbezogenen oder eingestuften Informationen ein. Das Tool speichert nur lokal in deinem Browser.</div>
-    <div class="hint">Dieses Blatt ersetzt die Freitext-Kurzbeschreibung deines Vorhabens (im Vorschlag, im Steckbrief, auf der ersten Folie). Es lohnt sich als Ersatz: Wenn es bei dir obendrauf käme, streich im Gegenzug einen der alten Bausteine.</div>
     <p class="privacy">Alles, was du hier eingibst, bleibt ausschließlich auf deinem Gerät. Kein Server, keine Übertragung, kein Konto. Mit "Neu starten" oben löschst du deinen lokalen Stand.</p>
   </div>`;
 }
@@ -285,10 +327,18 @@ function satzPreview(){
   const d = clean(S.beitragDass), i = clean(S.beitragIndem);
   return `Das Vorhaben trägt dazu bei, dass ${d ? esc(d) : '<span class="ph">[übergeordnetes Ziel oder Aufgabe]</span>'}, indem es ${i ? esc(i) : '<span class="ph">[dein Hebel]</span>'}.`;
 }
+function satzPreviewText(){
+  const d = clean(S.beitragDass), i = clean(S.beitragIndem);
+  return `Das Vorhaben trägt dazu bei, dass ${d || '[übergeordnetes Ziel oder Aufgabe]'}, indem es ${i || '[dein Hebel]'}.`;
+}
 
 function vSatzPreview(){
   const h = clean(S.heute), k = clean(S.kuenftig);
   return `Heute ${h ? esc(h) : '<span class="ph">[was mühsam, langsam oder doppelt ist]</span>'}. Künftig ${k ? esc(k) : '<span class="ph">[was für wen anders ist]</span>'}.`;
+}
+function vSatzPreviewText(){
+  const h = clean(S.heute), k = clean(S.kuenftig);
+  return `Heute ${h || '[was mühsam, langsam oder doppelt ist]'}. Künftig ${k || '[was für wen anders ist]'}.`;
 }
 
 function sigSatz(sig){
@@ -296,10 +346,13 @@ function sigSatz(sig){
   const e = clean(sig.erkennt), g = clean(sig.ausgang), z = clean(sig.ziel), w = clean(sig.warn);
   return `Wir erkennen Fortschritt an: ${e ? esc(e) : ph('Messgröße, Beobachtung oder konkreter Hinweis')}. Heute: ${g ? esc(g) : ph('Ausgangswert, Schätzung oder offen')}. Ein guter Stand wäre: ${z ? esc(z) : ph('Zielwert, Richtung oder Zustand bis Zeitpunkt')}. Warnzeichen: ${w ? esc(w) : ph('woran wir merken, dass es nur auf dem Papier gut aussieht')}.`;
 }
+function sigSatzText(sig){
+  const e = clean(sig.erkennt), g = clean(sig.ausgang), z = clean(sig.ziel), w = clean(sig.warn);
+  return `Wir erkennen Fortschritt an: ${e || '[Messgröße, Beobachtung oder konkreter Hinweis]'}. Heute: ${g || '[Ausgangswert, Schätzung oder offen]'}. Ein guter Stand wäre: ${z || '[Zielwert, Richtung oder Zustand bis Zeitpunkt]'}. Warnzeichen: ${w || '[woran wir merken, dass es nur auf dem Papier gut aussieht]'}.`;
+}
 
-function step1(){
-  return `<div class="step act">
-    ${kicker(1)}
+function section1Body(){
+  return `<div>
     <h2>Beitrag</h2>
     <p class="lead">Wozu trägt das Vorhaben über sich hinaus bei? Der Bezugspunkt ist das, woran sich dein Haus tatsächlich orientiert: ein Zielbild, eine Strategie, ein politischer Auftrag. Gibt es so etwas nicht, nimm das, worauf du dich berufen würdest, wenn jemand fragt: "Warum machen wir das eigentlich?"</p>
     <div class="card">
@@ -313,12 +366,12 @@ function step1(){
       ${markControl('beitrag')}
     </div>
     <div class="hint">Prüffrage: Würde deine Hausleitung diesen Satz unterschreiben, ohne vorher bei dir anzurufen?</div>
+    <div class="rcheck"><b>Realitätscheck</b>Klingen dein Beitrag-Satz und dein Künftig-Satz fast gleich? Dann ist einer davon auf der falschen Flughöhe: Der Beitrag ist das, was euer Vorhaben nicht allein erreicht.</div>
   </div>`;
 }
 
-function step2(){
-  return `<div class="step act">
-    ${kicker(2)}
+function section2Body(){
+  return `<div>
     <h2>Angestrebte Veränderung</h2>
     <p class="lead">Was soll sich für wen konkret verändern? Beschreibe zwei Zustände: den mühsamen von heute und den besseren von morgen.</p>
     <div class="card">
@@ -368,20 +421,23 @@ function sigCard(sig, i){
 }
 
 function step3(){
-  return `<div class="step act">
-    ${kicker(3)}
+  return `<div>
     <h2>Fortschrittssignale</h2>
     <p class="lead">Wenn ihr mit OKR arbeitet: Denk hier wie bei einem Key Result, nur vorsichtiger. Nicht alles muss numerisch messbar sein. Es reicht, wenn es konkret genug ist, dass ihr später wieder hinschauen könnt: Verhalten, Rückfragen, Bearbeitungszeit, Abbrüche, Beschwerden, Nutzung oder Qualität von Unterlagen.</p>
     ${S.signale.map(sigCard).join('')}
-    ${S.signale.length < 3 ? '<button class="btn add" id="addSig">+ Weiteres Signal (maximal 3)</button>' : ''}
+    <div class="card">
+      <label class="lbl">Wenn ein Warnzeichen eintritt, besprechen wir das:</label>
+      <input type="text" id="konsequenz" placeholder="z. B. in der AL-Runde, im Jour fixe mit der Referatsleitung" value="${esc(S.konsequenz)}">
+      <div class="sub" style="margin-top:8px;">Ein Warnzeichen ohne Adresse ist Dekoration. Noch keinen Ort? Der <a href="steuerungs-check.html">Steuerungs-Check</a> hilft beim Finden.</div>
+    </div>
+    ${S.signale.length < 3 ? '<button class="btn add" id="addSig">+ Weiteres Signal (maximal 3)</button><div class="sub">Ein Signal, auf das ihr wirklich schaut, schlägt drei, die keiner erhebt.</div>' : ''}
     ${bsp('signal', 'Beispiel für ein komplettes Signal ansehen')}
     <div class="rcheck"><b>Realitätscheck</b>Sieht dein Signal bei jedem Ausgang gut aus? Mehr Beratungsgespräche: "große Nachfrage!" Weniger: "läuft ja alles!" Dann ist es noch kein Signal, sondern Deko. Das Warnzeichen macht daraus ein echtes: Leg vorher fest, welcher Ausgang euch umdenken ließe.</div>
   </div>`;
 }
 
-function step4(){
-  return `<div class="step act">
-    ${kicker(4)}
+function section4Body(){
+  return `<div>
     <h2>Liefergegenstände</h2>
     <p class="lead">Was muss das Vorhaben dafür hervorbringen? Stichpunkte reichen: Produkte, Prozesse, Freigaben, Standards. Das ist die Ebene, über die ohnehin alle gern reden. Genau deshalb kommt sie zuletzt.</p>
     <div class="card">
@@ -396,7 +452,7 @@ function step4(){
 function qcHint(done){
   return done === 5
     ? 'Alle fünf. Dann raus damit: in den Projektvorschlag, den Steckbrief oder das nächste Gespräch mit deiner Leitung.'
-    : 'Noch ' + (5-done) + ' offen. Nicht schummeln: Lieber jetzt zwei Minuten nachschärfen als später an einer schiefen Kennzahl gemessen werden. Zum Nachbessern oben einfach den Schritt anklicken.';
+    : 'Noch ' + (5-done) + ' offen. Nicht schummeln: Lieber jetzt zwei Minuten nachschärfen als später an einer schiefen Kennzahl gemessen werden. Zum Nachbessern oben einfach die passende Sektion öffnen.';
 }
 
 function recapHTML(){
@@ -407,6 +463,7 @@ function recapHTML(){
   h += '<div class="rlbl">Fortschrittssignale</div>';
   const sigs = S.signale.filter(s => s.erkennt || s.ziel || s.warn || s.ausgang);
   h += sigs.length ? sigs.map((s,i)=>'<p><b>'+(i+1)+'.</b> '+sigSatz(s)+'</p>').join('') : '<p>' + leer + '</p>';
+  h += '<div class="rlbl">Wenn ein Warnzeichen eintritt</div><p>' + (S.konsequenz.trim() ? esc(S.konsequenz) : leer) + '</p>';
   h += '<div class="rlbl">Liefergegenstände</div><p>' + (S.liefer.trim() ? esc(S.liefer).replace(/\n/g,'<br>') : leer) + '</p>';
   return '<div class="card recap">' + h + '</div>';
 }
@@ -427,11 +484,12 @@ function sparringCard(){
     <p class="spartext">Dieses Tool erzeugt dir einen Prompt: eine strukturierte Arbeitsanweisung mit deinen Angaben. Den kopierst du selbst in das KI-System, das dein Haus zugelassen hat. Die KI stellt Rückfragen, sie schreibt dein Versprechen nicht.</p>
     <p class="spardisclaimer">Das ist ein Denkwerkzeug, kein Prüfverfahren und keine Vorgabe des Hauses.</p>
     <button class="btn primary" id="makePrompt">Sparring-Prompt erzeugen</button>
-    ${sparringError ? `<div class="rcheck"><b>Hinweis</b>${sparringError} <a href="#" data-go-step="0">Zu Schritt 1</a></div>` : ''}
+    ${sparringError ? `<div class="rcheck"><b>Hinweis</b>${sparringError} <a href="#" data-open-section="0">Zu Vorhaben</a></div>` : ''}
     ${sparringPrompt ? `<div class="sparresult">
       <div class="exportbtns">
         <button class="btn primary" id="copyPrompt">Prompt kopieren</button>
         <a href="${GPT_URL}" target="_blank" rel="noopener" class="gptlink">Zum Custom GPT</a>
+        ${n ? '<a href="#" class="markopen" id="openMarked">Zum Nachtragen: nur markierte Punkte öffnen</a>' : ''}
       </div>
       <textarea readonly class="promptbox">${esc(sparringPrompt)}</textarea>
       <div class="hint">Diese Seite sendet nichts. Der Prompt ist ein Stück Text in deiner Zwischenablage: Du entscheidest, ob und wo du ihn einfügst. Nutze das KI-System, das in deinem Haus zugelassen ist, und trage keine personenbezogenen oder eingestuften Informationen ins Formular ein.</div>
@@ -518,6 +576,8 @@ Veränderung künftig: ${prefixedPromptValue('Künftig', S.kuenftig)}
 
 ${S.signale.map(promptSignal).join('\n\n')}
 
+Wenn ein Warnzeichen eintritt: ${promptValue(S.konsequenz)}
+
 Liefergegenstände: ${promptValue(S.liefer)}${unsure}
 
 ## Ablauf
@@ -541,13 +601,12 @@ als [offen: …], nicht als glatte Behauptung. Das Wirkungsversprechen
 selbst entsteht im Formular, nicht hier.`;
 }
 
-function step5(){
+function finalBlock(){
   const done = S.checks.filter(Boolean).length;
-  return `<div class="step act">
-    ${kicker(5)}
+  return `<section class="finalblock">
     <h2>Qualitätscheck</h2>
     <p class="lead">Erst gegenlesen, dann abhaken: Oben steht dein Versprechen im Wortlaut, darunter die fünf ehrlichen Fragen. Prüfe am Text, nicht aus dem Gedächtnis.</p>
-    ${recapHTML()}
+    <div id="recaphost">${recapHTML()}</div>
     <div class="card">
       ${QC.map((q,i)=>`<label class="qc"><input type="checkbox" data-qc="${i}" ${S.checks[i]?'checked':''}><span>${q}</span></label>`).join('')}
     </div>
@@ -559,8 +618,136 @@ function step5(){
       <button class="btn ghost" id="cp">Formatiert kopieren</button>
     </div>
     <p class="mdlink">Für Textdateien-Fans: <a id="dlMd">als Markdown (.md) speichern</a></p>
+    <p class="mdlink"><a href="index.html">Zur Werkstatt</a></p>
     <p class="privacy">Alles bleibt auf deinem Gerät. Kein Server, keine Übertragung, kein Konto.</p>
+  </section>`;
+}
+
+function signalHasContent(sig){
+  return !!(sig.erkennt || sig.ausgang || sig.ziel || sig.warn);
+}
+function sectionFilled(i){
+  if (i === 0) return !!S.vorhaben.trim();
+  if (i === 1) return !!(S.beitragDass.trim() && S.beitragIndem.trim());
+  if (i === 2) return !!(S.heute.trim() && S.kuenftig.trim());
+  if (i === 3) return !!(S.signale[0] && S.signale[0].erkennt.trim());
+  if (i === 4) return !!S.liefer.trim();
+  return false;
+}
+function sectionAny(i){
+  if (i === 0) return !!(S.vorhaben.trim() || S.kontext.trim());
+  if (i === 1) return !!(S.beitragDass.trim() || S.beitragIndem.trim());
+  if (i === 2) return !!(S.heute.trim() || S.kuenftig.trim());
+  if (i === 3) return S.signale.some(signalHasContent) || !!S.konsequenz.trim();
+  if (i === 4) return !!S.liefer.trim();
+  return false;
+}
+function sectionMarked(i){
+  if (i === 1) return !!S.marks.beitrag.on;
+  if (i === 2) return !!S.marks.veraenderung.on;
+  if (i === 3) return S.signale.some(sig => sig.unsicher);
+  if (i === 4) return !!S.marks.liefer.on;
+  return false;
+}
+function initialOpenSections(){
+  const idx = [0,1,2,3,4];
+  if (!idx.some(sectionAny)) return [true,false,false,false,false];
+  if (markCount() && idx.every(i => sectionFilled(i) || sectionMarked(i))) {
+    return idx.map(sectionMarked);
+  }
+  const firstOpen = idx.find(i => !sectionFilled(i));
+  return idx.map(i => i === firstOpen);
+}
+function firstLine(s){
+  return (s || '').split(/\r?\n/).map(x => x.trim()).find(Boolean) || '';
+}
+function sectionSummary(i){
+  if (!sectionAny(i)) return LEITFRAGEN[i];
+  if (i === 0) return S.vorhaben.trim() || LEITFRAGEN[i];
+  if (i === 1) return satzPreviewText();
+  if (i === 2) return vSatzPreviewText();
+  if (i === 3) {
+    const count = Math.max(1, S.signale.filter(signalHasContent).length);
+    const first = S.signale.find(signalHasContent) || S.signale[0] || emptySignal();
+    return count + ' ' + (count === 1 ? 'Signal' : 'Signale') + ' · ' + sigSatzText(first);
+  }
+  if (i === 4) return firstLine(S.liefer) || LEITFRAGEN[i];
+  return LEITFRAGEN[i];
+}
+function statusChip(i){
+  if (sectionMarked(i)) return '<span class="status-chip unsure" data-status="' + i + '">unsicher</span>';
+  if (sectionFilled(i)) return '<span class="status-chip done" data-status="' + i + '">✓</span>';
+  return '<span class="status-chip" data-status="' + i + '">offen</span>';
+}
+function sectionHTML(i, body){
+  const any = sectionAny(i);
+  return `<details class="section" data-section="${i}" ${openSections[i] ? 'open' : ''}>
+    <summary>
+      <span class="sec-title">${i+1} · ${STEPS[i]}</span>
+      <span class="sec-line">
+        <span class="sec-summary${any ? '' : ' empty'}" data-summary="${i}">${esc(sectionSummary(i))}</span>
+        <span class="sec-time" data-time="${i}">${any ? '' : ZEIT[i]}</span>
+      </span>
+      ${statusChip(i)}
+    </summary>
+    <div class="sec-body">
+      ${body}
+      ${i < 4 ? `<div class="section-next"><button type="button" class="btn ghost" data-next-section="${i+1}">Weiter</button></div>` : ''}
+    </div>
+  </details>`;
+}
+function sectionsHTML(){
+  return `<div class="sections">
+    ${sectionHTML(0, section0Body())}
+    ${sectionHTML(1, section1Body())}
+    ${sectionHTML(2, section2Body())}
+    ${sectionHTML(3, step3())}
+    ${sectionHTML(4, section4Body())}
   </div>`;
+}
+function updateChrome(){
+  renderProgress();
+  [0,1,2,3,4].forEach(i=>{
+    const summary = main.querySelector(`[data-summary="${i}"]`);
+    const time = main.querySelector(`[data-time="${i}"]`);
+    const status = main.querySelector(`[data-status="${i}"]`);
+    const any = sectionAny(i);
+    if (summary) {
+      summary.textContent = sectionSummary(i);
+      summary.classList.toggle('empty', !any);
+    }
+    if (time) time.textContent = any ? '' : ZEIT[i];
+    if (status) {
+      status.outerHTML = statusChip(i);
+    }
+  });
+  const recap = main.querySelector('#recaphost');
+  if (recap) recap.innerHTML = recapHTML();
+}
+function goToSection(i){
+  openSections[i] = true;
+  render();
+  setTimeout(()=>{
+    const el = main.querySelector(`[data-section="${i}"]`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 0);
+}
+function closeSection(i){
+  openSections[i] = false;
+  const el = main.querySelector(`[data-section="${i}"]`);
+  if (el) el.open = false;
+  renderProgress();
+}
+function openMarkedSections(){
+  const marked = [0,1,2,3,4].filter(sectionMarked);
+  if (!marked.length) return;
+  openSections = openSections.map(()=>false);
+  marked.forEach(i => openSections[i] = true);
+  render();
+  setTimeout(()=>{
+    const first = main.querySelector(`[data-section="${marked[0]}"]`);
+    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 0);
 }
 
 /* ---------- Export ---------- */
@@ -583,6 +770,7 @@ function summaryHTML(){
          (sig.warn ? '<br><strong>Was wäre ein Warnzeichen?</strong> ' + esc(sig.warn) : '') + '</li>';
   });
   h += '</ol>';
+  h += '<p><strong>Wenn ein Warnzeichen eintritt:</strong> ' + (esc(S.konsequenz)||'…') + '</p>';
   h += '<h2>Liefergegenstände</h2><p>' + (esc(S.liefer)||'…').replace(/\n/g,'<br>') + '</p>';
   const offen = QC.filter((q,i)=>!S.checks[i]);
   h += '<h2>Qualitätscheck</h2>';
@@ -654,111 +842,128 @@ function bind(){
   const q = sel => main.querySelector(sel);
   const qa = sel => main.querySelectorAll(sel);
 
+  qa('details.section').forEach(d=>d.addEventListener('toggle', ()=>{
+    openSections[+d.dataset.section] = d.open;
+    renderProgress();
+  }));
+  qa('[data-next-section]').forEach(b=>b.onclick = ()=>{
+    const next = +b.dataset.nextSection;
+    openSections[next - 1] = false;
+    openSections[next] = true;
+    render();
+    setTimeout(()=>{
+      const el = main.querySelector(`[data-section="${next}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
+  });
+
   qa('[data-mark-toggle]').forEach(b=>b.onclick = ()=>{
     const key = b.dataset.markToggle;
+    const sec = key === 'beitrag' ? 1 : key === 'veraenderung' ? 2 : 4;
+    const wasOn = !!S.marks[key].on;
     S.marks[key].on = !S.marks[key].on;
     if (!S.marks[key].on) S.marks[key].note = '';
     save(); render();
+    if (wasOn && !sectionMarked(sec)) setTimeout(()=>closeSection(sec), 400);
   });
   qa('[data-mark-note]').forEach(inp=>inp.oninput = e=>{
     S.marks[inp.dataset.markNote].note = e.target.value; save();
   });
   qa('[data-sigmark-toggle]').forEach(b=>b.onclick = ()=>{
     const i = +b.dataset.sigmarkToggle;
+    const wasOn = !!S.signale[i].unsicher;
     S.signale[i].unsicher = !S.signale[i].unsicher;
     if (!S.signale[i].unsicher) S.signale[i].unsicherNote = '';
     save(); render();
+    if (wasOn && !sectionMarked(3)) setTimeout(()=>closeSection(3), 400);
   });
   qa('[data-sigmark-note]').forEach(inp=>inp.oninput = e=>{
     S.signale[+inp.dataset.sigmarkNote].unsicherNote = e.target.value; save();
   });
-  qa('[data-go-step]').forEach(a=>a.onclick = e=>{
+  qa('[data-open-section]').forEach(a=>a.onclick = e=>{
     e.preventDefault();
-    S.cur = +a.dataset.goStep;
-    save(); render(); window.scrollTo({top:0});
+    goToSection(+a.dataset.openSection);
   });
 
-  if (S.cur === 0){
-    q('#vorhaben').oninput = e=>{ S.vorhaben = e.target.value; save(); };
-    q('#kontext').oninput = e=>{ S.kontext = e.target.value; save(); };
-  }
-  if (S.cur === 1){
-    const upd = ()=>{ const el = q('#bsatz'); if (el) el.innerHTML = satzPreview(); };
-    q('#beitragDass').oninput = e=>{ S.beitragDass = e.target.value; save(); upd(); };
-    q('#beitragIndem').oninput = e=>{ S.beitragIndem = e.target.value; save(); upd(); };
-  }
-  if (S.cur === 2){
-    const upd = ()=>{ const el = q('#vsatz'); if (el) el.innerHTML = vSatzPreview(); };
-    q('#heute').oninput = e=>{ S.heute = e.target.value; save(); upd(); };
-    q('#kuenftig').oninput = e=>{ S.kuenftig = e.target.value; save(); upd(); };
-  }
-  if (S.cur === 3){
-    qa('[data-sig]').forEach(inp=>inp.oninput = e=>{
-      const i = +inp.dataset.sig;
-      S.signale[i][inp.dataset.f] = e.target.value; save();
-      const el = q('#sigsatz-' + i);
-      if (el) el.innerHTML = sigSatz(S.signale[i]);
-    });
-    qa('[data-rm]').forEach(b=>b.onclick = ()=>{ S.signale.splice(+b.dataset.rm,1); save(); render(); });
-    const add = q('#addSig');
-    if (add) add.onclick = ()=>{ S.signale.push(emptySignal()); save(); render(); };
-  }
-  if (S.cur === 4){
-    q('#liefer').oninput = e=>{ S.liefer = e.target.value; save(); };
-  }
-  if (S.cur === 5){
-    qa('[data-qc]').forEach(cb=>cb.onchange = ()=>{
-      S.checks[+cb.dataset.qc] = cb.checked; save();
-      const hint = q('#qchint');
-      if (hint) hint.textContent = qcHint(S.checks.filter(Boolean).length);
-    });
-    q('#prt').onclick = ()=>{ document.getElementById('printout').innerHTML = summaryHTML(); window.print(); };
-    q('#dlDoc').onclick = ()=>{ download(fullDoc(), 'wirkungsversprechen.doc', 'application/msword'); };
-    q('#dlMd').onclick = ()=>{ download(buildMd(), 'wirkungsversprechen.md', 'text/markdown;charset=utf-8'); };
-    q('#makePrompt').onclick = ()=>{
-      if (!S.vorhaben.trim()) {
-        sparringPrompt = '';
-        sparringError = 'Erst kurz sagen, worum es geht, Schritt 1 reicht schon: Ohne eigene Angaben hat die KI nichts zu schärfen.';
-      } else {
-        sparringError = '';
-        sparringPrompt = buildSparringPrompt();
-      }
-      render();
-    };
-    const copyPrompt = q('#copyPrompt');
-    if (copyPrompt) copyPrompt.onclick = async e=>{
-      try {
-        const ok = await copyText(sparringPrompt);
-        if (!ok) throw new Error('copy failed');
-        e.target.textContent = 'Kopiert!';
-        setTimeout(()=>e.target.textContent='Prompt kopieren', 1500);
-      } catch(err) {
-        alert('Kopieren nicht möglich. Markiere den Prompt und kopiere ihn manuell.');
-      }
-    };
-    q('#cp').onclick = async (e)=>{
-      const ok = ()=>{ e.target.textContent = 'Kopiert!'; setTimeout(()=>e.target.textContent='Formatiert kopieren', 1500); };
-      try {
-        const item = new ClipboardItem({
-          'text/html': new Blob(['<style>' + DOC_CSS + '</style>' + summaryHTML()], { type:'text/html' }),
-          'text/plain': new Blob([plainText()], { type:'text/plain' })
-        });
-        await navigator.clipboard.write([item]); ok();
-      } catch(err) {
-        try { await navigator.clipboard.writeText(plainText()); ok(); }
-        catch(err2) { alert('Kopieren nicht möglich. Nutze "Als Word-Datei speichern".'); }
-      }
-    };
-  }
+  q('#vorhaben').oninput = e=>{ S.vorhaben = e.target.value; save(); updateChrome(); };
+  q('#kontext').oninput = e=>{ S.kontext = e.target.value; save(); updateChrome(); };
+
+  const updBeitrag = ()=>{ const el = q('#bsatz'); if (el) el.innerHTML = satzPreview(); updateChrome(); };
+  q('#beitragDass').oninput = e=>{ S.beitragDass = e.target.value; save(); updBeitrag(); };
+  q('#beitragIndem').oninput = e=>{ S.beitragIndem = e.target.value; save(); updBeitrag(); };
+
+  const updVeraenderung = ()=>{ const el = q('#vsatz'); if (el) el.innerHTML = vSatzPreview(); updateChrome(); };
+  q('#heute').oninput = e=>{ S.heute = e.target.value; save(); updVeraenderung(); };
+  q('#kuenftig').oninput = e=>{ S.kuenftig = e.target.value; save(); updVeraenderung(); };
+
+  qa('[data-sig]').forEach(inp=>inp.oninput = e=>{
+    const i = +inp.dataset.sig;
+    S.signale[i][inp.dataset.f] = e.target.value; save();
+    const el = q('#sigsatz-' + i);
+    if (el) el.innerHTML = sigSatz(S.signale[i]);
+    updateChrome();
+  });
+  qa('[data-rm]').forEach(b=>b.onclick = ()=>{
+    S.signale.splice(+b.dataset.rm,1);
+    if (!S.signale.length) S.signale = [ emptySignal() ];
+    save(); render();
+  });
+  const add = q('#addSig');
+  if (add) add.onclick = ()=>{ S.signale.push(emptySignal()); save(); render(); };
+  q('#konsequenz').oninput = e=>{ S.konsequenz = e.target.value; save(); updateChrome(); };
+
+  q('#liefer').oninput = e=>{ S.liefer = e.target.value; save(); updateChrome(); };
+
+  qa('[data-qc]').forEach(cb=>cb.onchange = ()=>{
+    S.checks[+cb.dataset.qc] = cb.checked; save();
+    const hint = q('#qchint');
+    if (hint) hint.textContent = qcHint(S.checks.filter(Boolean).length);
+  });
+  q('#prt').onclick = ()=>{ document.getElementById('printout').innerHTML = summaryHTML(); window.print(); };
+  q('#dlDoc').onclick = ()=>{ download(fullDoc(), 'wirkungsversprechen.doc', 'application/msword'); };
+  q('#dlMd').onclick = ()=>{ download(buildMd(), 'wirkungsversprechen.md', 'text/markdown;charset=utf-8'); };
+  q('#makePrompt').onclick = ()=>{
+    if (!S.vorhaben.trim()) {
+      sparringPrompt = '';
+      sparringError = 'Erst kurz sagen, worum es geht, Vorhaben reicht schon: Ohne eigene Angaben hat die KI nichts zu schärfen.';
+    } else {
+      sparringError = '';
+      sparringPrompt = buildSparringPrompt();
+    }
+    render();
+  };
+  const copyPrompt = q('#copyPrompt');
+  if (copyPrompt) copyPrompt.onclick = async e=>{
+    try {
+      const ok = await copyText(sparringPrompt);
+      if (!ok) throw new Error('copy failed');
+      e.target.textContent = 'Kopiert!';
+      setTimeout(()=>e.target.textContent='Prompt kopieren', 1500);
+    } catch(err) {
+      alert('Kopieren nicht möglich. Markiere den Prompt und kopiere ihn manuell.');
+    }
+  };
+  const openMarked = q('#openMarked');
+  if (openMarked) openMarked.onclick = e=>{ e.preventDefault(); openMarkedSections(); };
+  q('#cp').onclick = async (e)=>{
+    const ok = ()=>{ e.target.textContent = 'Kopiert!'; setTimeout(()=>e.target.textContent='Formatiert kopieren', 1500); };
+    try {
+      const item = new ClipboardItem({
+        'text/html': new Blob(['<style>' + DOC_CSS + '</style>' + summaryHTML()], { type:'text/html' }),
+        'text/plain': new Blob([plainText()], { type:'text/plain' })
+      });
+      await navigator.clipboard.write([item]); ok();
+    } catch(err) {
+      try { await navigator.clipboard.writeText(plainText()); ok(); }
+      catch(err2) { alert('Kopieren nicht möglich. Nutze "Als Word-Datei speichern".'); }
+    }
+  };
 }
 
 function render(){
   renderProgress();
-  const steps = [step0, step1, step2, step3, step4, step5];
-  main.innerHTML = steps[S.cur]();
+  main.innerHTML = introHTML() + sectionsHTML() + finalBlock();
   bind();
-  document.getElementById('back').style.visibility = S.cur === 0 ? 'hidden' : 'visible';
-  document.getElementById('next').textContent = S.cur === STEPS.length - 1 ? 'Fertig · zur Werkstatt' : 'Weiter';
 }
 
 document.getElementById('reset').onclick = ()=>{
@@ -766,11 +971,6 @@ document.getElementById('reset').onclick = ()=>{
     try { localStorage.removeItem('wirkungsversprechen'); } catch(e){}
     location.reload();
   }
-};
-document.getElementById('back').onclick = ()=>{ if (S.cur > 0){ S.cur--; save(); render(); window.scrollTo({top:0}); } };
-document.getElementById('next').onclick = ()=>{
-  if (S.cur < STEPS.length - 1) { S.cur++; save(); render(); window.scrollTo({top:0}); }
-  else { location.href = 'index.html'; }
 };
 
 render();
