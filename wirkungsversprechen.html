@@ -276,7 +276,7 @@ function step0(){
       <input type="text" id="kontext" placeholder="z. B. Der Antrag soll digital werden" value="${esc(S.kontext)}">
     </div>
     <div class="hint">Trage keine personenbezogenen oder eingestuften Informationen ein. Das Tool speichert nur lokal in deinem Browser.</div>
-    <div class="hint">Dieses Blatt ersetzt die Freitext-Kurzbeschreibung deines Vorhabens (im Vorschlag, im Steckbrief, auf der ersten Folie). Wenn du es zusätzlich zu allem anderen ausfüllst, läuft etwas falsch.</div>
+    <div class="hint">Dieses Blatt ersetzt die Freitext-Kurzbeschreibung deines Vorhabens (im Vorschlag, im Steckbrief, auf der ersten Folie). Es lohnt sich als Ersatz: Wenn es bei dir obendrauf käme, streich im Gegenzug einen der alten Bausteine.</div>
     <p class="privacy">Alles, was du hier eingibst, bleibt ausschließlich auf deinem Gerät. Kein Server, keine Übertragung, kein Konto. Mit "Neu starten" oben löschst du deinen lokalen Stand.</p>
   </div>`;
 }
@@ -375,7 +375,7 @@ function step3(){
     ${S.signale.map(sigCard).join('')}
     ${S.signale.length < 3 ? '<button class="btn add" id="addSig">+ Weiteres Signal (maximal 3)</button>' : ''}
     ${bsp('signal', 'Beispiel für ein komplettes Signal ansehen')}
-    <div class="rcheck"><b>Realitätscheck</b>Sieht dein Signal bei jedem Ausgang gut aus? Mehr Beratungsgespräche: "große Nachfrage!" Weniger: "läuft ja alles!" Dann hast du kein Signal, du hast Deko.</div>
+    <div class="rcheck"><b>Realitätscheck</b>Sieht dein Signal bei jedem Ausgang gut aus? Mehr Beratungsgespräche: "große Nachfrage!" Weniger: "läuft ja alles!" Dann ist es noch kein Signal, sondern Deko. Das Warnzeichen macht daraus ein echtes: Leg vorher fest, welcher Ausgang euch umdenken ließe.</div>
   </div>`;
 }
 
@@ -718,7 +718,7 @@ function bind(){
     q('#makePrompt').onclick = ()=>{
       if (!S.vorhaben.trim()) {
         sparringPrompt = '';
-        sparringError = 'Erst kurz sagen, worum es geht. Ein leeres Formular ergibt kein Sparring, sondern ein Diktat.';
+        sparringError = 'Erst kurz sagen, worum es geht, Schritt 1 reicht schon: Ohne eigene Angaben hat die KI nichts zu schärfen.';
       } else {
         sparringError = '';
         sparringPrompt = buildSparringPrompt();
