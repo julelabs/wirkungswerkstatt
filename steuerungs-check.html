@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Der Steuerungs-Check · Wirkungswerkstatt</title>
-<meta name="description" content="Sechs klickbare Schritte von 'wir haben doch schon Termine' zu einem ehrlichen Befund: Wo wird bei euch tatsächlich gesteuert, und woran kann ein Instrument andocken? Alles bleibt auf deinem Gerät.">
+<meta name="description" content="Sechs klickbare Schritte von 'wir haben doch schon Termine' zu einem ehrlichen Befund: Wo wird bei euch tatsächlich gesteuert, und wo bekommen Warnzeichen eine Konsequenz? Alles bleibt auf deinem Gerät.">
 <style>
   @font-face {
     font-family: 'BundesSans';
@@ -96,16 +96,6 @@
   .rcheck b { color: var(--kirsche); font-family: var(--display); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 4px; }
   .privacy { font-size: 13px; color: var(--fg-muted); margin-top: 14px; }
 
-  .toff { margin-bottom: 26px; }
-  .toff .ends { display: flex; justify-content: space-between; font-size: 13.5px; color: var(--fg); font-family: var(--display); font-weight: 700; gap: 12px; margin-bottom: 8px; }
-  .toff .seg { display: flex; justify-content: space-between; align-items: center; position: relative; padding: 0 4px; }
-  .toff .seg::before { content: ''; position: absolute; left: 16px; right: 16px; top: 50%; height: 2px; background: var(--blau-20); z-index: 0; }
-  .segb { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--blau-20); background: var(--weiss); cursor: pointer; z-index: 1; transition: all .15s; }
-  .segb:hover { border-color: var(--blau); }
-  .segb.on { background: var(--blau); border-color: var(--blau); box-shadow: 0 0 0 4px rgba(54,52,157,0.15); }
-  .toffhint { font-size: 13px; color: var(--fg-muted); margin-top: 8px; }
-  .segstate { text-align: center; font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--blau); margin-top: 6px; min-height: 18px; }
-
   .exportbtns { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 6px; }
   .mdlink { font-size: 13px; color: var(--fg-muted); }
   .mdlink a { color: var(--fg-2); cursor: pointer; text-decoration: underline; }
@@ -166,27 +156,15 @@ const TAGS = [
 const EBENEN = ['Haus','Abteilung','Referat','Programm','Projektportfolio','Team','Schnittstellenraum'];
 const ERFOLG = ['An Zielen','Am Fortschritt der Projekte','An erledigten Aktivitäten','An Stimmung und Politik','Unklar'];
 const ERSATZ = ['Statusberichte','Ampel-Reporting','Themenspeicher und Rückblicke','Zielvereinbarungen','Bilaterale Updates','Noch nichts erkennbar'];
-const TOFFS = [
-  { a:'Beteiligung und Tiefe', b:'Begrenzte Zeit', hint:'Breite Beteiligung macht Ziele besser und den Prozess langsamer. Wie viel Beteiligung könnt ihr euch im Alltag wirklich leisten?' },
-  { a:'Moderative Steuerung', b:'Ownership der Gruppe', hint:'Starke Moderation hält den Prozess stabil, kann aber verhindern, dass die Gruppe ihn je selbst trägt.' },
-  { a:'Saubere Methodik', b:'Anschlussfähige Alltagssprache', hint:'Die reine Methodenlehre ist präzise, klingt aber schnell nach Fremdsprache. Wie viel Reinheit opfert ihr für Anschluss?' },
-  { a:'Ambition', b:'Politische Belastbarkeit', hint:'Mutige Ziele motivieren, können aber politisch verbrennen. Wie viel Ambition hält euer Umfeld aus?' },
-  { a:'Neue Formate schaffen', b:'Bestehende Formate verändern', hint:'Ein neuer Termin ist schnell eingerichtet und schnell tot. Eine bestehende Runde zu verändern ist zäher, aber nachhaltiger.' },
-  { a:'Strategische Ziele', b:'Operative Projektlogik', hint:'Zu strategisch: niemand erkennt die eigene Arbeit wieder. Zu operativ: das Zielsystem wird zur Projektliste.' },
-  { a:'Lokaler Pilot', b:'Anschluss nach oben und zur Seite', hint:'Ein Pilot im eigenen Bereich ist machbar, verpufft aber, wenn oben und daneben niemand mitzieht.' }
-];
-const SEGLABELS = ['klar', 'eher', 'ausgewogen', 'eher', 'klar'];
 const PRUEFSET = [
-  'In welcher Runde würden unsere Ziele und Signale tatsächlich relevant werden?',
-  'Wer müsste dort zuhören oder entscheiden können, damit das Instrument nicht nur Dokumentation bleibt?',
-  'Welche bestehenden Informationen könnten durch das Instrument ersetzt, verdichtet oder besser fokussiert werden?',
-  'Wo würde das Instrument aktuell nur zusätzlich obendrauf kommen?',
-  'Welche eine bestehende Routine könnten wir verändern, statt eine neue zu schaffen?',
-  'Welcher Trade-off müsste bewusst entschieden werden, bevor wir einführen oder ausweiten?',
-  'Welche Ziele oder Wirkungen liegen wirklich im Einflussbereich unseres gewählten Bereichs?',
-  'Wo brauchen wir Anschluss nach oben, zur Seite oder zu Nachbareinheiten, damit es nicht lokal verpufft?'
+  'In welcher Runde würden unsere Signale und Warnzeichen tatsächlich besprochen?',
+  'Welche Entscheidung wurde dort in den letzten drei Monaten wirklich getroffen?',
+  'Wer kann dort depriorisieren, und wurde das schon einmal getan?',
+  'Was ersetzen unsere Fortschrittssignale dort, was kommt nur obendrauf?',
+  'Was ist mit dem letzten Warnzeichen passiert, das dort auf dem Tisch lag?',
+  'Wenn es keinen solchen Ort gibt: Wer kann ihn benennen, und was schlagen wir konkret vor?'
 ];
-const STEPS = ['Bereich','Landkarte','Befund','Andockstelle','Trade-offs','Mitnehmen'];
+const STEPS = ['Bereich','Landkarte','Befund','Konsequenzort','Konsequenzprobe','Mitnehmen'];
 
 let S = {
   bereich: '', bereichName: '',
@@ -195,6 +173,7 @@ let S = {
   erfolg: [], entscheidung: '', wer: '', ersetzt: [], aendern: '',
   toffs: [2,2,2,2,2,2,2],
   toffFirst: -1,
+  probeWarn: '', probeSieht: '', probeLandet: '', probeFolgt: '', probeErgebnis: '',
   hyp: '', pruefen: '', schritt: '',
   cur: 0
 };
@@ -219,11 +198,6 @@ function classify(r){
   return 'bericht';
 }
 const TYPLABEL = { steuerung:'Steuerungsformat', koordination:'Koordinationsformat', bericht:'Berichtsformat', unklar:'Unklar (selbst ein Befund)' };
-function segText(i){
-  const v = S.toffs[i], t = TOFFS[i];
-  if (v === 2) return 'ausgewogen';
-  return SEGLABELS[v] + ' ' + (v < 2 ? t.a : t.b);
-}
 
 /* ---------- Schritte ---------- */
 const main = document.getElementById('main');
@@ -239,7 +213,7 @@ function step0(){
   return `<div class="step act">
     <div class="kicker">Schritt 1 von 6</div>
     <h2>Wähle deinen Einflussbereich</h2>
-    <p class="lead">Du willst ein Instrument einführen oder retten: OKR, Wirkungsorientierung, ein besseres Reporting. Dieser Check findet in sechs Schritten heraus, ob es bei euch einen Ort gibt, an dem es andocken kann. Nicht die Ebene, die formal am wichtigsten ist, sondern die, auf der du danach tatsächlich etwas herausfinden, anstoßen oder verändern kannst. Faustregel: Wähle den Bereich, in dem du an die Runden und die Menschen wirklich rankommst.</p>
+    <p class="lead">Du hast ein Vorhaben mit Zielen, Signalen, vielleicht einem Warnzeichen, aber keine Adresse dafür: keinen Ort, an dem daraus eine Entscheidung wird. Dieser Check findet in sechs Schritten heraus, wo bei euch tatsächlich gesteuert wird und ob deine Wirkungsinformation dort eine Konsequenz bekommt. Wähle nicht die Ebene, die formal am wichtigsten ist, sondern die, auf der du an die Runden und die Menschen wirklich rankommst.</p>
     <div class="card">
       <label class="lbl">Ebene</label>
       <div class="chips" id="ebenechips">${EBENEN.map(a=>`<span class="chip ${S.bereich===a?'sel':''}" data-a="${a}">${a}</span>`).join('')}</div>
@@ -296,18 +270,18 @@ function step1(){
 function step2(){
   const cards = S.runden.map((r)=>{
     const typ = classify(r);
-    const wetter = (typ==='bericht') ? `<div class="rcheck"><b>Wetterbericht-Verdacht</b>Hier wird informiert, aber nichts verändert. Informativ, aber das Wetter ändert sich davon nicht. Als Andockstelle ungeeignet, solange dort nichts entschieden wird.</div>` : '';
+    const wetter = (typ==='bericht') ? `<div class="rcheck"><b>Wetterbericht-Verdacht</b>Hier wird informiert, aber nichts verändert. Informativ, aber das Wetter ändert sich davon nicht. Als Konsequenzort ungeeignet, solange dort nichts entschieden wird.</div>` : '';
     return `<div class="card"><h3 style="font-size:16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">${esc(r.name)||'Ohne Namen'} <span class="typ ${typ}">${TYPLABEL[typ]}</span></h3>${wetter}</div>`;
   }).join('');
   const nSteu = S.runden.filter(r=>classify(r)==='steuerung').length;
   let fazit;
   if (!S.runden.length) fazit = 'Noch keine Runden erfasst. Geh einen Schritt zurück.';
-  else if (nSteu>0) fazit = `Es gibt ${nSteu===1?'einen Kandidaten':nSteu+' Kandidaten'} für eine echte Andockstelle. Im nächsten Schritt schaust du genauer hin.`;
-  else fazit = `Kein Steuerungsformat in Sicht. Das ist ein ehrlicher und wertvoller Befund: ein Instrument wie OKR oder Wirkungsorientierung hätte hier aktuell keinen Ort, an dem es Entscheidungen verändern kann. Dann gibt es drei ehrliche Optionen, die man nicht vermischen sollte: eine bestehende Runde gezielt zum Steuerungsformat weiterentwickeln, einen sehr schlanken neuen Rhythmus bewusst etablieren (nur wenn Führung ihn trägt), oder die Einführung verschieben beziehungsweise deutlich verkleinern. Wähle im nächsten Schritt die Runde mit dem größten Entwicklungspotenzial.`;
+  else if (nSteu>0) fazit = `Es gibt ${nSteu===1?'einen Kandidaten':nSteu+' Kandidaten'} für einen echten Konsequenzort. Im nächsten Schritt schaust du genauer hin.`;
+  else fazit = `Kein Steuerungsformat in Sicht. Das ist ein ehrlicher und wertvoller Befund: Wirkungsinformationen hätten hier aktuell keinen Ort, an dem Warnzeichen Entscheidungen verändern können. Dann gibt es drei ehrliche Optionen, die man nicht vermischen sollte: eine bestehende Runde gezielt zum Steuerungsformat weiterentwickeln, einen sehr schlanken neuen Rhythmus bewusst etablieren (nur wenn Führung ihn trägt), oder die Einführung verschieben beziehungsweise deutlich verkleinern. Wähle im nächsten Schritt die Runde mit dem größten Entwicklungspotenzial.`;
   return `<div class="step act">
     <div class="kicker">Schritt 3 von 6</div>
     <h2>Dein Befund</h2>
-    <p class="lead">Drei Formattypen: Berichtsformate liefern Status. Koordinationsformate klären Abhängigkeiten. Steuerungsformate verändern Prioritäten, Ressourcen oder Ziele. Nur an Letztere kann ein Steuerungsinstrument wirklich andocken.</p>
+    <p class="lead">Drei Formattypen: Berichtsformate liefern Status. Koordinationsformate klären Abhängigkeiten. Steuerungsformate verändern Prioritäten, Ressourcen oder Ziele. Nur in Letzteren bekommt ein Warnzeichen eine Konsequenz.</p>
     ${cards}
     <div class="hint">${fazit}</div>
   </div>`;
@@ -317,14 +291,14 @@ function step3(){
   const opts = S.runden.map((r,i)=>`<option value="${i}" ${S.dock===i?'selected':''}>${esc(r.name)||'Ohne Namen'} (${TYPLABEL[classify(r)]})</option>`).join('');
   const dockTyp = (S.dock>=0 && S.runden[S.dock]) ? classify(S.runden[S.dock]) : null;
   const dockHint = (dockTyp && dockTyp!=='steuerung')
-    ? `<div class="hint">Du hast ein ${TYPLABEL[dockTyp]} gewählt. Das kann bewusst sein: Dann ist deine Aufgabe, diese Runde weiterzuentwickeln, nicht nur anzudocken.</div>` : '';
+    ? `<div class="hint">Du hast ein ${TYPLABEL[dockTyp]} gewählt. Das kann bewusst sein: Dann ist deine Aufgabe, diese Runde weiterzuentwickeln, damit Warnzeichen dort eine Konsequenz bekommen.</div>` : '';
   const nichtsErkennbar = S.ersetzt.includes('Noch nichts erkennbar');
   return `<div class="step act">
     <div class="kicker">Schritt 4 von 6</div>
-    <h2>Anschlussdiagnose</h2>
-    <p class="lead">Wähle die vielversprechendste Andockstelle und prüfe sie. Kurz und ehrlich, Stichworte reichen.</p>
+    <h2>Konsequenzort</h2>
+    <p class="lead">Wähle die Runde, in der deine Warnzeichen am ehesten zu Entscheidungen werden, und prüfe sie. Kurz und ehrlich, Stichworte reichen.</p>
     <div class="card">
-      <label class="lbl">Meine Andockstellen-Kandidatin</label>
+      <label class="lbl">Mein Kandidat für den Konsequenzort</label>
       <select id="dockSel"><option value="-1">Bitte wählen</option>${opts}</select>
     </div>
     ${dockHint}
@@ -339,17 +313,17 @@ function step3(){
       <textarea id="entscheidung" placeholder="z. B. Vorhaben X wurde auf Q2 verschoben, um Y freizuräumen">${esc(S.entscheidung)}</textarea>
     </div>
     <div class="card">
-      <label class="lbl">Wer müsste zuhören oder mitentscheiden, damit euer Instrument dort mehr ist als Dokumentation?</label>
+      <label class="lbl">Wer müsste zuhören oder mitentscheiden, damit ein Warnzeichen dort mehr auslöst als Kenntnisnahme?</label>
       <textarea id="wer" placeholder="z. B. die Abteilungsleitung, nicht nur die Stabsstelle">${esc(S.wer)}</textarea>
     </div>
     <div class="card">
-      <label class="lbl">Was könnte das Instrument dort ersetzen oder verkürzen?</label>
-      <div class="sub">Ein neues Instrument muss etwas Bestehendes ablösen oder schärfen, sonst kommt es obendrauf. Mehrfachauswahl möglich.</div>
+      <label class="lbl">Was könnten deine Fortschrittssignale dort ersetzen oder verkürzen?</label>
+      <div class="sub">Fortschrittssignale müssen etwas Bestehendes ablösen oder schärfen, sonst kommen sie obendrauf. Mehrfachauswahl möglich.</div>
       <div class="chips" id="ersatzchips">${ERSATZ.map(e=>`<span class="chip ${S.ersetzt.includes(e)?'sel':''}" data-e="${e}">${e}</span>`).join('')}</div>
-      ${nichtsErkennbar ? `<div class="rcheck" style="margin-top:12px;"><b>Achtung</b>Wenn das Instrument nichts ersetzt, kommt es obendrauf. Genau so entsteht die Wahrnehmung "noch ein Format". Das ist der wichtigste Punkt, den du als Erstes klären solltest.</div>` : ''}
+      ${nichtsErkennbar ? `<div class="rcheck" style="margin-top:12px;"><b>Achtung</b>Wenn die Signal-Abfrage nichts ersetzt, kommt sie obendrauf. Genau so entsteht die Wahrnehmung "noch ein Format". Das ist der wichtigste Punkt, den du als Erstes klären solltest.</div>` : ''}
     </div>
     <div class="card">
-      <label class="lbl">Was müsste sich ändern, damit ein Steuerungsinstrument dort nützlich wäre?</label>
+      <label class="lbl">Was müsste sich ändern, damit dort auf ein Warnzeichen tatsächlich eine Entscheidung folgt?</label>
       <textarea id="aendern" placeholder="z. B. die Agenda braucht einen festen Entscheidungspunkt statt reiner Berichte">${esc(S.aendern)}</textarea>
     </div>
   </div>`;
@@ -358,37 +332,50 @@ function step3(){
 function step4(){
   return `<div class="step act">
     <div class="kicker">Schritt 5 von 6</div>
-    <h2>Trade-off-Mapping</h2>
-    <p class="lead">Kein Rollout ohne Zielkonflikte. Markiere pro Zeile, wohin ihr in der Praxis tendieren werdet, nicht wohin es schön wäre. Die Mitte heißt: bewusst ausgewogen.</p>
+    <h2>Die Konsequenzprobe</h2>
+    <p class="lead">Jetzt der Praxistest: Nimm ein echtes Warnzeichen aus deinem Wirkungsversprechen (oder denk dir das plausibelste aus) und spiele durch, was bei euch damit passieren würde.</p>
     <div class="card">
-      ${TOFFS.map((t,i)=>`<div class="toff">
-        <div class="ends"><span>${t.a}</span><span>${t.b}</span></div>
-        <div class="seg" data-toff="${i}">${[0,1,2,3,4].map(k=>`<button class="segb ${S.toffs[i]===k?'on':''}" data-k="${k}" title="${k===2?'ausgewogen':(SEGLABELS[k]+' '+(k<2?t.a:t.b))}"></button>`).join('')}</div>
-        <div class="segstate" id="segstate-${i}">${segText(i)}</div>
-        <div class="toffhint">${t.hint}</div>
-      </div>`).join('')}
+      <label class="lbl">Das Warnzeichen</label>
+      <div class="sub">Aus deinem Wirkungsversprechen, Schritt 4. Noch keins? Nimm: "Die Zahlen sehen gut aus, aber die Rückfragen steigen mit."</div>
+      <textarea id="probeWarn" placeholder="z. B. die Digitalquote steigt, aber Rückfragen und Nachbearbeitung steigen mit">${esc(S.probeWarn)}</textarea>
     </div>
     <div class="card">
-      <label class="lbl">Welcher Trade-off muss bei euch zuerst bewusst entschieden werden?</label>
-      <select id="toffFirst"><option value="-1">Bitte wählen</option>${TOFFS.map((t,i)=>`<option value="${i}" ${S.toffFirst===i?'selected':''}>${t.a} vs. ${t.b}</option>`).join('')}</select>
+      <label class="lbl">Wer sieht es zuerst?</label>
+      <input type="text" id="probeSieht" placeholder="z. B. das Team im Servicepostfach, die Stabsstelle im Monatsreport" value="${esc(S.probeSieht)}">
+    </div>
+    <div class="card">
+      <label class="lbl">In welcher Runde landet es?</label>
+      <div class="sub">Wenn die Antwort "in keiner" ist, schreib genau das.</div>
+      <input type="text" id="probeLandet" value="${esc(S.probeLandet)}">
+    </div>
+    <div class="card">
+      <label class="lbl">Was würde dort entschieden?</label>
+      <textarea id="probeFolgt" placeholder="z. B. Fallgruppe ausnehmen, Strecke umbauen, oder: es würde zur Kenntnis genommen">${esc(S.probeFolgt)}</textarea>
+    </div>
+    <div class="card">
+      <label class="lbl">Was ist das Ergebnis?</label>
+      <div class="chips" id="probeErgebnischips">
+        ${['Es kommt an und führt zu einer Entscheidung','Es kommt an und versandet','Es kommt nirgends an'].map(e=>`<span class="chip ${S.probeErgebnis===e?'sel':''}" data-ergebnis="${e}">${e}</span>`).join('')}
+      </div>
+      ${S.probeErgebnis==='Es kommt an und versandet' || S.probeErgebnis==='Es kommt nirgends an' ? `<div class="rcheck"><b>Ergebnis</b>Das ist kein Scheitern des Checks, das ist sein Ergebnis. Ein Warnzeichen ohne Adresse ist Dekoration. Was Führung dafür tun kann, steht im <a href="fuehrungspfad.html">Führungspfad</a>: einen Ort benennen, an dem entschieden und depriorisiert wird.</div>` : ''}
     </div>
   </div>`;
 }
 
 function step5(){
-  const dockName = (S.dock>=0 && S.runden[S.dock]) ? (S.runden[S.dock].name || 'meiner Andockstelle') : '';
-  if (!S.hyp && dockName) S.hyp = `Ein Steuerungsinstrument könnte bei uns an ${dockName} andocken, wenn `;
+  const dockName = (S.dock>=0 && S.runden[S.dock]) ? S.runden[S.dock].name : '';
+  if (!S.hyp && dockName) S.hyp = `Warnzeichen aus meinem Bereich bekommen bei uns in ${dockName} eine Konsequenz, wenn `;
   return `<div class="step act">
     <div class="kicker">Schritt 6 von 6</div>
     <h2>Mitnehmen</h2>
-    <p class="lead">Drei Sätze, dann bist du fertig. Kein Rollout-Plan, sondern eine Hypothese und ein erster Prüfschritt.</p>
-    <div class="card"><label class="lbl">Meine Anschluss-Hypothese</label>
+    <p class="lead">Drei Sätze, dann bist du fertig. Kein Maßnahmenplan, sondern eine Hypothese und ein erster Prüfschritt.</p>
+    <div class="card"><label class="lbl">Meine Konsequenz-Hypothese</label>
       <div class="sub">Der Satzanfang ist vorbereitet, vervollständige das "wenn".</div>
       <textarea id="hyp">${esc(S.hyp)}</textarea></div>
     <div class="card"><label class="lbl">Das muss ich zuerst überprüfen</label>
       <textarea id="pruefen" placeholder="z. B. Welche Entscheidung wurde in dieser Runde zuletzt tatsächlich getroffen?">${esc(S.pruefen)}</textarea></div>
     <div class="card"><label class="lbl">Mein kleinster nächster Schritt</label>
-      <textarea id="schritt" placeholder="z. B. Nächste AL-Runde beobachten: Wird dort entschieden oder berichtet?">${esc(S.schritt)}</textarea></div>
+      <textarea id="schritt" placeholder="z. B. Nächste Runde beobachten: Wird dort entschieden oder berichtet?">${esc(S.schritt)}</textarea></div>
     <div class="exportbtns">
       <button class="btn primary" id="prt">Drucken / PDF</button>
       <button class="btn minze" id="dlDoc">Als Word-Datei speichern</button>
@@ -398,7 +385,7 @@ function step5(){
     <p class="privacy">Alles bleibt auf deinem Gerät. Kein Server, keine Übertragung, kein Konto.</p>
     <div class="card" style="margin-top:20px;"><label class="lbl">Dein Prüf-Set für die nächsten zwei Wochen (ist im Export enthalten)</label>
       <ol class="pruefset">${PRUEFSET.map(q=>`<li>${q}</li>`).join('')}</ol></div>
-    <div class="hint">Du weißt jetzt, wo gesteuert wird. Das <a href="wirkungsversprechen.html">Wirkungsversprechen</a> klärt, was dort auf den Tisch gehört.</div>
+    <div class="hint">Du weißt jetzt, wo Warnzeichen eine Adresse haben. Das <a href="wirkungsversprechen.html">Wirkungsversprechen</a> klärt, was dorthin gehört, und die Adresse trägst du dort in Schritt 4 ein.</div>
   </div>`;
 }
 
@@ -416,19 +403,21 @@ function summaryHTML(){
   });
   h += '</table>';
   if (S.dock >= 0 && S.runden[S.dock]) {
-    h += '<h2>Anschlussdiagnose: ' + esc(S.runden[S.dock].name || '') + '</h2>';
+    h += '<h2>Konsequenzort: ' + esc(S.runden[S.dock].name || '') + '</h2>';
     if (S.erfolg.length) h += '<p><strong>Erfolg wird festgemacht:</strong> ' + esc(S.erfolg.join(', ')) + '</p>';
     if (S.entscheidung) h += '<p><strong>Letzte tatsächliche Entscheidung:</strong> ' + esc(S.entscheidung) + '</p>';
     if (S.wer) h += '<p><strong>Wer müsste zuhören oder mitentscheiden:</strong> ' + esc(S.wer) + '</p>';
     if (S.ersetzt.length) h += '<p><strong>Könnte ersetzen oder verkürzen:</strong> ' + esc(S.ersetzt.join(', ')) + '</p>';
     if (S.aendern) h += '<p><strong>Das müsste sich ändern:</strong> ' + esc(S.aendern) + '</p>';
   }
-  h += '<h2>Trade-offs</h2><ul>';
-  TOFFS.forEach((t,i)=>{ h += '<li>' + t.a + ' vs. ' + t.b + ': <strong>' + segText(i) + '</strong></li>'; });
-  h += '</ul>';
-  if (S.toffFirst >= 0) h += '<p><strong>Zuerst bewusst entscheiden:</strong> ' + TOFFS[S.toffFirst].a + ' vs. ' + TOFFS[S.toffFirst].b + '</p>';
+  h += '<h2>Konsequenzprobe</h2>';
+  h += '<p><strong>Warnzeichen:</strong> ' + esc(S.probeWarn) + '</p>';
+  h += '<p><strong>Wer sieht es zuerst:</strong> ' + esc(S.probeSieht) + '</p>';
+  h += '<p><strong>In welcher Runde landet es:</strong> ' + esc(S.probeLandet) + '</p>';
+  h += '<p><strong>Was würde dort entschieden:</strong> ' + esc(S.probeFolgt) + '</p>';
+  h += '<p><strong>Ergebnis:</strong> ' + esc(S.probeErgebnis || 'nicht gewählt') + '</p>';
   h += '<h2>Mitnehmen</h2>';
-  h += '<p><strong>Anschluss-Hypothese:</strong> ' + esc(S.hyp) + '</p>';
+  h += '<p><strong>Konsequenz-Hypothese:</strong> ' + esc(S.hyp) + '</p>';
   h += '<p><strong>Zuerst überprüfen:</strong> ' + esc(S.pruefen) + '</p>';
   h += '<p><strong>Kleinster nächster Schritt:</strong> ' + esc(S.schritt) + '</p>';
   h += '<h2>Prüf-Set für die nächsten zwei Wochen</h2><ul>';
@@ -549,16 +538,11 @@ function bind(){
     q('#aendern').oninput = e=>{ S.aendern = e.target.value; save(); };
   }
   if (S.cur === 4){
-    qa('.seg').forEach(seg=>{
-      const i = +seg.dataset.toff;
-      seg.querySelectorAll('.segb').forEach(b=>b.onclick=()=>{
-        S.toffs[i] = +b.dataset.k; save();
-        seg.querySelectorAll('.segb').forEach(x=>x.classList.toggle('on', +x.dataset.k === S.toffs[i]));
-        const st = document.getElementById('segstate-' + i);
-        if (st) st.textContent = segText(i);
-      });
-    });
-    q('#toffFirst').onchange = e=>{ S.toffFirst = +e.target.value; save(); };
+    q('#probeWarn').oninput = e=>{ S.probeWarn = e.target.value; save(); };
+    q('#probeSieht').oninput = e=>{ S.probeSieht = e.target.value; save(); };
+    q('#probeLandet').oninput = e=>{ S.probeLandet = e.target.value; save(); };
+    q('#probeFolgt').oninput = e=>{ S.probeFolgt = e.target.value; save(); };
+    qa('#probeErgebnischips .chip').forEach(c=>c.onclick=()=>{ S.probeErgebnis = c.dataset.ergebnis; save(); render(); });
   }
   if (S.cur === 5){
     save(); // ggf. vorausgefüllte Hypothese sichern
@@ -601,6 +585,7 @@ document.getElementById('reset').onclick = ()=>{
 };
 document.getElementById('back').onclick = ()=>{ if (S.cur > 0){ S.cur--; save(); render(); window.scrollTo({top:0}); } };
 document.getElementById('next').onclick = ()=>{
+  if (S.cur === 4 && !S.probeErgebnis) { alert('Wähle aus, was mit dem Warnzeichen passiert.'); return; }
   if (S.cur < STEPS.length - 1) { S.cur++; save(); render(); window.scrollTo({top:0}); }
   else { location.href = 'index.html'; }
 };
