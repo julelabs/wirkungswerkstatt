@@ -15,16 +15,17 @@
   .chg-chips .chip { font-family: var(--display); font-size: 13px; font-weight: 700; padding: 8px 14px; border: 1.5px solid var(--blau-20); border-radius: 999px; background: var(--weiss); color: var(--fg-2); cursor: pointer; transition: all .15s; }
   .chg-chips .chip:hover { border-color: var(--blau); color: var(--blau); }
   .chg-chips .chip.on { background: var(--blau); border-color: var(--blau); color: var(--weiss); }
-  .chg-note { font-size: 13.5px; color: var(--fg-muted); margin-top: 10px; }
   mark.chg { background: transparent; color: inherit; border-radius: 3px; padding: 0 1px; cursor: pointer; transition: background .15s, box-shadow .15s; }
   .vorher mark.chg.on { background: var(--kirsche-10); box-shadow: inset 0 -2px 0 var(--kirsche); }
   .nachher mark.chg.on { background: var(--minze-20); box-shadow: inset 0 -2px 0 var(--minze); }
+  .chg-panel { margin-top: 14px; border: 1px solid var(--line); border-radius: 10px; padding: 13px 16px; font-size: 14.5px; color: var(--fg-2); background: var(--weiss); max-width: 76ch; transition: border-color .2s; }
+  .chg-panel.on { border-color: var(--blau); }
+  .chg-panel .cp-t { display: block; font-family: var(--display); font-weight: 700; color: var(--fg); margin-bottom: 3px; }
+  .chg-panel .cp-default { color: var(--fg-muted); }
 
   .cardhead { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
   .card h3 { margin: 0; font-size: 16.5px; }
   .card p { font-size: 14.5px; color: var(--fg-2); }
-  .chg-exp .card { transition: border-color .2s, box-shadow .2s; }
-  .chg-exp .card.on { border-color: var(--blau); box-shadow: 0 10px 26px rgba(13,12,43,0.08); }
 
   /* Drei Fragen: aufklappbare Karten */
   details.frage { padding: 0; cursor: default; transition: border-color .2s; }
@@ -81,17 +82,16 @@
 
 <main class="page">
 
-<section>
+<section style="padding-bottom: 8px;">
   <div class="wrap">
     <div class="sec-kicker">Für Führung · 5 Minuten</div>
     <h2>Ich führe.</h2>
-    <p class="lead">Kein Appell an Kulturwandel. Hier steht, was Wirkungsklärung an einem ganz normalen Projektvorschlag verändert, welche drei Fragen den Unterschied machen, und welche drei Beiträge nur Führung leisten kann. Alles davon ist überprüfbar.</p>
+    <p class="lead">Kein Appell an Kulturwandel. Hier steht, was Wirkungsklärung an einem ganz normalen Projektvorschlag verändert, welche drei Fragen den Unterschied machen, und welche drei Beiträge nur Führung leisten kann.</p>
   </div>
 </section>
 
 <section class="tint">
   <div class="wrap">
-    <div class="sec-kicker">Der Fünf-Minuten-Beweis</div>
     <h2>Ein Projektvorschlag, zweimal</h2>
     <p class="lead">Die linke Fassung ist kein Strohmann. Sie hat ein Ziel, Meilensteine, sogar einen Indikator, und sie würde durch die meisten Vorlagenprüfungen kommen. Genau das ist das Problem.</p>
 
@@ -102,7 +102,7 @@
       <button class="chip" data-c="4">4 · Annahmen sichtbar</button>
       <button class="chip" data-c="5">5 · Meilensteine unverändert</button>
     </div>
-    <p class="chg-note">Klick auf eine Änderung: Links siehst du, was wegfällt, rechts, was an seine Stelle tritt. Die Karten darunter erklären das Warum.</p>
+    <div class="chg-panel" id="chgPanel"><span class="cp-default">Klick auf eine Änderung: Links siehst du, was wegfällt, rechts, was an seine Stelle tritt.</span></div>
 
     <div class="vn" id="vn">
       <div class="col vorher">
@@ -136,29 +136,6 @@
       </div>
     </div>
 
-    <h3 style="margin-top:38px;">Was sich geändert hat, und warum es dich interessiert</h3>
-    <div class="cards chg-exp">
-      <div class="card" data-c="1">
-        <div class="cardhead"><span class="num">1</span><h3>Aus einem Ding wurde ein Zustand</h3></div>
-        <p>"Digitalisierung des Verfahrens" ist ein Liefergegenstand. "Standardfälle digital und ohne Rückfragen" ist eine Veränderung, an der man das Vorhaben messen kann und will.</p>
-      </div>
-      <div class="card" data-c="2">
-        <div class="cardhead"><span class="num">2</span><h3>Aus Strategieprosa wurde ein Priorisierungsargument</h3></div>
-        <p>"Antragsstärkstes Verfahren des Hauses" ist vergleichbar. Jetzt kannst du fragen: Und Verfahren Y? Vorher konntest du nur nicken.</p>
-      </div>
-      <div class="card" data-c="3">
-        <div class="cardhead"><span class="num">3</span><h3>Aus Deko wurden Signale, die scheitern können</h3></div>
-        <p>Der wichtigste Satz im ganzen Vorschlag ist "Wir liegen falsch, wenn". Er verwandelt das spätere Reporting von einer Erfolgserzählung in ein Steuerungsgespräch.</p>
-      </div>
-      <div class="card" data-c="4">
-        <div class="cardhead"><span class="num">4</span><h3>Die Annahmen stehen im Text</h3></div>
-        <p>Wenn die Annahme über die Rückfragen fällt, weiß das Haus es nach dem Pilot, nicht nach dem Go-live. Im Vorher-Text gibt es für Annahmen gar keine Stelle: genau das ist das Problem.</p>
-      </div>
-      <div class="card" data-c="5">
-        <div class="cardhead"><span class="num">5</span><h3>Die Meilensteine sind geblieben</h3></div>
-        <p>Wirkungsklärung ersetzt keine Projektplanung und kostet kein einziges Delivery-Artefakt. Sie gibt der Planung eine Richtung und dem Reporting einen Maßstab.</p>
-      </div>
-    </div>
     <div class="hint">Und der Aufwand für den Unterschied? Kein Beratungsprojekt. Ungefähr 30 Minuten mit den richtigen Fragen.</div>
   </div>
 </section>
@@ -191,13 +168,11 @@
         </div>
       </details>
     </div>
-    <div class="hint">Keine neue Methode. Nur die Fragen.</div>
   </div>
 </section>
 
 <section class="tint">
   <div class="wrap">
-    <div class="sec-kicker">Für deine Steuerungsrunde</div>
     <h2>Die sechs Steuerungsfragen</h2>
     <p class="lead">Ein Termin, der diese Fragen regelmäßig beantwortet, ist ein Steuerungsort. Ein Termin, der sie nie beantwortet, ist ein Wetterbericht: informativ, aber das Wetter ändert sich davon nicht.</p>
     <div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
@@ -212,7 +187,7 @@
       <button class="btn blau" id="agendaPrint">Als Agenda-Vorlage drucken / PDF</button>
       <button class="btn ghost" id="agendaCopy">Fragen kopieren</button>
     </div>
-    <div class="hint">Die Vorlage ist eine Seite: sechs Fragen, Platz für den Befund und für "wer bis wann". Zum Mitnehmen in die Runde oder als PDF in die Einladung. Und wenn deine Runde ihre Punkte selbst mitbringt: Die <a href="top-triage.html">TOP-Triage</a> sortiert sie zu einer Steuerungsagenda (frisch aus der Werkstatt, im Praxistest).</div>
+    <div class="hint">Die Vorlage ist eine Seite: sechs Fragen, Platz für den Befund und für "wer bis wann". Und wenn deine Runde ihre Punkte selbst mitbringt: Die <a href="top-triage.html">TOP-Triage</a> sortiert sie zu einer Steuerungsagenda.</div>
   </div>
 </section>
 
@@ -220,6 +195,7 @@
   <div class="wrap">
     <div class="sec-kicker">Ohne dich geht es nicht</div>
     <h2>Die drei Beiträge, die nur Führung leisten kann</h2>
+    <p class="lead">Kein Kulturwandel-Programm: drei Handlungen, und alle drei sind nächste Woche überprüfbar.</p>
     <div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
       <div class="card beitrag">
         <div class="cardhead"><span class="num">1</span><h3>Einen Ort schaffen, an dem entschieden wird</h3></div>
@@ -236,9 +212,6 @@
         <p>Wer vorschlägt, etwas wegzulassen, verweigert keine Leistung. Er steuert. Und wer ehrlich berichtet und dafür bestraft wird, berichtet nie wieder ehrlich.</p>
         <p class="check"><b>Nächste Woche überprüfbar</b>Was ist beim letzten unbequemen Bericht mit der Überbringerin passiert?</p>
       </div>
-    </div>
-    <div class="wrap-narrow prose" style="margin-top:26px; margin-inline:0;">
-      <p>Das ist kein Kulturwandel-Programm. Es sind drei Handlungen, und alle drei sind nächste Woche überprüfbar. Konsequenz ist keine Härte, sondern die Währung, in der Steuerung bezahlt wird.</p>
     </div>
     <div class="ctas" style="margin-top:30px; display:flex; gap:14px; flex-wrap:wrap;">
       <a class="btn blau" href="wirkungsversprechen.html">Gib deinen Projektleitungen das Wirkungsversprechen</a>
@@ -292,12 +265,32 @@
 /* Vorher/Nachher: Änderungen markieren */
 const chips = document.querySelectorAll('.chg-chips .chip');
 const marks = document.querySelectorAll('mark.chg');
-const expCards = document.querySelectorAll('.chg-exp .card');
+const panel = document.getElementById('chgPanel');
+const EXPLAIN = {
+  '1': ['Aus einem Ding wurde ein Zustand', '"Digitalisierung des Verfahrens" ist ein Liefergegenstand. "Standardfälle digital und ohne Rückfragen" ist eine Veränderung, an der man das Vorhaben messen kann und will.'],
+  '2': ['Aus Strategieprosa wurde ein Priorisierungsargument', '"Antragsstärkstes Verfahren des Hauses" ist vergleichbar. Jetzt kannst du fragen: Und Verfahren Y? Vorher konntest du nur nicken.'],
+  '3': ['Aus Deko wurden Signale, die scheitern können', 'Der wichtigste Satz im ganzen Vorschlag ist "Wir liegen falsch, wenn". Er verwandelt das spätere Reporting von einer Erfolgserzählung in ein Steuerungsgespräch.'],
+  '4': ['Die Annahmen stehen im Text', 'Wenn die Annahme über die Rückfragen fällt, weiß das Haus es nach dem Pilot, nicht nach dem Go-live. Im Vorher-Text gibt es für Annahmen gar keine Stelle: genau das ist das Problem.'],
+  '5': ['Die Meilensteine sind geblieben', 'Wirkungsklärung ersetzt keine Projektplanung und kostet kein einziges Delivery-Artefakt. Sie gibt der Planung eine Richtung und dem Reporting einen Maßstab.']
+};
 let cur = null;
 function setChg(c){
   chips.forEach(ch => ch.classList.toggle('on', ch.dataset.c === c));
   marks.forEach(m => m.classList.toggle('on', c !== null && m.classList.contains('c' + c)));
-  expCards.forEach(card => card.classList.toggle('on', c !== null && card.dataset.c === c));
+  panel.classList.toggle('on', c !== null);
+  panel.textContent = '';
+  if (c !== null && EXPLAIN[c]) {
+    const t = document.createElement('span');
+    t.className = 'cp-t';
+    t.textContent = c + ' · ' + EXPLAIN[c][0];
+    panel.appendChild(t);
+    panel.appendChild(document.createTextNode(EXPLAIN[c][1]));
+  } else {
+    const d = document.createElement('span');
+    d.className = 'cp-default';
+    d.textContent = 'Klick auf eine Änderung: Links siehst du, was wegfällt, rechts, was an seine Stelle tritt.';
+    panel.appendChild(d);
+  }
 }
 chips.forEach(ch => ch.onclick = () => { cur = cur === ch.dataset.c ? null : ch.dataset.c; setChg(cur); });
 marks.forEach(m => m.onclick = () => {
