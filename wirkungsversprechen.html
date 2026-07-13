@@ -85,6 +85,10 @@
   .rcheck b { color: var(--kirsche); font-family: var(--display); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 4px; }
   .rcheck a { color: var(--kirsche); }
   .privacy { font-size: 13px; color: var(--fg-muted); margin-top: 14px; }
+  section.finalblock { margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--line); }
+  .endnav { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--line); font-family: var(--display); font-weight: 700; font-size: 14px; }
+  .endnav a { color: var(--blau); text-decoration: none; }
+  .endnav a:hover { text-decoration: underline; }
 
   .satz { background: var(--blau-10); border-radius: 10px; padding: 12px 16px; font-size: 15.5px; margin-top: 12px; color: var(--fg); }
   .satz .ph { color: var(--fg-muted); font-style: italic; }
@@ -613,13 +617,13 @@ function finalBlock(){
     <div class="hint" id="qchint">${qcHint(done)}</div>
     ${sparringCard()}
     <div class="exportbtns">
-      <button class="btn primary" id="prt">Drucken / PDF</button>
       <button class="btn minze" id="dlDoc">Als Word-Datei speichern</button>
+      <button class="btn ghost" id="prt">Drucken / PDF</button>
       <button class="btn ghost" id="cp">Formatiert kopieren</button>
     </div>
-    <p class="mdlink">Für Textdateien-Fans: <a id="dlMd">als Markdown (.md) speichern</a></p>
-    <p class="mdlink"><a href="index.html">Zur Werkstatt</a></p>
+    <p class="mdlink">Oder für Textdateien-Fans: <a id="dlMd">als Markdown (.md) speichern</a></p>
     <p class="privacy">Alles bleibt auf deinem Gerät. Kein Server, keine Übertragung, kein Konto.</p>
+    <div class="endnav"><a href="index.html">Zurück zur Werkstatt</a></div>
   </section>`;
 }
 

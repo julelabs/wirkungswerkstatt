@@ -159,10 +159,11 @@ a.pfad:hover { border-color: var(--blau); transform: translateY(-2px); }
 .rcheck b, .rcheck .rlabel { color: var(--kirsche); font-family: var(--display); font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase; display: block; margin-bottom: 5px; }
 
 /* ---------- Begriffsleiter ---------- */
-.leiter { margin-top: 30px; display: grid; grid-template-columns: 34px 1fr; gap: 0 18px; max-width: 800px; }
-.leiter .dim { grid-column: 1; grid-row: 1 / span 2; writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-family: var(--display); font-weight: 800; font-size: 12.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blau); border-right: 3px solid var(--blau); padding-right: 6px; margin: 4px 0; }
-.leiter .dim.zwei { grid-row: 3 / span 2; color: var(--fg-muted); border-right-color: var(--blau-20); }
-.leiter details.sprosse { grid-column: 2; background: var(--weiss); border: 1px solid var(--line); border-radius: 12px; margin: 4px 0; transition: border-color .2s; }
+.leiter { margin-top: 30px; max-width: 800px; }
+.leiter .gruppe { font-family: var(--display); font-weight: 800; font-size: 12.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blau); margin: 26px 0 10px; }
+.leiter .gruppe:first-child { margin-top: 0; }
+.leiter .gruppe.zwei { color: var(--fg-muted); }
+.leiter details.sprosse { background: var(--weiss); border: 1px solid var(--line); border-radius: 12px; margin: 4px 0; transition: border-color .2s; }
 .leiter details.sprosse:hover { border-color: var(--blau); }
 .leiter .sprosse summary { padding: 16px 20px; display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; cursor: pointer; list-style: none; }
 .leiter .sprosse summary::-webkit-details-marker { display: none; }
@@ -228,5 +229,5 @@ p.lead, .prose p { text-wrap: pretty; }
 .prinzipien .p p { font-size: 15px; color: var(--fg-2); }
 
 /* Folgt-Zeile unter dem Pfade-Grid */
-.folgt-note { margin-top: 20px; font-size: 14.5px; color: var(--fg-2); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; max-width: 75ch; }
+.folgt-note { margin-top: 20px; font-size: 14.5px; color: var(--fg-2); display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: baseline; max-width: 75ch; }
 .folgt-note .pill { flex-shrink: 0; font-family: var(--display); font-size: 12px; font-weight: 800; padding: 3px 9px; border-radius: 999px; background: var(--lavendel); color: var(--fg-2); }
