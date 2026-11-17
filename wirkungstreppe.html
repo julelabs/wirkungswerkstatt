@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wirkungstreppe (Entwurf)</title>
+<link rel="stylesheet" href="gemeinsam.css">
+<style>
+
+  body { line-height: 1.5; font-size: 17px; }
+  h1 { font-family: var(--display); font-weight: 700; color: var(--blau); letter-spacing: -0.025em; line-height: 1.08; font-size: clamp(32px, 3.4vw, 46px); text-wrap: balance; }
+  button { font: inherit; background: none; border: 0; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--blau); outline-offset: 3px; border-radius: 6px; }
+  header.top { gap: 10px 14px; flex-wrap: wrap; }
+  .brand { text-decoration: none; display: inline-flex; align-items: center; gap: 9px; }
+  .brand svg { width: 18px; height: 18px; }
+
+  .schritte { display: flex; flex-wrap: wrap; gap: 6px 22px; list-style: none; margin-top: 18px; font-family: var(--display); font-size: 14px; font-weight: 600; color: var(--fg-muted); }
+  .schritte button { font-weight: 600; color: var(--fg-muted); padding-bottom: 3px; }
+  .schritte button:hover { color: var(--blau); }
+  .schritte [aria-current] { color: var(--blau); font-weight: 700; box-shadow: inset 0 -3px 0 var(--minze); }
+  .schritte .spaeter { opacity: .55; padding-bottom: 3px; }
+
+  .kopf { padding-top: clamp(22px, 3vw, 36px); }
+  .zaehler { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--fg-muted); margin-bottom: 10px; }
+  .unter { font-family: var(--display); font-weight: 300; font-size: clamp(19px, 1.8vw, 22px); line-height: 1.45; color: var(--fg); max-width: 34em; margin-top: 12px; }
+
+  .sammeln { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 290px); gap: 32px clamp(40px, 6vw, 96px); align-items: start; padding-top: clamp(22px, 3vw, 36px); min-height: 430px; }
+  .felder { display: grid; gap: 18px; margin-top: 28px; max-width: 560px; }
+  .feld label { display: block; font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--fg); }
+  .feld .hilfe { display: block; font-size: 14.5px; color: var(--fg-muted); margin-top: 1px; }
+  input[type=text] { width: 100%; margin-top: 8px; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 12px; padding: 13px 16px; font-family: var(--display); font-weight: 600; font-size: 17px; color: var(--fg); transition: border-color .2s var(--ease); }
+  input[type=text]::placeholder { color: var(--blau-40); font-weight: 400; }
+  input[type=text]:hover { border-color: var(--blau-40); }
+  input[type=text]:focus { outline: none; border-color: var(--blau); box-shadow: 0 0 0 3px var(--blau-10); }
+  .eingabe { display: flex; gap: 10px; margin-top: 28px; max-width: 620px; }
+  .eingabe input { margin-top: 0; }
+  .neben { flex: none; display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--blau); color: var(--blau); border-radius: 999px; padding: 0 18px; font-family: var(--display); font-weight: 700; font-size: 15px; transition: background .2s var(--ease); }
+  .neben:hover { background: var(--blau-10); }
+  .neben svg { width: 16px; height: 16px; }
+  .diese { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; max-width: 620px; }
+  .diese .chip { cursor: default; }
+  .chip .weg { display: inline-grid; place-items: center; width: 22px; height: 22px; margin: -4px -6px -4px 0; border-radius: 50%; color: var(--fg-muted); }
+  .chip .weg:hover { background: var(--blau-10); color: var(--blau); }
+  .chip .weg svg { width: 12px; height: 12px; }
+
+  .stapel .halter { position: relative; }
+  .stapel .halter::before, .stapel .halter::after { content: ''; position: absolute; inset: 0; border: 1.5px solid var(--line); border-radius: 14px; background: var(--weiss); }
+  .stapel .halter::before { transform: rotate(-2.2deg) translate(-3px, 5px); }
+  .stapel .halter::after { transform: rotate(1.4deg) translate(4px, 3px); }
+  .stapel.leer .halter::before, .stapel.leer .halter::after { display: none; }
+  .karte { position: relative; z-index: 1; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 14px; padding: 18px 20px 20px; transition: border-color .25s var(--ease), box-shadow .25s var(--ease), transform .25s var(--ease); }
+  .karte.ziehbar { cursor: grab; }
+  .karte.ziehbar:hover { border-color: var(--blau); box-shadow: 0 14px 32px rgba(54,52,157,.12); transform: translateY(-2px); }
+  .karte.zieht { opacity: .4; }
+  .karte.frisch { animation: landen .5s var(--ease); }
+  @keyframes landen { from { transform: translateY(-14px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .sorte { display: flex; align-items: center; gap: 7px; font-family: var(--display); font-weight: 700; font-size: 12.5px; color: var(--fg-muted); }
+  .sorte svg { width: 15px; height: 15px; flex: none; }
+  .karte p { font-family: var(--display); font-weight: 600; font-size: 19px; line-height: 1.3; color: var(--fg); margin-top: 8px; text-wrap: balance; }
+  .stapel .unten { display: flex; justify-content: space-between; align-items: baseline; margin-top: 18px; padding: 0 4px; font-size: 14px; color: var(--fg-muted); }
+  .stapel .unten button { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--blau); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  .stapel.leer .karte { border-style: dashed; }
+  .stapel.leer .karte p { color: var(--fg-muted); font-weight: 400; font-size: 16px; }
+
+  .buehne { position: relative; margin-top: clamp(20px, 3vw, 36px); }
+  .buehne .stapel { position: absolute; left: 0; top: 0; width: min(264px, 22.5%); z-index: 2; }
+  .treppe { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); align-items: end; padding-top: 64px; }
+  .stufe { --h: calc(272px + var(--n) * 34px); height: var(--h); position: relative; border-top: 2.25px solid var(--blau); padding: 14px 8px 0 10px; cursor: pointer; }
+  .stufe::after { content: ''; position: absolute; left: -1.1px; top: -2.25px; width: 2.25px; height: 36.25px; background: var(--blau); border-radius: 2px; }
+  .stufe[data-n="0"]::after { display: none; }
+  .stufe::before { content: ''; position: absolute; left: -2px; right: 0; top: -2.25px; height: 6px; background: var(--minze); transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ease), opacity .3s var(--ease); }
+  .stufe.vorschlag::before { transform: scaleX(1); opacity: .55; height: 5px; }
+  .stufe.drueber::before, .stufe.offen::before { transform: scaleX(1); opacity: 1; height: 8px; }
+  .stufe.offen .satz, .stufe:hover .satz { color: var(--blau); }
+  .stufe .nr { font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--fg-muted); }
+  .stufe .satz { font-family: var(--display); font-weight: 600; font-size: 15.5px; line-height: 1.3; color: var(--fg); margin-top: 2px; text-wrap: pretty; }
+  .minis { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+  .mini { display: flex; align-items: flex-start; gap: 6px; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 7px; font-family: var(--display); font-weight: 600; font-size: 12.5px; line-height: 1.28; color: var(--fg); cursor: grab; transition: border-color .25s var(--ease), box-shadow .6s var(--ease); }
+  .mini span { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .mini svg { width: 12px; height: 12px; flex: none; margin-top: 2px; }
+  .mini:hover { border-color: var(--blau); }
+  .mini.neu { border-color: var(--minze); box-shadow: 0 0 0 3px rgba(77,255,176,.45); }
+  .mini.zieht { opacity: .4; }
+  .stufe .weitere { font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--blau); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; margin-top: 2px; align-self: flex-start; }
+  .ebenen { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); margin-top: 14px; }
+  .ebene { border-top: 1.5px solid var(--line); padding: 10px 14px 0 14px; margin-right: 8px; }
+  .ebene b { font-family: var(--display); font-weight: 700; font-size: 17px; color: var(--blau); }
+  .ebene span { display: block; font-size: 14px; color: var(--fg-2); margin-top: 1px; }
+  .ebene.input { grid-column: 1; } .ebene.output { grid-column: 2 / 5; } .ebene.outcome { grid-column: 5 / 8; } .ebene.impact { grid-column: 8; margin-right: 0; }
+  .fach { margin-top: 28px; min-height: 116px; }
+  .fach-innen { display: grid; grid-template-columns: minmax(220px, 300px) minmax(0, 1fr); gap: 12px 40px; align-items: start; }
+  .fach h2 { font-family: var(--display); font-weight: 700; font-size: 22px; color: var(--blau); letter-spacing: -0.02em; line-height: 1.15; }
+  .fach .frage { font-family: var(--display); font-weight: 300; font-size: 18px; line-height: 1.4; color: var(--fg); margin-top: 6px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 13px; font-family: var(--display); font-weight: 600; font-size: 15px; color: var(--fg); cursor: grab; transition: border-color .25s var(--ease); }
+  .chip:hover { border-color: var(--blau); }
+  .chip svg { width: 15px; height: 15px; flex: none; }
+  .leise { color: var(--fg-muted); font-size: 15px; }
+
+  .fuss { display: flex; justify-content: space-between; align-items: center; gap: 16px 40px; flex-wrap: wrap; padding: 26px 0 48px; border-top: 1.5px solid var(--line); margin-top: 28px; }
+  .fuss .links { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .hinweis { display: flex; align-items: center; gap: 10px; color: var(--fg-2); font-size: 16px; max-width: 46em; }
+  .hinweis svg { width: 20px; height: 20px; flex: none; }
+  .leiser-weg { font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--blau); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+  .haupt { display: inline-flex; align-items: center; gap: 10px; background: var(--blau); color: var(--weiss); font-family: var(--display); font-weight: 700; font-size: 15.5px; border-radius: 999px; padding: 13px 22px; transition: box-shadow .3s var(--ease); }
+  .haupt svg { width: 18px; height: 18px; stroke: var(--weiss); transition: transform .3s var(--ease); }
+  .haupt:hover { box-shadow: 0 12px 28px rgba(54,52,157,.25); }
+  .haupt:hover svg { transform: translateX(4px); }
+  .haupt[disabled] { background: var(--blau-20); color: var(--blau); cursor: default; box-shadow: none; }
+  .haupt[disabled] svg { stroke: var(--blau); transform: none; }
+
+  @media (max-width: 900px) {
+    .sammeln { grid-template-columns: 1fr; min-height: 0; }
+    .sammeln .stapel { max-width: 340px; }
+    .buehne .stapel { position: static; width: 100%; max-width: 340px; margin-bottom: 26px; }
+    .treppe { padding-top: 0; }
+    .treppe, .ebenen { grid-template-columns: 1fr; }
+    .stufe { height: auto; min-height: 72px; padding: 12px 0 14px; }
+    .stufe::after { display: none; }
+    .ebenen { display: none; }
+    .fach-innen { grid-template-columns: 1fr; }
+    .eingabe { flex-direction: column; }
+    .neben { padding: 12px 18px; align-self: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="blatt">
+
+  <header class="top">
+    <a class="brand" href="./"><svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H5M11 6l-6 6 6 6"/></svg>Wirkungstreppe</a>
+    <span class="badge">Entwurf</span>
+  </header>
+
+  <ol class="schritte" id="schritte" aria-label="Schritte"></ol>
+
+  <main id="ansicht"></main>
+
+  <footer class="fuss" id="fuss"></footer>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var FRAGEN = [
+    null,                                                
+    { sorte: 'tun', frage: 'Was macht ihr in dem Vorhaben?', unter: 'Schreibt auf, was euch einfällt: was ihr baut, organisiert, schreibt oder beschließt. Eine Sache pro Karte.', ph: 'zum Beispiel: Antragsformular mit Unternehmen testen' },
+    { sorte: 'anders', frage: 'Was soll in zwei Jahren anders sein?', unter: 'Was würden {zg} merken? Worüber würdet ihr euch freuen?', ph: 'zum Beispiel: Unternehmen reichen vollständige Anträge ein' },
+    { sorte: 'merken', frage: 'Woran würdet ihr merken, dass es klappt?', unter: 'Zahlen, die ihr schon habt, und Beobachtungen, die ihr noch nicht erhebt. Kleine sind willkommen: Rückfragen, Beschwerden, Bearbeitungszeiten.', ph: 'zum Beispiel: Wie oft die Bewilligungsstelle nachfragen muss' }
+  ];
+  var STUFEN = [
+    { n: 0, satz: 'Was wir hineinstecken', frage: 'Was steckt ihr hinein? Leute, Geld, Zeit.' },
+    { n: 1, satz: 'Wir setzen um, wie geplant', frage: 'Was macht ihr konkret?' },
+    { n: 2, satz: '{ZG} erfahren davon', frage: 'Wie erfahren {zg} davon?' },
+    { n: 3, satz: '{ZG} machen mit', frage: 'Woran merkt ihr, dass {zg} wirklich mitmachen?' },
+    { n: 4, satz: 'Sie wissen und können mehr', frage: 'Was müssen {zg} dafür wissen, können oder dürfen?' },
+    { n: 5, satz: 'Sie handeln anders', frage: 'Was machen {zg} dann anders als heute?' },
+    { n: 6, satz: 'Ihre Lage verändert sich dauerhaft', frage: 'Was ändert sich dauerhaft an ihren Abläufen und ihrer Lage?' },
+    { n: 7, satz: 'Die Gesellschaft hat etwas davon', frage: 'Wozu trägt das Ganze bei?' }
+  ];
+  var SORTE = {
+    input:  { name: 'Das stecken wir hinein', zone: [0],          icon: '<rect x="4" y="13" width="16" height="7" rx="1.5"/><rect x="6" y="5" width="12" height="7" rx="1.5"/>' },
+    tun:    { name: 'Das tun wir',            zone: [1, 2],       icon: '<path d="M4 12h15M13 6l6 6-6 6"/>' },
+    anders: { name: 'Das soll anders sein',   zone: [4, 5, 6],    icon: '<path d="M6 21V4"/><path class="akzent" d="M6 4.5l12 4-12 4z"/>' },
+    merken: { name: 'Woran wir es merken',    zone: [],           icon: '<circle cx="10" cy="10" r="6.5"/><path d="M15 15l5.5 5.5"/>' }
+  };
+  var SCHRITTE = [
+    { id: 'sammeln', name: 'Sammeln' },
+    { id: 'sortieren', name: 'Sortieren' },
+    { id: 'merken', name: 'Woran wir es merken', spaeter: true },
+    { id: 'entwurf', name: 'Entwurf', spaeter: true }
+  ];
+  var PFEIL = '<svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>';
+  var PLUS = '<svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+  var KREUZ = '<svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  var LUPE = '<svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l5.5 5.5"/><circle class="akzent" cx="10" cy="10" r="2.2"/></svg>';
+
+  var SPEICHER = 'wirkungstreppe-entwurf-1';
+  function leer() { return { ansicht: 'sammeln', frage: 0, vorhaben: '', zg: '', input: '', karten: [], naechste: 1 }; }
+  function beispiel() {
+    var s = leer();
+    s.vorhaben = 'Online-Antrag für ein Förderprogramm des Bundes';
+    s.zg = 'kleine Unternehmen';
+    s.input = 'Zwei Leute aus dem Referat, ein Dienstleister, ein Jahr';
+    [['input', s.input],
+     ['tun', 'Antragsformular mit Unternehmen testen'], ['tun', 'Antrag online stellen und in der Förderdatenbank verlinken'], ['tun', 'Hotline für Rückfragen in den ersten Monaten'],
+     ['anders', 'Unternehmen reichen vollständige Anträge ein'], ['anders', 'Unternehmen trauen sich den Antrag ohne Beratungsfirma zu'], ['anders', 'Bewilligung dauert Wochen statt Monate'], ['anders', 'Mehr kleine Unternehmen nutzen die Förderung'],
+     ['merken', 'Registrierungen im Antragsportal'], ['merken', 'Wie oft die Bewilligungsstelle nachfragen muss'], ['merken', 'Zeit vom Antrag bis zur Bewilligung']
+    ].forEach(function (p) { s.karten.push({ id: p[0] === 'input' ? 'input' : 'k' + (s.naechste++), sorte: p[0], t: p[1], stufe: null }); });
+    return s;
+  }
+  function laden() { try { var r = localStorage.getItem(SPEICHER); if (r) return Object.assign(leer(), JSON.parse(r)); } catch (e) {} return leer(); }
+  function speichern() { try { localStorage.setItem(SPEICHER, JSON.stringify(S)); } catch (e) {} }
+
+  var S = laden();
+  var offen = null, ziehtId = null, neuId = null, frischId = null, resetGefragt = false, ZEIGEN = 3;
+
+  var q = new URLSearchParams(location.search);
+  if (q.has('beispiel')) S = beispiel();
+  if (q.get('schritt')) S.ansicht = q.get('schritt');
+  if (q.get('frage')) { S.ansicht = 'sammeln'; S.frage = +q.get('frage'); }
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function icon(sorte) { return '<svg class="strich" viewBox="0 0 24 24" aria-hidden="true">' + SORTE[sorte].icon + '</svg>'; }
+  function gross(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function zg() { return S.zg.trim(); }
+  function mitZg(text) {
+    var z = zg();
+    return text.replace(/\{ZG\}/g, z ? gross(z) : 'Sie').replace(/\{zg\}/g, z || 'die Leute');
+  }
+  function finde(id) { for (var i = 0; i < S.karten.length; i++) if (S.karten[i].id === id) return S.karten[i]; }
+  function stapel() { return S.karten.filter(function (k) { return k.stufe === null; }); }
+  function auf(n) { return S.karten.filter(function (k) { return k.stufe === n; }); }
+  function karteHtml(k, extra) {
+    return '<div class="karte' + (extra || '') + '"' + (k ? '' : '') + '><div class="sorte">' + icon(k.sorte) + esc(SORTE[k.sorte].name) + '</div><p>' + esc(k.t) + '</p></div>';
+  }
+
+  function renderSchritte() {
+    $('schritte').innerHTML = SCHRITTE.map(function (s) {
+      if (s.spaeter) return '<li><span class="spaeter" title="Kommt als Nächstes">' + s.name + '</span></li>';
+      return '<li><button type="button" data-ziel="' + s.id + '"' + (S.ansicht === s.id ? ' aria-current="step"' : '') + '>' + s.name + '</button></li>';
+    }).join('');
+    $('schritte').querySelectorAll('button').forEach(function (b) { b.onclick = function () { geheZu(b.dataset.ziel); }; });
+  }
+  function geheZu(ansicht) { merkeStart(); S.ansicht = ansicht; offen = null; speichern(); render(); window.scrollTo(0, 0); }
+
+  function merkeStart() {
+    if (S.ansicht !== 'sammeln' || S.frage !== 0 || !$('fVorhaben')) return;
+    S.vorhaben = $('fVorhaben').value; S.zg = $('fZg').value; S.input = $('fInput').value;
+    var k = finde('input'), t = S.input.trim();
+    if (t && k) k.t = t;
+    else if (t) S.karten.unshift({ id: 'input', sorte: 'input', t: t, stufe: null });
+    else if (k) S.karten.splice(S.karten.indexOf(k), 1);
+    speichern();
+  }
+
+  function stapelSammeln() {
+    var alle = S.karten, oben = alle[alle.length - 1];
+    if (!oben) return '<div class="stapel leer"><div class="halter"><div class="karte"><p>Hier landen eure Antworten als Karten.</p></div></div></div>';
+    return '<div class="stapel"><div class="halter">' + karteHtml(oben, oben.id === frischId ? ' frisch' : '') + '</div>' +
+      '<div class="unten"><span>' + alle.length + (alle.length === 1 ? ' Karte' : ' Karten') + ' auf dem Stapel</span></div></div>';
+  }
+
+  function renderSammeln() {
+    var a = $('ansicht'), html;
+    if (S.frage === 0) {
+      html = '<div class="sammeln"><div>' +
+        '<p class="zaehler">Sammeln · Frage 1 von 4</p>' +
+        '<h1>Worum geht es, und für wen macht ihr das?</h1>' +
+        '<p class="unter">Vier kurze Fragen. Aus jeder Antwort wird eine Karte. Grob reicht, im nächsten Schritt sortiert ihr sie.</p>' +
+        '<div class="felder">' +
+          '<div class="feld"><label for="fVorhaben">Euer Vorhaben</label><input type="text" id="fVorhaben" autocomplete="off" placeholder="zum Beispiel: Online-Antrag für ein Förderprogramm" value="' + esc(S.vorhaben) + '"></div>' +
+          '<div class="feld"><label for="fZg">Wer soll am Ende etwas anders machen?<span class="hilfe">Menschen oder Stellen, so eng wie möglich.</span></label><input type="text" id="fZg" autocomplete="off" placeholder="zum Beispiel: kleine Unternehmen" value="' + esc(S.zg) + '"></div>' +
+          '<div class="feld"><label for="fInput">Was steckt ihr hinein?<span class="hilfe">Leute, Geld, Zeit. Grob reicht.</span></label><input type="text" id="fInput" autocomplete="off" placeholder="zum Beispiel: zwei Leute, ein Dienstleister, ein Jahr" value="' + esc(S.input) + '"></div>' +
+        '</div></div>' + stapelSammeln() + '</div>';
+      a.innerHTML = html;
+      ['fVorhaben', 'fZg', 'fInput'].forEach(function (id) { $(id).addEventListener('change', merkeStart); });
+      $('fInput').addEventListener('input', function () {                                       });
+      return;
+    }
+    var f = FRAGEN[S.frage];
+    var diese = S.karten.filter(function (k) { return k.sorte === f.sorte; });
+    html = '<div class="sammeln"><div>' +
+      '<p class="zaehler">Sammeln · Frage ' + (S.frage + 1) + ' von 4</p>' +
+      '<h1>' + esc(mitZg(f.frage)) + '</h1>' +
+      '<p class="unter">' + esc(mitZg(f.unter)) + '</p>' +
+      '<form class="eingabe" id="form" autocomplete="off"><input type="text" id="neu" aria-label="Neue Karte" placeholder="' + esc(f.ph) + '"><button class="neben" type="submit">' + PLUS + 'Karte anlegen</button></form>' +
+      '<div class="diese" id="diese">' + diese.map(function (k) {
+        return '<span class="chip">' + icon(k.sorte) + '<span>' + esc(k.t) + '</span><button type="button" class="weg" data-weg="' + k.id + '" aria-label="Karte löschen: ' + esc(k.t) + '">' + KREUZ + '</button></span>';
+      }).join('') + '</div>' +
+      '</div>' + stapelSammeln() + '</div>';
+    a.innerHTML = html;
+    $('form').onsubmit = function (e) {
+      e.preventDefault();
+      var t = $('neu').value.trim(); if (!t) { $('neu').focus(); return; }
+      var k = { id: 'k' + (S.naechste++), sorte: f.sorte, t: t, stufe: null };
+      S.karten.push(k); frischId = k.id; speichern(); render(); $('neu').focus();
+    };
+    a.querySelectorAll('[data-weg]').forEach(function (b) {
+      b.onclick = function () { var k = finde(b.dataset.weg); S.karten.splice(S.karten.indexOf(k), 1); speichern(); render(); };
+    });
+    $('neu').focus({ preventScroll: true });
+  }
+
+  function fussSammeln() {
+    var links = '';
+    if (S.frage > 0) links += '<button type="button" class="leiser-weg" id="zurueck">Zurück</button>';
+    if (S.frage === 0) {
+      links += '<button type="button" class="leiser-weg" id="bsp">Mit Beispiel ausprobieren</button>';
+      if (S.karten.length || S.vorhaben) links += '<button type="button" class="leiser-weg" id="reset">' + (resetGefragt ? 'Wirklich alles löschen?' : 'Von vorn anfangen') + '</button>';
+    }
+    var letzte = S.frage === FRAGEN.length - 1;
+    $('fuss').innerHTML = '<div class="links">' + links + '</div>' +
+      '<button class="haupt" type="button" id="weiter">' + (letzte ? 'Weiter: Sortieren' : 'Nächste Frage') + PFEIL + '</button>';
+    if ($('zurueck')) $('zurueck').onclick = function () { S.frage--; frischId = null; speichern(); render(); };
+    if ($('bsp')) $('bsp').onclick = function () { S = beispiel(); S.frage = 1; frischId = null; speichern(); render(); };
+    if ($('reset')) $('reset').onclick = function () {
+      if (!resetGefragt) { resetGefragt = true; fussSammeln(); return; }
+      resetGefragt = false; S = leer(); speichern(); render();
+    };
+    $('weiter').onclick = function () {
+      merkeStart(); frischId = null;
+      if (letzte) geheZu('sortieren'); else { S.frage++; speichern(); render(); window.scrollTo(0, 0); }
+    };
+  }
+
+  function zeigeVorschlag(sorte) {
+    var zone = sorte ? SORTE[sorte].zone : [];
+    document.querySelectorAll('.stufe').forEach(function (el) { el.classList.toggle('vorschlag', zone.indexOf(+el.dataset.n) > -1); });
+  }
+  function ziehbar(el, id) {
+    el.draggable = true;
+    el.addEventListener('dragstart', function (e) {
+      ziehtId = id; e.dataTransfer.setData('text/plain', id); e.dataTransfer.effectAllowed = 'move';
+      el.classList.add('zieht'); zeigeVorschlag(finde(id).sorte);
+    });
+    el.addEventListener('dragend', function () { el.classList.remove('zieht'); ziehtId = null; renderSortieren(); });
+  }
+  function lege(id, n) {
+    var k = finde(id); if (!k) return; ziehtId = null;
+    k.stufe = n;
+    if (n === null) { S.karten.splice(S.karten.indexOf(k), 1); var erste = S.karten.findIndex(function (x) { return x.stufe === null; }); S.karten.splice(erste < 0 ? S.karten.length : erste, 0, k); }
+    else neuId = id;
+    speichern(); renderSortieren(); renderFussSortieren();
+    setTimeout(function () { neuId = null; var m = document.querySelector('.mini.neu'); if (m) m.classList.remove('neu'); }, 1200);
+  }
+
+  function renderSortieren() {
+    var a = $('ansicht');
+    if (!$('treppe')) {
+      a.innerHTML = '<div class="kopf"><h1>Wohin gehören eure Karten?</h1>' +
+        '<p class="unter">Zieht jede Karte auf die Stufe, zu der sie gehört. Unsicher? Legt sie erst mal irgendwohin, im Workshop schauen wir gemeinsam drauf.</p></div>' +
+        '<div class="buehne"><div class="stapel" id="stapel"></div><div class="treppe" id="treppe"></div>' +
+        '<div class="ebenen" aria-hidden="true"><div class="ebene input"><b>Input</b><span>Was wir hineinstecken.</span></div><div class="ebene output"><b>Output</b><span>Was wir liefern.</span></div><div class="ebene outcome"><b>Outcome</b><span>Was sich bei der Zielgruppe verändert.</span></div><div class="ebene impact"><b>Impact</b><span>Wozu es beiträgt.</span></div></div></div>' +
+        '<div class="fach" id="fach" aria-live="polite"></div>';
+    }
+    renderTreppe(); renderStapelSort(); renderFach();
+  }
+
+  function renderTreppe() {
+    var t = $('treppe'); t.innerHTML = '';
+    STUFEN.forEach(function (s) {
+      var el = document.createElement('div'), satz = mitZg(s.satz), ks = auf(s.n);
+      el.className = 'stufe' + (offen === s.n ? ' offen' : '');
+      el.dataset.n = s.n; el.style.setProperty('--n', s.n);
+      el.tabIndex = 0; el.setAttribute('role', 'button');
+      el.setAttribute('aria-label', 'Stufe ' + s.n + ': ' + satz + '. ' + ks.length + (ks.length === 1 ? ' Karte.' : ' Karten.'));
+      el.innerHTML = '<div class="nr">' + s.n + '</div><div class="satz">' + esc(satz) + '</div><div class="minis"></div>';
+      var minis = el.querySelector('.minis');
+      ks.slice(0, ZEIGEN).forEach(function (k) {
+        var m = document.createElement('div'); m.className = 'mini' + (k.id === neuId ? ' neu' : ''); m.title = SORTE[k.sorte].name + ': ' + k.t;
+        m.innerHTML = icon(k.sorte) + '<span>' + esc(k.t) + '</span>';
+        m.addEventListener('click', function (e) { e.stopPropagation(); offen = s.n; renderSortieren(); });
+        ziehbar(m, k.id); minis.appendChild(m);
+      });
+      if (ks.length > ZEIGEN) { var w = document.createElement('button'); w.type = 'button'; w.className = 'weitere'; w.textContent = (ks.length - ZEIGEN) + ' weitere'; minis.appendChild(w); }
+      el.addEventListener('click', function () { offen = offen === s.n ? null : s.n; renderSortieren(); });
+      el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); } });
+      el.addEventListener('dragover', function (e) { e.preventDefault(); el.classList.add('drueber'); });
+      el.addEventListener('dragleave', function () { el.classList.remove('drueber'); });
+      el.addEventListener('drop', function (e) { e.preventDefault(); lege(e.dataTransfer.getData('text/plain'), s.n); });
+      t.appendChild(el);
+    });
+  }
+
+  function renderStapelSort() {
+    var st = stapel(), box = $('stapel'), k = st[0];
+    box.classList.toggle('leer', !k);
+    if (!k) {
+      box.innerHTML = '<div class="halter"><div class="karte"><p>' + (S.karten.length ? 'Alle Karten liegen auf der Treppe.' : 'Noch keine Karten. Fangt beim Sammeln an.') + '</p></div></div>';
+    } else {
+      box.innerHTML = '<div class="halter"><div class="karte ziehbar" id="aktuell" tabindex="0" aria-label="Aktuelle Karte: ' + esc(k.t) + '. Mit den Tasten 0 bis 7 auf eine Stufe legen."><div class="sorte">' + icon(k.sorte) + esc(SORTE[k.sorte].name) + '</div><p>' + esc(k.t) + '</p></div></div>' +
+        '<div class="unten"><span>Noch ' + st.length + (st.length === 1 ? ' Karte' : ' Karten') + '</span>' + (st.length > 1 ? '<button type="button" id="spaeter">Später</button>' : '') + '</div>';
+      ziehbar($('aktuell'), k.id);
+      if ($('spaeter')) $('spaeter').onclick = function () { S.karten.splice(S.karten.indexOf(k), 1); S.karten.push(k); speichern(); renderSortieren(); };
+    }
+    box.ondragover = function (e) { e.preventDefault(); };
+    box.ondrop = function (e) { e.preventDefault(); lege(e.dataTransfer.getData('text/plain'), null); };
+    if (!ziehtId) zeigeVorschlag(k ? k.sorte : null);
+  }
+
+  function renderFach() {
+    var f = $('fach');
+    if (offen === null) { f.innerHTML = ''; return; }
+    var s = STUFEN[offen], ks = auf(offen);
+    f.innerHTML = '<div class="fach-innen"><div><h2>' + s.n + ' · ' + esc(mitZg(s.satz)) + '</h2><p class="frage">' + esc(mitZg(s.frage)) + '</p></div><div class="chips" id="chips">' +
+      (ks.length ? '' : '<p class="leise">Hier liegt noch nichts.</p>') + '</div></div>';
+    ks.forEach(function (k) {
+      var c = document.createElement('div'); c.className = 'chip'; c.title = SORTE[k.sorte].name;
+      c.innerHTML = icon(k.sorte) + '<span>' + esc(k.t) + '</span>';
+      ziehbar(c, k.id); $('chips').appendChild(c);
+    });
+  }
+
+  function hinweisText() {
+    var merken = S.karten.filter(function (k) { return k.sorte === 'merken' && k.stufe !== null; });
+    var oben = merken.filter(function (k) { return k.stufe >= 4; });
+    var anders = S.karten.filter(function (k) { return k.sorte === 'anders' && k.stufe !== null && k.stufe <= 2; });
+    if (!S.karten.length) return 'Noch keine Karten. Beim Sammeln entstehen sie aus euren Antworten.';
+    if (anders.length) return 'Eine Karte „Das soll anders sein“ liegt bei dem, was ihr tut. Ist das schon eine Veränderung, oder noch eure Arbeit?';
+    if (merken.length >= 2 && !oben.length) return 'Eure Zeichen liegen bisher alle unter Stufe 4. Sie zeigen, dass etwas ankommt, aber noch nicht, dass sich bei ' + (zg() || 'den Leuten') + ' etwas ändert.';
+    if (!stapel().length) return 'Alle Karten liegen. Als Nächstes geht es darum, woran ihr es merkt.';
+    return 'Die hellen Striche sind ein Vorschlag, wohin die Karte passen könnte. Ihr entscheidet. Klickt eine Stufe an, dann seht ihr ihre Leitfrage.';
+  }
+  function renderFussSortieren() {
+    $('fuss').innerHTML = '<p class="hinweis">' + LUPE + '<span>' + esc(hinweisText()) + '</span></p>' +
+      '<button class="haupt" type="button" disabled title="Kommt als Nächstes">Weiter: Woran wir es merken' + PFEIL + '</button>';
+  }
+
+  function render() {
+    renderSchritte();
+    if (S.ansicht === 'sortieren') { $('ansicht').innerHTML = ''; renderSortieren(); renderFussSortieren(); }
+    else { S.ansicht = 'sammeln'; renderSammeln(); fussSammeln(); }
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (document.activeElement && document.activeElement.id === 'aktuell' && /^[0-7]$/.test(e.key)) {
+      var k = stapel()[0]; if (k) { lege(k.id, +e.key); var a = $('aktuell'); if (a) a.focus(); }
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
