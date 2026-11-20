@@ -24,6 +24,10 @@
 
   .kopf { padding-top: clamp(22px, 3vw, 36px); }
   .zaehler { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--fg-muted); margin-bottom: 10px; }
+  .vorschau { list-style: none; margin-top: 18px; display: grid; gap: 4px; max-width: 560px; font-size: 15.5px; color: var(--fg-2); }
+  .vorschau b { font-family: var(--display); font-weight: 700; color: var(--fg-muted); margin-right: 8px; }
+  .rechts { display: flex; align-items: center; gap: 12px 22px; flex-wrap: wrap; justify-content: flex-end; }
+  .als-naechstes { font-size: 15px; color: var(--fg-muted); }
   .unter { font-family: var(--display); font-weight: 300; font-size: clamp(19px, 1.8vw, 22px); line-height: 1.45; color: var(--fg); max-width: 34em; margin-top: 12px; }
 
   .sammeln { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 290px); gap: 32px clamp(40px, 6vw, 96px); align-items: start; padding-top: clamp(22px, 3vw, 36px); min-height: 430px; }
@@ -253,6 +257,7 @@
         '<p class="zaehler">Sammeln · Frage 1 von 4</p>' +
         '<h1>Worum geht es, und für wen macht ihr das?</h1>' +
         '<p class="unter">Vier kurze Fragen. Aus jeder Antwort wird eine Karte. Grob reicht, im nächsten Schritt sortiert ihr sie.</p>' +
+        '<ol class="vorschau" aria-label="Danach fragen wir">' + FRAGEN.slice(1).map(function (f, i) { return '<li><b>' + (i + 2) + '</b>' + esc(mitZg(f.frage)) + '</li>'; }).join('') + '</ol>' +
         '<div class="felder">' +
           '<div class="feld"><label for="fVorhaben">Euer Vorhaben</label><input type="text" id="fVorhaben" autocomplete="off" placeholder="zum Beispiel: Online-Antrag für ein Förderprogramm" value="' + esc(S.vorhaben) + '"></div>' +
           '<div class="feld"><label for="fZg">Wer soll am Ende etwas anders machen?<span class="hilfe">Menschen oder Stellen, so eng wie möglich.</span></label><input type="text" id="fZg" autocomplete="off" placeholder="zum Beispiel: kleine Unternehmen" value="' + esc(S.zg) + '"></div>' +
@@ -295,8 +300,10 @@
       if (S.karten.length || S.vorhaben) links += '<button type="button" class="leiser-weg" id="reset">' + (resetGefragt ? 'Wirklich alles löschen?' : 'Von vorn anfangen') + '</button>';
     }
     var letzte = S.frage === FRAGEN.length - 1;
+    var naechstes = letzte ? 'Danach legt ihr die Karten auf die Treppe.' : 'Als Nächstes: ' + mitZg(FRAGEN[S.frage + 1].frage);
     $('fuss').innerHTML = '<div class="links">' + links + '</div>' +
-      '<button class="haupt" type="button" id="weiter">' + (letzte ? 'Weiter: Sortieren' : 'Nächste Frage') + PFEIL + '</button>';
+      '<div class="rechts"><span class="als-naechstes">' + esc(naechstes) + '</span>' +
+      '<button class="haupt" type="button" id="weiter">' + (letzte ? 'Weiter: Sortieren' : 'Nächste Frage') + PFEIL + '</button></div>';
     if ($('zurueck')) $('zurueck').onclick = function () { S.frage--; frischId = null; speichern(); render(); };
     if ($('bsp')) $('bsp').onclick = function () { S = beispiel(); S.frage = 1; frischId = null; speichern(); render(); };
     if ($('reset')) $('reset').onclick = function () {
