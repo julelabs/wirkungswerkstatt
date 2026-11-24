@@ -9,7 +9,7 @@
 <style>
 
   body { line-height: 1.5; font-size: 17px; }
-  h1 { font-family: var(--display); font-weight: 700; color: var(--blau); letter-spacing: -0.025em; line-height: 1.08; font-size: clamp(32px, 3.4vw, 46px); text-wrap: balance; }
+  .blatt { max-width: 1400px; }
   button { font: inherit; background: none; border: 0; color: inherit; cursor: pointer; }
   :focus-visible { outline: 3px solid var(--blau); outline-offset: 3px; border-radius: 6px; }
   header.top { gap: 10px 14px; flex-wrap: wrap; }
@@ -20,113 +20,165 @@
   .schritte button { font-weight: 600; color: var(--fg-muted); padding-bottom: 3px; }
   .schritte button:hover { color: var(--blau); }
   .schritte [aria-current] { color: var(--blau); font-weight: 700; box-shadow: inset 0 -3px 0 var(--minze); }
-  .schritte .spaeter { opacity: .55; padding-bottom: 3px; }
 
-  .kopf { padding-top: clamp(22px, 3vw, 36px); }
+  .kopf { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px 40px; flex-wrap: wrap; padding-top: 22px; }
+  h1 { font-family: var(--display); font-weight: 700; color: var(--blau); letter-spacing: -0.02em; line-height: 1.1; font-size: clamp(26px, 2.4vw, 32px); text-wrap: balance; }
+  .unter { font-size: 16px; color: var(--fg-2); margin-top: 6px; max-width: 46em; }
+  .rand { display: flex; align-items: baseline; gap: 22px; font-size: 13.5px; color: var(--fg-muted); }
+  .rand b { font-weight: 600; }
+  .schalter { font-family: var(--display); font-weight: 600; font-size: 13.5px; color: var(--fg-muted); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; text-decoration-color: var(--blau-20); }
+  .schalter:hover { color: var(--blau); }
+
   .zaehler { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--fg-muted); margin-bottom: 10px; }
+  .sammeln { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 290px); gap: 32px clamp(40px, 6vw, 96px); align-items: start; padding-top: clamp(22px, 3vw, 36px); min-height: 430px; }
+  .sammeln h1 { font-size: clamp(30px, 3.2vw, 42px); }
+  .sammeln .unter { font-family: var(--display); font-weight: 300; font-size: clamp(18px, 1.7vw, 21px); line-height: 1.45; color: var(--fg); margin-top: 12px; }
   .vorschau { list-style: none; margin-top: 18px; display: grid; gap: 4px; max-width: 560px; font-size: 15.5px; color: var(--fg-2); }
   .vorschau b { font-family: var(--display); font-weight: 700; color: var(--fg-muted); margin-right: 8px; }
-  .rechts { display: flex; align-items: center; gap: 12px 22px; flex-wrap: wrap; justify-content: flex-end; }
-  .als-naechstes { font-size: 15px; color: var(--fg-muted); }
-  .unter { font-family: var(--display); font-weight: 300; font-size: clamp(19px, 1.8vw, 22px); line-height: 1.45; color: var(--fg); max-width: 34em; margin-top: 12px; }
-
-  .sammeln { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 290px); gap: 32px clamp(40px, 6vw, 96px); align-items: start; padding-top: clamp(22px, 3vw, 36px); min-height: 430px; }
   .felder { display: grid; gap: 18px; margin-top: 28px; max-width: 560px; }
   .feld label { display: block; font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--fg); }
-  .feld .hilfe { display: block; font-size: 14.5px; color: var(--fg-muted); margin-top: 1px; }
-  input[type=text] { width: 100%; margin-top: 8px; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 12px; padding: 13px 16px; font-family: var(--display); font-weight: 600; font-size: 17px; color: var(--fg); transition: border-color .2s var(--ease); }
-  input[type=text]::placeholder { color: var(--blau-40); font-weight: 400; }
-  input[type=text]:hover { border-color: var(--blau-40); }
-  input[type=text]:focus { outline: none; border-color: var(--blau); box-shadow: 0 0 0 3px var(--blau-10); }
+  .feld .hilfe { display: block; font-size: 14.5px; color: var(--fg-muted); font-weight: 400; margin-top: 1px; }
+  input[type=text], textarea { width: 100%; margin-top: 8px; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 12px; padding: 13px 16px; font-family: var(--display); font-weight: 600; font-size: 17px; color: var(--fg); transition: border-color .2s var(--ease); }
+  textarea { font-weight: 400; line-height: 1.5; resize: vertical; min-height: 120px; }
+  input[type=text]::placeholder, textarea::placeholder { color: var(--blau-40); font-weight: 400; }
+  input[type=text]:hover, textarea:hover { border-color: var(--blau-40); }
+  input[type=text]:focus, textarea:focus { outline: none; border-color: var(--blau); box-shadow: 0 0 0 3px var(--blau-10); }
   .eingabe { display: flex; gap: 10px; margin-top: 28px; max-width: 620px; }
   .eingabe input { margin-top: 0; }
   .neben { flex: none; display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--blau); color: var(--blau); border-radius: 999px; padding: 0 18px; font-family: var(--display); font-weight: 700; font-size: 15px; transition: background .2s var(--ease); }
   .neben:hover { background: var(--blau-10); }
   .neben svg { width: 16px; height: 16px; }
+  .ideen { margin-top: 18px; max-width: 620px; font-size: 14.5px; color: var(--fg-2); }
+  .ideen p { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg-muted); }
+  .ideen ul { list-style: none; display: grid; gap: 3px; margin-top: 6px; }
+  .ideen b { font-weight: 600; color: var(--fg); }
   .diese { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; max-width: 620px; }
-  .diese .chip { cursor: default; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 12px; font-family: var(--display); font-weight: 600; font-size: 15px; color: var(--fg); }
+  .chip.minze { background: #CFF7E4; border-color: #A9EBCB; }
+  .chip svg { width: 15px; height: 15px; flex: none; }
   .chip .weg { display: inline-grid; place-items: center; width: 22px; height: 22px; margin: -4px -6px -4px 0; border-radius: 50%; color: var(--fg-muted); }
   .chip .weg:hover { background: var(--blau-10); color: var(--blau); }
   .chip .weg svg { width: 12px; height: 12px; }
 
-  .stapel .halter { position: relative; }
-  .stapel .halter::before, .stapel .halter::after { content: ''; position: absolute; inset: 0; border: 1.5px solid var(--line); border-radius: 14px; background: var(--weiss); }
-  .stapel .halter::before { transform: rotate(-2.2deg) translate(-3px, 5px); }
-  .stapel .halter::after { transform: rotate(1.4deg) translate(4px, 3px); }
-  .stapel.leer .halter::before, .stapel.leer .halter::after { display: none; }
-  .karte { position: relative; z-index: 1; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 14px; padding: 18px 20px 20px; transition: border-color .25s var(--ease), box-shadow .25s var(--ease), transform .25s var(--ease); }
-  .karte.ziehbar { cursor: grab; }
-  .karte.ziehbar:hover { border-color: var(--blau); box-shadow: 0 14px 32px rgba(54,52,157,.12); transform: translateY(-2px); }
-  .karte.zieht { opacity: .4; }
-  .karte.frisch { animation: landen .5s var(--ease); }
+  .stapel-titel { font-family: var(--display); font-weight: 600; font-size: 12.5px; color: var(--fg-muted); margin-bottom: 8px; }
+  .halter { position: relative; }
+  .halter::before { content: ''; position: absolute; inset: 0; border-radius: 6px; background: var(--weiss); border: 1.5px solid var(--line); transform: rotate(-1.6deg) translate(-2px, 4px); }
+  .halter.minze::before { background: #E3F8EE; border-color: #CDEFDD; }
+  .halter.leer::before { display: none; }
+  .noch { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; color: var(--fg-muted); margin-top: 9px; }
+  .noch button { font-family: var(--display); font-weight: 600; font-size: 12.5px; color: var(--fg-muted); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--blau-20); }
+  .noch button:hover { color: var(--blau); }
+  .ruht .halter { opacity: .55; filter: saturate(.5); }
+  .leerkarte { position: relative; border: 1.5px dashed var(--line); border-radius: 6px; padding: 15px 16px; font-size: 14.5px; color: var(--fg-muted); }
+
+  .karte { position: relative; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 6px; padding: 11px 12px 12px; transition: border-color .2s var(--ease), box-shadow .6s var(--ease); }
+  .karte svg { width: 15px; height: 15px; display: block; margin-bottom: 6px; }
+  .karte p { font-family: var(--display); font-weight: 600; font-size: 13.5px; line-height: 1.3; overflow-wrap: break-word; hyphens: auto; }
+  .karte .vorschlag { position: absolute; top: 9px; right: 10px; font-family: var(--display); font-size: 11px; font-weight: 600; color: var(--fg-muted); }
+  .karte.gross { padding: 15px 16px 17px; }
+  .karte.gross svg { width: 22px; height: 22px; margin-bottom: 8px; }
+  .karte.gross p { font-size: 17px; }
+  .zettel { position: relative; background: #CFF7E4; border: 1.5px solid #A9EBCB; border-radius: 4px; padding: 10px 28px 10px 11px; font-family: var(--display); font-weight: 600; font-size: 13px; line-height: 1.3; color: var(--dunkel); overflow-wrap: break-word; hyphens: auto; transition: box-shadow .6s var(--ease); }
+  .zettel.gross { padding: 15px 16px 17px; font-size: 16.5px; }
+  .zettel p { font: inherit; }
+  .stand { position: absolute; top: 8px; right: 7px; width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--blau); background: transparent; padding: 0; }
+  .stand.voll { background: var(--blau); }
+  .stand.halb { background: linear-gradient(90deg, var(--blau) 50%, transparent 50%); }
+  .stand:hover { box-shadow: 0 0 0 3px rgba(54,52,157,.15); }
+  .ziehbar { cursor: grab; }
+  .ziehbar:hover { border-color: var(--blau); }
+  .zettel.ziehbar:hover { border-color: #6FD9A6; }
+  .zieht { opacity: .4; }
+  .neu { box-shadow: 0 0 0 3px rgba(77,255,176,.6); }
+  .karte p[contenteditable="true"], .zettel p[contenteditable="true"] { outline: none; cursor: text; }
+  .bearbeitet { border-color: var(--blau) !important; box-shadow: 0 0 0 3px var(--blau-10); }
+  .frisch { animation: landen .5s var(--ease); }
   @keyframes landen { from { transform: translateY(-14px); opacity: 0; } to { transform: none; opacity: 1; } }
-  .sorte { display: flex; align-items: center; gap: 7px; font-family: var(--display); font-weight: 700; font-size: 12.5px; color: var(--fg-muted); }
-  .sorte svg { width: 15px; height: 15px; flex: none; }
-  .karte p { font-family: var(--display); font-weight: 600; font-size: 19px; line-height: 1.3; color: var(--fg); margin-top: 8px; text-wrap: balance; }
-  .stapel .unten { display: flex; justify-content: space-between; align-items: baseline; margin-top: 18px; padding: 0 4px; font-size: 14px; color: var(--fg-muted); }
-  .stapel .unten button { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--blau); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
-  .stapel.leer .karte { border-style: dashed; }
-  .stapel.leer .karte p { color: var(--fg-muted); font-weight: 400; font-size: 16px; }
 
-  .buehne { position: relative; margin-top: clamp(20px, 3vw, 36px); }
-  .buehne .stapel { position: absolute; left: 0; top: 0; width: min(264px, 22.5%); z-index: 2; }
-  .treppe { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); align-items: end; padding-top: 64px; }
-  .stufe { --h: calc(272px + var(--n) * 34px); height: var(--h); position: relative; border-top: 2.25px solid var(--blau); padding: 14px 8px 0 10px; cursor: pointer; }
-  .stufe::after { content: ''; position: absolute; left: -1.1px; top: -2.25px; width: 2.25px; height: 36.25px; background: var(--blau); border-radius: 2px; }
-  .stufe[data-n="0"]::after { display: none; }
-  .stufe::before { content: ''; position: absolute; left: -2px; right: 0; top: -2.25px; height: 6px; background: var(--minze); transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ease), opacity .3s var(--ease); }
-  .stufe.vorschlag::before { transform: scaleX(1); opacity: .55; height: 5px; }
-  .stufe.drueber::before, .stufe.offen::before { transform: scaleX(1); opacity: 1; height: 8px; }
-  .stufe.offen .satz, .stufe:hover .satz { color: var(--blau); }
-  .stufe .nr { font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--fg-muted); }
-  .stufe .satz { font-family: var(--display); font-weight: 600; font-size: 15.5px; line-height: 1.3; color: var(--fg); margin-top: 2px; text-wrap: pretty; }
-  .minis { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
-  .mini { display: flex; align-items: flex-start; gap: 6px; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 7px; font-family: var(--display); font-weight: 600; font-size: 12.5px; line-height: 1.28; color: var(--fg); cursor: grab; transition: border-color .25s var(--ease), box-shadow .6s var(--ease); }
-  .mini span { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-width: 0; overflow-wrap: anywhere; hyphens: auto; }
-  .mini svg { width: 12px; height: 12px; flex: none; margin-top: 2px; }
-  .mini:hover { border-color: var(--blau); }
-  .mini.neu { border-color: var(--minze); box-shadow: 0 0 0 3px rgba(77,255,176,.45); }
-  .mini.zieht { opacity: .4; }
-  .stufe .weitere { font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--blau); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; margin-top: 2px; align-self: flex-start; }
-  .ebenen { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); margin-top: 14px; }
-  .ebene { border-top: 1.5px solid var(--line); padding: 10px 14px 0 14px; margin-right: 8px; }
-  .ebene b { font-family: var(--display); font-weight: 700; font-size: 17px; color: var(--blau); }
-  .ebene span { display: block; font-size: 14px; color: var(--fg-2); margin-top: 1px; }
-  .ebene.input { grid-column: 1; } .ebene.output { grid-column: 2 / 5; } .ebene.outcome { grid-column: 5 / 8; } .ebene.impact { grid-column: 8; margin-right: 0; }
-  .fach { margin-top: 28px; min-height: 116px; }
-  .fach-innen { display: grid; grid-template-columns: minmax(220px, 300px) minmax(0, 1fr); gap: 12px 40px; align-items: start; }
-  .fach h2 { font-family: var(--display); font-weight: 700; font-size: 22px; color: var(--blau); letter-spacing: -0.02em; line-height: 1.15; }
-  .fach .frage { font-family: var(--display); font-weight: 300; font-size: 18px; line-height: 1.4; color: var(--fg); margin-top: 6px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
-  .chip { display: inline-flex; align-items: center; gap: 8px; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 13px; font-family: var(--display); font-weight: 600; font-size: 15px; color: var(--fg); cursor: grab; transition: border-color .25s var(--ease); }
-  .chip:hover { border-color: var(--blau); }
-  .chip svg { width: 15px; height: 15px; flex: none; }
-  .leise { color: var(--fg-muted); font-size: 15px; }
+  .anlegen { margin-top: 10px; display: grid; gap: 8px; }
+  .anlegen input { margin-top: 0; padding: 9px 12px; font-size: 14.5px; border-radius: 8px; }
+  .sorten { display: flex; flex-wrap: wrap; gap: 6px; }
+  .sorten button { font-family: var(--display); font-weight: 600; font-size: 12.5px; color: var(--fg-2); border: 1.5px solid var(--line); border-radius: 999px; padding: 4px 10px; background: var(--weiss); }
+  .sorten button[aria-pressed="true"] { border-color: var(--blau); color: var(--blau); }
 
-  .fuss { display: flex; justify-content: space-between; align-items: center; gap: 16px 40px; flex-wrap: wrap; padding: 26px 0 48px; border-top: 1.5px solid var(--line); margin-top: 28px; }
+  .bereiche { display: none; grid-template-columns: repeat(8, minmax(0, 1fr)); margin-top: 22px; }
+  .zeige-ebenen .bereiche { display: grid; }
+  .bereich { margin-right: 16px; border-top: 1.5px solid var(--blau-20); padding-top: 6px; font-family: var(--display); font-size: 12.5px; color: var(--fg-muted); }
+  .bereich b { font-weight: 700; color: var(--blau); margin-right: 6px; }
+  .b-input { grid-column: 1; } .b-output { grid-column: 2 / 5; } .b-outcome { grid-column: 5 / 8; } .b-impact { grid-column: 8; margin-right: 0; }
+  .wand { position: relative; margin-top: 26px; }
+  .stapel-reihe { position: absolute; left: 0; top: 0; z-index: 2; display: grid; grid-template-columns: repeat(2, 196px); gap: 30px; align-items: start; }
+  .treppe { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); align-items: start; padding-top: 20px; }
+  .stufe { margin-top: calc((7 - var(--n)) * 40px); padding-right: 16px; display: flex; flex-direction: column; min-height: 220px; border-radius: 6px; }
+  .stufe.drueber { background: rgba(77,255,176,.10); }
+  .kante { position: relative; height: 10px; background: var(--blau); border-radius: 1px; margin-top: 40px; transition: box-shadow .3s var(--ease); }
+  .stufe.vorschlagszone .kante { box-shadow: 0 -5px 0 rgba(77,255,176,.6); }
+  .stufe.drueber .kante { box-shadow: 0 -7px 0 var(--minze); }
+  .nummer { position: absolute; left: 0; bottom: 100%; width: 42px; height: 36px; background: #DEDDF4; display: grid; place-items: center; font-family: var(--display); font-weight: 300; font-size: 19px; color: var(--dunkel); }
+  .fahne { position: absolute; right: 6px; bottom: 100%; width: 30px; height: 46px; }
+  .kante .i { position: absolute; right: 0; bottom: calc(100% + 9px); width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid currentColor; color: var(--blau-40); font-family: var(--display); font-size: 10.5px; font-weight: 700; display: grid; place-items: center; transition: color .2s var(--ease); }
+  .stufe[data-n="7"] .kante .i { right: 44px; }
+  .stufe:hover .i, .kante .i:focus-visible, .kante .i[aria-expanded="true"] { color: var(--blau); }
+  .hilfe-box { position: absolute; z-index: 5; top: calc(100% + 8px); left: 0; width: max(100%, 260px); background: var(--weiss); border: 1.5px solid var(--blau-20); border-radius: 8px; padding: 12px 14px; box-shadow: 0 16px 36px rgba(54,52,157,.14); font-size: 14px; color: var(--fg); }
+  .stufe[data-n="6"] .hilfe-box, .stufe[data-n="7"] .hilfe-box { left: auto; right: 0; }
+  .hilfe-box .ebene { font-family: var(--display); font-weight: 700; font-size: 12.5px; color: var(--blau); }
+  .hilfe-box .ebene span { font-weight: 400; color: var(--fg-muted); }
+  .hilfe-box p { margin-top: 6px; }
+  .hilfe-box .bsp { color: var(--fg-2); }
+  .frage { font-family: var(--display); font-weight: 600; font-size: 15px; line-height: 1.3; color: var(--fg); margin-top: 10px; }
+  .liegen { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+  .zettel-reihe { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .zettel-reihe:empty { display: none; }
+
+  .fuss { display: flex; justify-content: space-between; align-items: center; gap: 16px 40px; flex-wrap: wrap; margin-top: 28px; padding: 20px 0 48px; border-top: 1.5px solid var(--line); }
   .fuss .links { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
-  .hinweis { display: flex; align-items: center; gap: 10px; color: var(--fg-2); font-size: 16px; max-width: 46em; }
-  .hinweis svg { width: 20px; height: 20px; flex: none; }
+  .rechts { display: flex; align-items: center; gap: 12px 22px; flex-wrap: wrap; justify-content: flex-end; }
+  .als-naechstes { font-size: 15px; color: var(--fg-muted); }
+  .hinweis { display: flex; gap: 10px; align-items: center; font-size: 15px; color: var(--fg-2); max-width: 52em; }
+  .hinweis svg { width: 18px; height: 18px; flex: none; }
   .leiser-weg { font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--blau); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
-  .haupt { display: inline-flex; align-items: center; gap: 10px; background: var(--blau); color: var(--weiss); font-family: var(--display); font-weight: 700; font-size: 15.5px; border-radius: 999px; padding: 13px 22px; transition: box-shadow .3s var(--ease); }
+  .haupt { display: inline-flex; align-items: center; gap: 10px; background: var(--blau); color: var(--weiss); font-family: var(--display); font-weight: 700; font-size: 15px; border-radius: 999px; padding: 12px 20px; transition: box-shadow .3s var(--ease); }
   .haupt svg { width: 18px; height: 18px; stroke: var(--weiss); transition: transform .3s var(--ease); }
   .haupt:hover { box-shadow: 0 12px 28px rgba(54,52,157,.25); }
   .haupt:hover svg { transform: translateX(4px); }
-  .haupt[disabled] { background: var(--blau-20); color: var(--blau); cursor: default; box-shadow: none; }
-  .haupt[disabled] svg { stroke: var(--blau); transform: none; }
+  .legende { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13.5px; color: var(--fg-muted); }
+  .legende span { display: inline-flex; gap: 7px; align-items: center; }
+  .legende i { width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid var(--blau-40); display: inline-block; }
+  .legende i.voll { background: var(--blau-40); } .legende i.halb { background: linear-gradient(90deg, var(--blau-40) 50%, transparent 50%); }
+
+  .entwurf { display: grid; grid-template-columns: minmax(0, 760px) minmax(220px, 1fr); gap: 32px 64px; padding-top: 26px; align-items: start; }
+  .blattseite { background: var(--weiss); border: 1.5px solid var(--line); border-radius: 10px; padding: clamp(24px, 3vw, 40px); }
+  .blattseite h2 { font-family: var(--display); font-weight: 700; color: var(--blau); font-size: 26px; letter-spacing: -0.02em; line-height: 1.15; }
+  .blattseite .zg-zeile { color: var(--fg-2); margin-top: 4px; }
+  .abschnitt { margin-top: 26px; }
+  .abschnitt h3 { font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--fg); }
+  .abschnitt h3 span { font-weight: 400; color: var(--fg-muted); }
+  .abschnitt ul { margin-top: 6px; padding-left: 20px; display: grid; gap: 3px; }
+  .abschnitt .leer { color: var(--fg-muted); margin-top: 4px; font-size: 15.5px; }
+  .abschnitt textarea { font-size: 16px; }
+  .seitenleiste { display: grid; gap: 14px; position: sticky; top: 20px; }
+  .seitenleiste .leise { font-size: 14.5px; color: var(--fg-2); }
+  .knopfreihe { display: grid; gap: 10px; justify-items: start; }
+  .rahmenknopf { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--blau); color: var(--blau); border-radius: 999px; padding: 9px 16px; font-family: var(--display); font-weight: 700; font-size: 14.5px; }
+  .rahmenknopf:hover { background: var(--blau-10); }
 
   @media (max-width: 900px) {
-    .sammeln { grid-template-columns: 1fr; min-height: 0; }
-    .sammeln .stapel { max-width: 340px; }
-    .buehne .stapel { position: static; width: 100%; max-width: 340px; margin-bottom: 26px; }
-    .treppe { padding-top: 0; }
-    .treppe, .ebenen { grid-template-columns: 1fr; }
-    .stufe { height: auto; min-height: 72px; padding: 12px 0 14px; }
-    .stufe::after { display: none; }
-    .ebenen { display: none; }
-    .fach-innen { grid-template-columns: 1fr; }
+    .sammeln, .entwurf { grid-template-columns: 1fr; min-height: 0; }
+    .sammeln .halter { max-width: 340px; }
+    .stapel-reihe { position: static; grid-template-columns: 1fr 1fr; margin-bottom: 24px; }
+    .treppe { grid-template-columns: 1fr; padding-top: 0; }
+    .stufe { margin-top: 0; min-height: 0; padding: 0 0 20px; }
+    .bereiche { display: none !important; }
     .eingabe { flex-direction: column; }
     .neben { padding: 12px 18px; align-self: flex-start; }
+    .seitenleiste { position: static; }
+  }
+  @media print {
+    header.top, .schritte, .fuss, .seitenleiste { display: none !important; }
+    body { background: #fff; }
+    .entwurf { display: block; padding: 0; }
+    .blattseite { border: 0; padding: 0; }
+    textarea { border: 0; padding: 0; resize: none; }
   }
 </style>
 </head>
@@ -139,9 +191,7 @@
   </header>
 
   <ol class="schritte" id="schritte" aria-label="Schritte"></ol>
-
   <main id="ansicht"></main>
-
   <footer class="fuss" id="fuss"></footer>
 
 </div>
@@ -153,38 +203,47 @@
   var FRAGEN = [
     null,                                                
     { sorte: 'tun', frage: 'Was macht ihr in dem Vorhaben?', unter: 'Schreibt auf, was euch einfällt: was ihr baut, organisiert, schreibt oder beschließt. Eine Sache pro Karte.', ph: 'zum Beispiel: Antragsformular mit Unternehmen testen' },
-    { sorte: 'anders', frage: 'Was soll in zwei Jahren anders sein?', unter: 'Was würden {zg} merken? Worüber würdet ihr euch freuen?', ph: 'zum Beispiel: Unternehmen reichen vollständige Anträge ein' },
-    { sorte: 'merken', frage: 'Woran würdet ihr merken, dass es klappt?', unter: 'Zahlen, die ihr schon habt, und Beobachtungen, die ihr noch nicht erhebt. Kleine sind willkommen: Rückfragen, Beschwerden, Bearbeitungszeiten.', ph: 'zum Beispiel: Wie oft die Bewilligungsstelle nachfragen muss' }
+    { sorte: 'anders', frage: 'Was soll in zwei Jahren anders sein?', unter: 'Was würde eure Zielgruppe merken? Worüber würdet ihr euch freuen?', ph: 'zum Beispiel: Unternehmen reichen vollständige Anträge ein' },
+    { sorte: 'merken', frage: 'Woran würdet ihr merken, dass es klappt?', unter: 'Zahlen, die ihr schon habt, und Beobachtungen, die ihr noch nicht erhebt. Kleine sind willkommen.', ph: 'zum Beispiel: Wie oft die Bewilligungsstelle nachfragen muss' }
   ];
+  var IDEEN = [
+    ['Im eigenen Portal oder Verfahren', 'Aufrufe, Registrierungen, begonnene und abgeschlossene Vorgänge'],
+    ['Im Kontakt', 'Hotline, Postfach, Beschwerden'],
+    ['Bei der Stelle, die die Fälle bearbeitet', 'Bearbeitungszeit, Nachforderungen'],
+    ['Im Berichtswesen', 'was ihr heute schon meldet']
+  ];
+  var EBENEN = {
+    input: ['Input', 'Was wir hineinstecken'], output: ['Output', 'Was wir liefern'],
+    outcome: ['Outcome', 'Was sich bei der Zielgruppe verändert'], impact: ['Impact', 'Wozu es beiträgt']
+  };
   var STUFEN = [
-    { n: 0, satz: 'Was wir hineinstecken', frage: 'Was steckt ihr hinein? Leute, Geld, Zeit.' },
-    { n: 1, satz: 'Wir setzen um, wie geplant', frage: 'Was macht ihr konkret?' },
-    { n: 2, satz: '{ZG} erfahren davon', frage: 'Wie erfahren {zg} davon?' },
-    { n: 3, satz: '{ZG} machen mit', frage: 'Woran merkt ihr, dass {zg} wirklich mitmachen?' },
-    { n: 4, satz: 'Sie wissen und können mehr', frage: 'Was müssen {zg} dafür wissen, können oder dürfen?' },
-    { n: 5, satz: 'Sie handeln anders', frage: 'Was machen {zg} dann anders als heute?' },
-    { n: 6, satz: 'Ihre Lage verändert sich dauerhaft', frage: 'Was ändert sich dauerhaft an ihren Abläufen und ihrer Lage?' },
-    { n: 7, satz: 'Die Gesellschaft hat etwas davon', frage: 'Wozu trägt das Ganze bei?' }
+    { n: 0, e: 'input',   frage: 'Was stecken wir hinein?',        hilfe: 'Leute, Geld, Zeit, Partner: was ihr einsetzt, damit das Vorhaben läuft.', bsp: 'Zwei Leute aus dem Referat, ein Dienstleister, ein Jahr.' },
+    { n: 1, e: 'output',  frage: 'Was machen wir?',                hilfe: 'Was ihr baut, organisiert, schreibt oder beschließt.', bsp: 'Der Online-Antrag ist gebaut und mit Unternehmen getestet.' },
+    { n: 2, e: 'output',  frage: 'Hört unsere Zielgruppe davon?',  hilfe: 'Erreicht euer Angebot die Zielgruppe überhaupt?', bsp: 'Die Förderdatenbank verlinkt auf den Antrag.' },
+    { n: 3, e: 'output',  frage: 'Macht sie mit?',                 hilfe: 'Nimmt die Zielgruppe das Angebot an und probiert es aus?', bsp: 'Die ersten Unternehmen stellen ihren Antrag online.' },
+    { n: 4, e: 'outcome', frage: 'Weiß sie, wie es geht?',         hilfe: 'Hat sie das Wissen, das Können und das Zutrauen, es anders zu machen?', bsp: 'Unternehmen trauen sich den Antrag ohne Beratungsfirma zu.' },
+    { n: 5, e: 'outcome', frage: 'Macht sie es anders?',           hilfe: 'Macht sie im Alltag tatsächlich etwas anders als vorher?', bsp: 'Unternehmen reichen vollständige Anträge ein.' },
+    { n: 6, e: 'outcome', frage: 'Hat sie etwas davon?',           hilfe: 'Wird ihre Lage dadurch dauerhaft besser?', bsp: 'Die Bewilligung dauert Wochen statt Monate.' },
+    { n: 7, e: 'impact',  frage: 'Wozu trägt das bei?',            hilfe: 'Wozu trägt das über das Vorhaben hinaus bei? Hier begründet ihr euren Beitrag, beweisen lässt er sich selten.', bsp: 'Fördergeld kommt schneller dort an, wo es etwas bewegen soll.' }
   ];
   var SORTE = {
-    input:  { name: 'Das stecken wir hinein', zone: [0],          icon: '<rect x="4" y="13" width="16" height="7" rx="1.5"/><rect x="6" y="5" width="12" height="7" rx="1.5"/>' },
-    tun:    { name: 'Das tun wir',            zone: [1, 2],       icon: '<path d="M4 12h15M13 6l6 6-6 6"/>' },
-    anders: { name: 'Das soll anders sein',   zone: [4, 5, 6],    icon: '<path d="M6 21V4"/><path class="akzent" d="M6 4.5l12 4-12 4z"/>' },
-    merken: { name: 'Woran wir es merken',    zone: [],           icon: '<circle cx="10" cy="10" r="6.5"/><path d="M15 15l5.5 5.5"/>' }
+    input:  { name: 'Das stecken wir hinein', zone: [0],       icon: '<rect x="4" y="13" width="16" height="7" rx="1.5"/><rect x="6" y="5" width="12" height="7" rx="1.5"/>' },
+    tun:    { name: 'Das tun wir',            zone: [1, 2, 3], icon: '<path d="M4 12h15M13 6l6 6-6 6"/>' },
+    anders: { name: 'Das soll anders sein',   zone: [4, 5, 6], icon: '<path d="M6 21V4"/><path class="akzent" d="M6 4.5l12 4-12 4z"/>' },
+    merken: { name: 'Woran wir es merken',    zone: [],        icon: '<circle cx="10" cy="10" r="6.5"/><path d="M15 15l5.5 5.5"/>' }
   };
-  var SCHRITTE = [
-    { id: 'sammeln', name: 'Sammeln' },
-    { id: 'sortieren', name: 'Sortieren' },
-    { id: 'merken', name: 'Woran wir es merken', spaeter: true },
-    { id: 'entwurf', name: 'Entwurf', spaeter: true }
-  ];
+  var STAND = { leer: 'noch keine Daten', halb: 'teilweise Daten', voll: 'Daten da' };
+  var NAECHSTER_STAND = { leer: 'halb', halb: 'voll', voll: 'leer' };
+  var SCHRITTE = [{ id: 'sammeln', name: 'Sammeln' }, { id: 'sortieren', name: 'Sortieren' }, { id: 'entwurf', name: 'Entwurf' }];
   var PFEIL = '<svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>';
   var PLUS = '<svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
   var KREUZ = '<svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   var LUPE = '<svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l5.5 5.5"/><circle class="akzent" cx="10" cy="10" r="2.2"/></svg>';
+  var FAHNE = '<svg class="fahne strich" viewBox="0 0 30 46" aria-hidden="true"><path d="M4 46V4"/><path class="akzent" d="M4 4.5l20 7-20 7z"/></svg>';
 
   var SPEICHER = 'wirkungstreppe-entwurf-1';
-  function leer() { return { ansicht: 'sammeln', frage: 0, vorhaben: '', zg: '', input: '', karten: [], naechste: 1 }; }
+  function leer() { return { ansicht: 'sammeln', frage: 0, vorhaben: '', zg: '', input: '', karten: [], naechste: 1, zusammenfassung: '' }; }
+  function neueKarte(sorte, t, id) { return { id: id, sorte: sorte, t: t, stufe: null, stand: sorte === 'merken' ? 'leer' : null, vorschlag: false }; }
   function beispiel() {
     var s = leer();
     s.vorhaben = 'Online-Antrag für ein Förderprogramm des Bundes';
@@ -194,60 +253,83 @@
      ['tun', 'Antragsformular mit Unternehmen testen'], ['tun', 'Antrag online stellen und in der Förderdatenbank verlinken'], ['tun', 'Hotline für Rückfragen in den ersten Monaten'],
      ['anders', 'Unternehmen reichen vollständige Anträge ein'], ['anders', 'Unternehmen trauen sich den Antrag ohne Beratungsfirma zu'], ['anders', 'Bewilligung dauert Wochen statt Monate'], ['anders', 'Mehr kleine Unternehmen nutzen die Förderung'],
      ['merken', 'Registrierungen im Antragsportal'], ['merken', 'Wie oft die Bewilligungsstelle nachfragen muss'], ['merken', 'Zeit vom Antrag bis zur Bewilligung']
-    ].forEach(function (p) { s.karten.push({ id: p[0] === 'input' ? 'input' : 'k' + (s.naechste++), sorte: p[0], t: p[1], stufe: null }); });
+    ].forEach(function (p) { s.karten.push(neueKarte(p[0], p[1], p[0] === 'input' ? 'input' : 'k' + (s.naechste++))); });
     return s;
   }
-  function laden() { try { var r = localStorage.getItem(SPEICHER); if (r) return Object.assign(leer(), JSON.parse(r)); } catch (e) {} return leer(); }
+
+  function vorsortieren(s) {
+    var plan = { input: 0, k1: 1, k2: 2, k5: 4, k4: 5, k6: 6 };
+    s.karten.forEach(function (k) { if (plan[k.id] !== undefined) { k.stufe = plan[k.id]; k.vorschlag = k.id !== 'input'; } });
+    return s;
+  }
+  function laden() {
+    try {
+      var r = localStorage.getItem(SPEICHER);
+      if (r) {
+        var s = Object.assign(leer(), JSON.parse(r));
+        if (s.ansicht === 'merken') s.ansicht = 'sortieren';
+        s.karten.forEach(function (k) { if (k.sorte === 'merken' && !k.stand) k.stand = 'leer'; if (k.vorschlag === undefined) k.vorschlag = false; });
+        return s;
+      }
+    } catch (e) {}
+    return leer();
+  }
   function speichern() { try { localStorage.setItem(SPEICHER, JSON.stringify(S)); } catch (e) {} }
 
   var S = laden();
-  var offen = null, ziehtId = null, neuId = null, frischId = null, resetGefragt = false, ZEIGEN = 3;
+  var ziehtId = null, neuId = null, frischId = null, resetGefragt = false, ebenenZeigen = false, hilfeOffen = null, neueSorte = 'tun', anlegenOffen = false, ZEIGEN = 4;
 
   var q = new URLSearchParams(location.search);
   if (q.has('beispiel')) S = beispiel();
+  if (q.has('vorsortiert')) S = vorsortieren(S);
+  if (q.has('gelegt')) S.karten.forEach(function (k) { var p = { k3: [2], k7: [7], k8: [2, 'voll'], k9: [5, 'halb'] }[k.id]; if (p) { k.stufe = p[0]; if (p[1]) k.stand = p[1]; } });
   if (q.get('schritt')) S.ansicht = q.get('schritt');
   if (q.get('frage')) { S.ansicht = 'sammeln'; S.frage = +q.get('frage'); }
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function icon(sorte) { return '<svg class="strich" viewBox="0 0 24 24" aria-hidden="true">' + SORTE[sorte].icon + '</svg>'; }
-  function gross(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
   function zg() { return S.zg.trim(); }
-  function mitZg(text) {
-    var z = zg();
-    return text.replace(/\{ZG\}/g, z ? gross(z) : 'Sie').replace(/\{zg\}/g, z || 'die Leute');
-  }
   function finde(id) { for (var i = 0; i < S.karten.length; i++) if (S.karten[i].id === id) return S.karten[i]; }
-  function stapel() { return S.karten.filter(function (k) { return k.stufe === null; }); }
-  function auf(n) { return S.karten.filter(function (k) { return k.stufe === n; }); }
-  function karteHtml(k, extra) {
-    return '<div class="karte' + (extra || '') + '"' + (k ? '' : '') + '><div class="sorte">' + icon(k.sorte) + esc(SORTE[k.sorte].name) + '</div><p>' + esc(k.t) + '</p></div>';
+  function istZettel(k) { return k.sorte === 'merken'; }
+  function stapelKarten() { return S.karten.filter(function (k) { return !istZettel(k) && k.stufe === null; }); }
+  function stapelZettel() { return S.karten.filter(function (k) { return istZettel(k) && k.stufe === null; }); }
+  function aufStufe(n, zettel) { return S.karten.filter(function (k) { return k.stufe === n && istZettel(k) === !!zettel; }); }
+  function phase() { return stapelKarten().length ? 'karten' : 'zettel'; }
+
+  function karteHtml(k, opt) {
+    opt = opt || {};
+    if (istZettel(k)) {
+      return '<div class="zettel' + (opt.gross ? ' gross' : '') + (opt.extra || '') + '" data-id="' + k.id + '"><p>' + esc(k.t) + '</p>' +
+        (opt.stand ? '<button type="button" class="stand ' + k.stand + '" data-stand="' + k.id + '" title="' + STAND[k.stand] + '. Klicken zum Ändern." aria-label="Datenstand: ' + STAND[k.stand] + '"></button>' : '') + '</div>';
+    }
+    return '<div class="karte' + (opt.gross ? ' gross' : '') + (opt.extra || '') + '" data-id="' + k.id + '" title="' + esc(SORTE[k.sorte].name) + '">' + icon(k.sorte) +
+      (k.vorschlag ? '<span class="vorschlag">Vorschlag</span>' : '') + '<p>' + esc(k.t) + '</p></div>';
   }
 
   function renderSchritte() {
     $('schritte').innerHTML = SCHRITTE.map(function (s) {
-      if (s.spaeter) return '<li><span class="spaeter" title="Kommt als Nächstes">' + s.name + '</span></li>';
       return '<li><button type="button" data-ziel="' + s.id + '"' + (S.ansicht === s.id ? ' aria-current="step"' : '') + '>' + s.name + '</button></li>';
     }).join('');
     $('schritte').querySelectorAll('button').forEach(function (b) { b.onclick = function () { geheZu(b.dataset.ziel); }; });
   }
-  function geheZu(ansicht) { merkeStart(); S.ansicht = ansicht; offen = null; speichern(); render(); window.scrollTo(0, 0); }
+  function geheZu(ansicht) { merkeStart(); S.ansicht = ansicht; hilfeOffen = null; anlegenOffen = false; speichern(); render(); window.scrollTo(0, 0); }
 
   function merkeStart() {
     if (S.ansicht !== 'sammeln' || S.frage !== 0 || !$('fVorhaben')) return;
     S.vorhaben = $('fVorhaben').value; S.zg = $('fZg').value; S.input = $('fInput').value;
     var k = finde('input'), t = S.input.trim();
     if (t && k) k.t = t;
-    else if (t) S.karten.unshift({ id: 'input', sorte: 'input', t: t, stufe: null });
+    else if (t) S.karten.unshift(neueKarte('input', t, 'input'));
     else if (k) S.karten.splice(S.karten.indexOf(k), 1);
     speichern();
   }
 
   function stapelSammeln() {
-    var alle = S.karten, oben = alle[alle.length - 1];
-    if (!oben) return '<div class="stapel leer"><div class="halter"><div class="karte"><p>Hier landen eure Antworten als Karten.</p></div></div></div>';
-    return '<div class="stapel"><div class="halter">' + karteHtml(oben, oben.id === frischId ? ' frisch' : '') + '</div>' +
-      '<div class="unten"><span>' + alle.length + (alle.length === 1 ? ' Karte' : ' Karten') + ' auf dem Stapel</span></div></div>';
+    var oben = S.karten[S.karten.length - 1];
+    if (!oben) return '<div><div class="halter leer"><div class="leerkarte">Hier landen eure Antworten als Karten.</div></div></div>';
+    return '<div><div class="halter' + (istZettel(oben) ? ' minze' : '') + '">' + karteHtml(oben, { gross: true, extra: oben.id === frischId ? ' frisch' : '' }) + '</div>' +
+      '<div class="noch"><span>' + S.karten.length + (S.karten.length === 1 ? ' Karte' : ' Karten') + ' auf dem Stapel</span></div></div>';
   }
 
   function renderSammeln() {
@@ -257,7 +339,7 @@
         '<p class="zaehler">Sammeln · Frage 1 von 4</p>' +
         '<h1>Worum geht es, und für wen macht ihr das?</h1>' +
         '<p class="unter">Vier kurze Fragen. Aus jeder Antwort wird eine Karte. Grob reicht, im nächsten Schritt sortiert ihr sie.</p>' +
-        '<ol class="vorschau" aria-label="Danach fragen wir">' + FRAGEN.slice(1).map(function (f, i) { return '<li><b>' + (i + 2) + '</b>' + esc(mitZg(f.frage)) + '</li>'; }).join('') + '</ol>' +
+        '<ol class="vorschau" aria-label="Danach fragen wir">' + FRAGEN.slice(1).map(function (f, i) { return '<li><b>' + (i + 2) + '</b>' + esc(f.frage) + '</li>'; }).join('') + '</ol>' +
         '<div class="felder">' +
           '<div class="feld"><label for="fVorhaben">Euer Vorhaben</label><input type="text" id="fVorhaben" autocomplete="off" placeholder="zum Beispiel: Online-Antrag für ein Förderprogramm" value="' + esc(S.vorhaben) + '"></div>' +
           '<div class="feld"><label for="fZg">Wer soll am Ende etwas anders machen?<span class="hilfe">Menschen oder Stellen, so eng wie möglich.</span></label><input type="text" id="fZg" autocomplete="off" placeholder="zum Beispiel: kleine Unternehmen" value="' + esc(S.zg) + '"></div>' +
@@ -265,25 +347,25 @@
         '</div></div>' + stapelSammeln() + '</div>';
       a.innerHTML = html;
       ['fVorhaben', 'fZg', 'fInput'].forEach(function (id) { $(id).addEventListener('change', merkeStart); });
-      $('fInput').addEventListener('input', function () {                                       });
       return;
     }
     var f = FRAGEN[S.frage];
     var diese = S.karten.filter(function (k) { return k.sorte === f.sorte; });
     html = '<div class="sammeln"><div>' +
       '<p class="zaehler">Sammeln · Frage ' + (S.frage + 1) + ' von 4</p>' +
-      '<h1>' + esc(mitZg(f.frage)) + '</h1>' +
-      '<p class="unter">' + esc(mitZg(f.unter)) + '</p>' +
-      '<form class="eingabe" id="form" autocomplete="off"><input type="text" id="neu" aria-label="Neue Karte" placeholder="' + esc(f.ph) + '"><button class="neben" type="submit">' + PLUS + 'Karte anlegen</button></form>' +
-      '<div class="diese" id="diese">' + diese.map(function (k) {
-        return '<span class="chip">' + icon(k.sorte) + '<span>' + esc(k.t) + '</span><button type="button" class="weg" data-weg="' + k.id + '" aria-label="Karte löschen: ' + esc(k.t) + '">' + KREUZ + '</button></span>';
+      '<h1>' + esc(f.frage) + '</h1>' +
+      '<p class="unter">' + esc(f.unter) + '</p>' +
+      '<form class="eingabe" id="form" autocomplete="off"><input type="text" id="neu" aria-label="Neue Karte" placeholder="' + esc(f.ph) + '"><button class="neben" type="submit">' + PLUS + (f.sorte === 'merken' ? 'Zettel anlegen' : 'Karte anlegen') + '</button></form>' +
+      (f.sorte === 'merken' ? '<div class="ideen"><p>Wo fallen bei euch ohnehin Zahlen an?</p><ul>' + IDEEN.map(function (i) { return '<li><b>' + i[0] + ':</b> ' + i[1] + '</li>'; }).join('') + '</ul></div>' : '') +
+      '<div class="diese">' + diese.map(function (k) {
+        return '<span class="chip' + (istZettel(k) ? ' minze' : '') + '">' + (istZettel(k) ? '' : icon(k.sorte)) + '<span>' + esc(k.t) + '</span><button type="button" class="weg" data-weg="' + k.id + '" aria-label="Löschen: ' + esc(k.t) + '">' + KREUZ + '</button></span>';
       }).join('') + '</div>' +
       '</div>' + stapelSammeln() + '</div>';
     a.innerHTML = html;
     $('form').onsubmit = function (e) {
       e.preventDefault();
       var t = $('neu').value.trim(); if (!t) { $('neu').focus(); return; }
-      var k = { id: 'k' + (S.naechste++), sorte: f.sorte, t: t, stufe: null };
+      var k = neueKarte(f.sorte, t, 'k' + (S.naechste++));
       S.karten.push(k); frischId = k.id; speichern(); render(); $('neu').focus();
     };
     a.querySelectorAll('[data-weg]').forEach(function (b) {
@@ -300,7 +382,7 @@
       if (S.karten.length || S.vorhaben) links += '<button type="button" class="leiser-weg" id="reset">' + (resetGefragt ? 'Wirklich alles löschen?' : 'Von vorn anfangen') + '</button>';
     }
     var letzte = S.frage === FRAGEN.length - 1;
-    var naechstes = letzte ? 'Danach legt ihr die Karten auf die Treppe.' : 'Als Nächstes: ' + mitZg(FRAGEN[S.frage + 1].frage);
+    var naechstes = letzte ? 'Danach legt ihr die Karten auf die Treppe.' : 'Als Nächstes: ' + FRAGEN[S.frage + 1].frage;
     $('fuss').innerHTML = '<div class="links">' + links + '</div>' +
       '<div class="rechts"><span class="als-naechstes">' + esc(naechstes) + '</span>' +
       '<button class="haupt" type="button" id="weiter">' + (letzte ? 'Weiter: Sortieren' : 'Nächste Frage') + PFEIL + '</button></div>';
@@ -316,119 +398,248 @@
     };
   }
 
-  function zeigeVorschlag(sorte) {
+  function zeigeZone(sorte) {
     var zone = sorte ? SORTE[sorte].zone : [];
-    document.querySelectorAll('.stufe').forEach(function (el) { el.classList.toggle('vorschlag', zone.indexOf(+el.dataset.n) > -1); });
+    document.querySelectorAll('.stufe').forEach(function (el) { el.classList.toggle('vorschlagszone', zone.indexOf(+el.dataset.n) > -1); });
   }
   function ziehbar(el, id) {
-    el.draggable = true;
+    el.draggable = true; el.classList.add('ziehbar');
     el.addEventListener('dragstart', function (e) {
+      if (el.querySelector('[contenteditable="true"]')) { e.preventDefault(); return; }
       ziehtId = id; e.dataTransfer.setData('text/plain', id); e.dataTransfer.effectAllowed = 'move';
-      el.classList.add('zieht'); zeigeVorschlag(finde(id).sorte);
+      el.classList.add('zieht'); zeigeZone(finde(id).sorte);
     });
     el.addEventListener('dragend', function () { el.classList.remove('zieht'); ziehtId = null; renderSortieren(); });
   }
+  function bearbeitbar(el, id) {
+    el.addEventListener('dblclick', function (e) {
+      if (e.target.closest('.stand')) return;
+      var p = el.querySelector('p'), k = finde(id); if (!p || !k) return;
+      el.draggable = false; el.classList.add('bearbeitet');
+      p.contentEditable = 'true'; p.focus();
+      var r = document.createRange(); r.selectNodeContents(p); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      function fertig(behalten) {
+        p.contentEditable = 'false'; el.classList.remove('bearbeitet');
+        var t = p.textContent.trim();
+        if (behalten) { if (t) { k.t = t; k.vorschlag = false; } else S.karten.splice(S.karten.indexOf(k), 1); speichern(); }
+        renderSortieren(); renderFussSortieren();
+      }
+      p.onkeydown = function (ev) {
+        if (ev.key === 'Enter') { ev.preventDefault(); p.onblur = null; fertig(true); }
+        if (ev.key === 'Escape') { p.onblur = null; fertig(false); }
+      };
+      p.onblur = function () { fertig(true); };
+    });
+  }
   function lege(id, n) {
     var k = finde(id); if (!k) return; ziehtId = null;
+    if (k.stufe !== n) k.vorschlag = false;
     k.stufe = n;
-    if (n === null) { S.karten.splice(S.karten.indexOf(k), 1); var erste = S.karten.findIndex(function (x) { return x.stufe === null; }); S.karten.splice(erste < 0 ? S.karten.length : erste, 0, k); }
+    if (n === null) { S.karten.splice(S.karten.indexOf(k), 1); S.karten.push(k); }
     else neuId = id;
     speichern(); renderSortieren(); renderFussSortieren();
-    setTimeout(function () { neuId = null; var m = document.querySelector('.mini.neu'); if (m) m.classList.remove('neu'); }, 1200);
+    setTimeout(function () { neuId = null; document.querySelectorAll('.neu').forEach(function (m) { m.classList.remove('neu'); }); }, 1200);
   }
 
   function renderSortieren() {
-    var a = $('ansicht');
-    if (!$('treppe')) {
-      a.innerHTML = '<div class="kopf"><h1>Wohin gehören eure Karten?</h1>' +
-        '<p class="unter">Zieht jede Karte auf die Stufe, zu der sie gehört. Unsicher? Legt sie erst mal irgendwohin, im Workshop schauen wir gemeinsam drauf.</p></div>' +
-        '<div class="buehne"><div class="stapel" id="stapel"></div><div class="treppe" id="treppe"></div>' +
-        '<div class="ebenen" aria-hidden="true"><div class="ebene input"><b>Input</b><span>Was wir hineinstecken.</span></div><div class="ebene output"><b>Output</b><span>Was wir liefern.</span></div><div class="ebene outcome"><b>Outcome</b><span>Was sich bei der Zielgruppe verändert.</span></div><div class="ebene impact"><b>Impact</b><span>Wozu es beiträgt.</span></div></div></div>' +
-        '<div class="fach" id="fach" aria-live="polite"></div>';
-    }
-    renderTreppe(); renderStapelSort(); renderFach();
+    var a = $('ansicht'), ph = phase();
+    a.innerHTML = '<div class="kopf"><div>' +
+        (ph === 'karten'
+          ? '<h1>Wohin gehören eure Karten?</h1><p class="unter">Legt jede Karte auf ihre Stufe. Die Ebene reicht. Doppelklick auf eine Karte, um sie zu ändern.</p>'
+          : '<h1>Was könnt ihr schon beobachten?</h1><p class="unter">Legt jeden Zettel unter die Stufe, die er belegt. Klickt auf den Kreis, um zu markieren, ob es dazu Daten gibt.</p>') +
+      '</div><div class="rand">' + (zg() ? '<span><b>Zielgruppe:</b> ' + esc(zg()) + '</span>' : '') +
+      '<button type="button" class="schalter" id="ebenen">' + (ebenenZeigen ? 'Ebenen ausblenden' : 'Ebenen zeigen') + '</button></div></div>' +
+      '<div class="bereiche" aria-hidden="true">' + ['input', 'output', 'outcome', 'impact'].map(function (e) { return '<div class="bereich b-' + e + '"><b>' + EBENEN[e][0] + '</b>' + EBENEN[e][1] + '</div>'; }).join('') + '</div>' +
+      '<div class="wand"><div class="stapel-reihe" id="stapel"></div><div class="treppe" id="treppe"></div></div>';
+    a.classList.toggle('zeige-ebenen', ebenenZeigen);
+    $('ebenen').onclick = function () { ebenenZeigen = !ebenenZeigen; renderSortieren(); };
+    renderStapel(); renderTreppe();
+  }
+
+  function renderStapel() {
+    var box = $('stapel'), ph = phase(), sk = stapelKarten(), sz = stapelZettel(), html = '';
+
+    html += '<div id="stapelKarten"><div class="stapel-titel">Eure Karten</div>';
+    if (sk.length) html += '<div class="halter">' + karteHtml(sk[0], { gross: true }) + '</div><div class="noch"><span>noch ' + sk.length + '</span>' + (sk.length > 1 ? '<button type="button" id="spaeterK">später</button>' : '') + '</div>';
+    else html += '<div class="halter leer"><div class="leerkarte">Alle Karten liegen.</div></div><div class="noch"><span></span></div>';
+    html += anlegenHtml() + '</div>';
+
+    html += '<div id="stapelZettel" class="' + (ph === 'karten' ? 'ruht' : '') + '"><div class="stapel-titel">Woran wir es merken</div>';
+    if (sz.length) html += '<div class="halter minze">' + karteHtml(sz[0], { gross: true }) + '</div><div class="noch"><span>' + (ph === 'karten' ? sz.length + ' Zettel, danach' : 'noch ' + sz.length) + '</span>' + (ph !== 'karten' && sz.length > 1 ? '<button type="button" id="spaeterZ">später</button>' : '') + '</div>';
+    else html += '<div class="halter leer"><div class="leerkarte">' + (S.karten.some(istZettel) ? 'Alle Zettel liegen.' : 'Keine Zettel. Beim Sammeln entstehen sie aus Frage 4.') + '</div></div>';
+    html += '</div>';
+    box.innerHTML = html;
+
+    var oberK = box.querySelector('#stapelKarten [data-id]'), oberZ = box.querySelector('#stapelZettel [data-id]');
+    if (oberK) { ziehbar(oberK, oberK.dataset.id); bearbeitbar(oberK, oberK.dataset.id); oberK.tabIndex = 0; oberK.setAttribute('aria-label', 'Oberste Karte: ' + sk[0].t + '. Mit den Tasten 0 bis 7 auf eine Stufe legen.'); oberK.id = 'aktuell'; }
+    if (oberZ && ph !== 'karten') { ziehbar(oberZ, oberZ.dataset.id); bearbeitbar(oberZ, oberZ.dataset.id); oberZ.tabIndex = 0; if (!oberK) oberZ.id = 'aktuell'; }
+    if ($('spaeterK')) $('spaeterK').onclick = function () { var k = sk[0]; S.karten.splice(S.karten.indexOf(k), 1); S.karten.push(k); speichern(); renderSortieren(); };
+    if ($('spaeterZ')) $('spaeterZ').onclick = function () { var k = sz[0]; S.karten.splice(S.karten.indexOf(k), 1); S.karten.push(k); speichern(); renderSortieren(); };
+    [$('stapelKarten'), $('stapelZettel')].forEach(function (z) {
+      z.ondragover = function (e) { e.preventDefault(); };
+      z.ondrop = function (e) { e.preventDefault(); lege(e.dataTransfer.getData('text/plain'), null); };
+    });
+    verdrahteAnlegen();
+    if (!ziehtId) zeigeZone(sk[0] ? sk[0].sorte : null);
+  }
+
+  function anlegenHtml() {
+    if (!anlegenOffen) return '<div class="noch" style="margin-top:4px"><button type="button" id="anlegenAuf">Karte anlegen</button></div>';
+    return '<form class="anlegen" id="anlegen" autocomplete="off"><input type="text" id="anlegenText" aria-label="Text der neuen Karte" placeholder="Was soll auf die Karte?">' +
+      '<div class="sorten">' + ['tun', 'anders', 'merken'].map(function (s) { return '<button type="button" data-sorte="' + s + '" aria-pressed="' + (neueSorte === s) + '">' + SORTE[s].name + '</button>'; }).join('') + '</div>' +
+      '<div class="noch" style="margin-top:0"><button type="submit">anlegen</button><button type="button" id="anlegenZu">abbrechen</button></div></form>';
+  }
+  function verdrahteAnlegen() {
+    if ($('anlegenAuf')) $('anlegenAuf').onclick = function () { anlegenOffen = true; renderStapel(); $('anlegenText').focus(); };
+    if (!$('anlegen')) return;
+    document.querySelectorAll('[data-sorte]').forEach(function (b) { b.onclick = function () { neueSorte = b.dataset.sorte; var t = $('anlegenText').value; renderStapel(); $('anlegenText').value = t; $('anlegenText').focus(); }; });
+    $('anlegenZu').onclick = function () { anlegenOffen = false; renderStapel(); };
+    $('anlegen').onsubmit = function (e) {
+      e.preventDefault();
+      var t = $('anlegenText').value.trim(); if (!t) { $('anlegenText').focus(); return; }
+      var k = neueKarte(neueSorte, t, 'k' + (S.naechste++));
+      var erste = S.karten.findIndex(function (x) { return x.stufe === null && istZettel(x) === istZettel(k); });
+      S.karten.splice(erste < 0 ? S.karten.length : erste, 0, k);
+      speichern(); renderSortieren(); renderFussSortieren();
+      anlegenOffen = true; renderStapel(); $('anlegenText').focus();
+    };
   }
 
   function renderTreppe() {
     var t = $('treppe'); t.innerHTML = '';
     STUFEN.forEach(function (s) {
-      var el = document.createElement('div'), satz = mitZg(s.satz), ks = auf(s.n);
-      el.className = 'stufe' + (offen === s.n ? ' offen' : '');
-      el.dataset.n = s.n; el.style.setProperty('--n', s.n);
-      el.tabIndex = 0; el.setAttribute('role', 'button');
-      el.setAttribute('aria-label', 'Stufe ' + s.n + ': ' + satz + '. ' + ks.length + (ks.length === 1 ? ' Karte.' : ' Karten.'));
-      el.innerHTML = '<div class="nr">' + s.n + '</div><div class="satz">' + esc(satz) + '</div><div class="minis"></div>';
-      var minis = el.querySelector('.minis');
+      var el = document.createElement('div'), ks = aufStufe(s.n, false), zs = aufStufe(s.n, true);
+      el.className = 'stufe'; el.dataset.n = s.n; el.style.setProperty('--n', s.n);
+      el.setAttribute('aria-label', 'Stufe ' + s.n + ': ' + s.frage);
+      var hilfe = hilfeOffen === s.n ? '<div class="hilfe-box" role="note"><div class="ebene">' + EBENEN[s.e][0] + ' <span>· ' + EBENEN[s.e][1] + '</span></div><p>' + esc(s.hilfe) + '</p><p class="bsp">Beispiel: ' + esc(s.bsp) + '</p></div>' : '';
+      el.innerHTML = '<div class="kante"><div class="nummer">0' + s.n + '</div>' + (s.n === 7 ? FAHNE : '') +
+        '<button type="button" class="i" aria-expanded="' + (hilfeOffen === s.n) + '" aria-label="Hilfe zu Stufe ' + s.n + '">i</button>' + hilfe + '</div>' +
+        '<div class="frage">' + esc(s.frage) + '</div><div class="liegen"></div><div class="zettel-reihe"></div>';
+      var liegen = el.querySelector('.liegen'), reihe = el.querySelector('.zettel-reihe');
       ks.slice(0, ZEIGEN).forEach(function (k) {
-        var m = document.createElement('div'); m.className = 'mini' + (k.id === neuId ? ' neu' : ''); m.title = SORTE[k.sorte].name + ': ' + k.t;
-        m.innerHTML = icon(k.sorte) + '<span>' + esc(k.t) + '</span>';
-        m.addEventListener('click', function (e) { e.stopPropagation(); offen = s.n; renderSortieren(); });
-        ziehbar(m, k.id); minis.appendChild(m);
+        var w = document.createElement('div'); w.innerHTML = karteHtml(k, { extra: k.id === neuId ? ' neu' : '' });
+        var c = w.firstChild; ziehbar(c, k.id); bearbeitbar(c, k.id); liegen.appendChild(c);
       });
-      if (ks.length > ZEIGEN) { var w = document.createElement('button'); w.type = 'button'; w.className = 'weitere'; w.textContent = (ks.length - ZEIGEN) + ' weitere'; minis.appendChild(w); }
-      el.addEventListener('click', function () { offen = offen === s.n ? null : s.n; renderSortieren(); });
-      el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); } });
+      if (ks.length > ZEIGEN) { var mehr = document.createElement('div'); mehr.className = 'noch'; mehr.innerHTML = '<span>' + (ks.length - ZEIGEN) + ' weitere</span>'; liegen.appendChild(mehr); }
+      zs.forEach(function (k) {
+        var w = document.createElement('div'); w.innerHTML = karteHtml(k, { stand: true, extra: k.id === neuId ? ' neu' : '' });
+        var c = w.firstChild; ziehbar(c, k.id); bearbeitbar(c, k.id); reihe.appendChild(c);
+      });
+      el.querySelector('.i').onclick = function (e) { e.stopPropagation(); hilfeOffen = hilfeOffen === s.n ? null : s.n; renderTreppe(); };
       el.addEventListener('dragover', function (e) { e.preventDefault(); el.classList.add('drueber'); });
-      el.addEventListener('dragleave', function () { el.classList.remove('drueber'); });
+      el.addEventListener('dragleave', function (e) { if (!el.contains(e.relatedTarget)) el.classList.remove('drueber'); });
       el.addEventListener('drop', function (e) { e.preventDefault(); lege(e.dataTransfer.getData('text/plain'), s.n); });
       t.appendChild(el);
     });
-  }
-
-  function renderStapelSort() {
-    var st = stapel(), box = $('stapel'), k = st[0];
-    box.classList.toggle('leer', !k);
-    if (!k) {
-      box.innerHTML = '<div class="halter"><div class="karte"><p>' + (S.karten.length ? 'Alle Karten liegen auf der Treppe.' : 'Noch keine Karten. Fangt beim Sammeln an.') + '</p></div></div>';
-    } else {
-      box.innerHTML = '<div class="halter"><div class="karte ziehbar" id="aktuell" tabindex="0" aria-label="Aktuelle Karte: ' + esc(k.t) + '. Mit den Tasten 0 bis 7 auf eine Stufe legen."><div class="sorte">' + icon(k.sorte) + esc(SORTE[k.sorte].name) + '</div><p>' + esc(k.t) + '</p></div></div>' +
-        '<div class="unten"><span>Noch ' + st.length + (st.length === 1 ? ' Karte' : ' Karten') + '</span>' + (st.length > 1 ? '<button type="button" id="spaeter">Später</button>' : '') + '</div>';
-      ziehbar($('aktuell'), k.id);
-      if ($('spaeter')) $('spaeter').onclick = function () { S.karten.splice(S.karten.indexOf(k), 1); S.karten.push(k); speichern(); renderSortieren(); };
-    }
-    box.ondragover = function (e) { e.preventDefault(); };
-    box.ondrop = function (e) { e.preventDefault(); lege(e.dataTransfer.getData('text/plain'), null); };
-    if (!ziehtId) zeigeVorschlag(k ? k.sorte : null);
-  }
-
-  function renderFach() {
-    var f = $('fach');
-    if (offen === null) { f.innerHTML = ''; return; }
-    var s = STUFEN[offen], ks = auf(offen);
-    f.innerHTML = '<div class="fach-innen"><div><h2>' + s.n + ' · ' + esc(mitZg(s.satz)) + '</h2><p class="frage">' + esc(mitZg(s.frage)) + '</p></div><div class="chips" id="chips">' +
-      (ks.length ? '' : '<p class="leise">Hier liegt noch nichts.</p>') + '</div></div>';
-    ks.forEach(function (k) {
-      var c = document.createElement('div'); c.className = 'chip'; c.title = SORTE[k.sorte].name;
-      c.innerHTML = icon(k.sorte) + '<span>' + esc(k.t) + '</span>';
-      ziehbar(c, k.id); $('chips').appendChild(c);
+    t.querySelectorAll('[data-stand]').forEach(function (b) {
+      b.onclick = function (e) { e.stopPropagation(); var k = finde(b.dataset.stand); k.stand = NAECHSTER_STAND[k.stand] || 'halb'; speichern(); renderTreppe(); renderFussSortieren(); };
     });
   }
 
   function hinweisText() {
-    var merken = S.karten.filter(function (k) { return k.sorte === 'merken' && k.stufe !== null; });
-    var oben = merken.filter(function (k) { return k.stufe >= 4; });
-    var anders = S.karten.filter(function (k) { return k.sorte === 'anders' && k.stufe !== null && k.stufe <= 2; });
+    var gelegt = function (sorte) { return S.karten.filter(function (k) { return k.sorte === sorte && k.stufe !== null; }); };
+    var outcome = S.karten.filter(function (k) { return !istZettel(k) && k.stufe >= 4 && k.stufe <= 6; });
+    var andersUnten = gelegt('anders').filter(function (k) { return k.stufe <= 3; });
+    var zettel = gelegt('merken'), oben = zettel.filter(function (k) { return k.stufe >= 4; });
     if (!S.karten.length) return 'Noch keine Karten. Beim Sammeln entstehen sie aus euren Antworten.';
-    if (anders.length) return 'Eine Karte „Das soll anders sein“ liegt bei dem, was ihr tut. Ist das schon eine Veränderung, oder noch eure Arbeit?';
-    if (merken.length >= 2 && !oben.length) return 'Eure Zeichen liegen bisher alle unter Stufe 4. Sie zeigen, dass etwas ankommt, aber noch nicht, dass sich bei ' + (zg() || 'den Leuten') + ' etwas ändert.';
-    if (!stapel().length) return 'Alle Karten liegen. Als Nächstes geht es darum, woran ihr es merkt.';
-    return 'Die hellen Striche sind ein Vorschlag, wohin die Karte passen könnte. Ihr entscheidet. Klickt eine Stufe an, dann seht ihr ihre Leitfrage.';
+    if (andersUnten.length) return 'Eine Karte „Das soll anders sein“ liegt bei dem, was ihr liefert. Ist das schon eine Veränderung bei eurer Zielgruppe, oder noch eure Arbeit?';
+    if (phase() === 'zettel' && !outcome.length) return 'Bei Outcome liegt noch nichts. Was soll eure Zielgruppe anders machen?';
+    if (zettel.length >= 2 && !oben.length) return 'Eure Zettel zeigen, dass es ankommt. Bekommt ihr irgendwo mit, ob sich bei eurer Zielgruppe etwas ändert?';
+    if (phase() === 'zettel' && !stapelZettel().length) return 'Alles liegt. Im Entwurf seht ihr, was daraus wird.';
+    if (S.karten.some(function (k) { return k.vorschlag; })) return 'Karten mit „Vorschlag“ haben wir gelegt. Lasst sie liegen oder verschiebt sie.';
+    return phase() === 'karten' ? 'Der helle Strich über einer Stufe ist ein Vorschlag, wohin die Karte passen könnte. Ihr entscheidet.' : 'Unsicher, wohin ein Zettel gehört? Legt ihn unter die Stufe, über die er am meisten sagt.';
   }
   function renderFussSortieren() {
-    $('fuss').innerHTML = '<p class="hinweis">' + LUPE + '<span>' + esc(hinweisText()) + '</span></p>' +
-      '<button class="haupt" type="button" disabled title="Kommt als Nächstes">Weiter: Woran wir es merken' + PFEIL + '</button>';
+    var legende = phase() === 'zettel' ? '<div class="legende"><span><i class="voll"></i>Daten da</span><span><i class="halb"></i>teilweise</span><span><i></i>noch keine</span></div>' : '';
+    $('fuss').innerHTML = '<div class="links"><p class="hinweis">' + LUPE + '<span>' + esc(hinweisText()) + '</span></p>' + legende + '</div>' +
+      '<button class="haupt" type="button" id="weiter">Weiter: Entwurf' + PFEIL + '</button>';
+    $('weiter').onclick = function () { geheZu('entwurf'); };
+  }
+
+  function karten(ebene) {
+    return S.karten.filter(function (k) { return !istZettel(k) && k.stufe !== null && STUFEN[k.stufe].e === ebene; })
+      .sort(function (a, b) { return b.stufe - a.stufe; });
+  }
+  function zettelZeilen() {
+    return ['impact', 'outcome', 'output', 'input'].map(function (e) {
+      var zs = S.karten.filter(function (k) { return istZettel(k) && k.stufe !== null && STUFEN[k.stufe].e === e; });
+      if (!zs.length) return null;
+      return { e: e, zs: zs };
+    }).filter(Boolean);
+  }
+  function offenes() {
+    var o = [];
+    ['impact', 'outcome', 'output'].forEach(function (e) { if (!karten(e).length) o.push('Bei ' + EBENEN[e][0] + ' liegt noch nichts.'); });
+    var sk = stapelKarten().length, sz = stapelZettel().length;
+    if (sk) o.push(sk + (sk === 1 ? ' Karte liegt' : ' Karten liegen') + ' noch auf dem Stapel.');
+    if (sz) o.push(sz + (sz === 1 ? ' Zettel liegt' : ' Zettel liegen') + ' noch auf dem Stapel.');
+    var ohne = S.karten.filter(function (k) { return istZettel(k) && k.stufe !== null && k.stand === 'leer'; }).length;
+    if (ohne) o.push('Zu ' + ohne + (ohne === 1 ? ' Beobachtung gibt' : ' Beobachtungen gibt') + ' es noch keine Daten.');
+    return o;
+  }
+  var ABSCHNITTE = [['impact', 'Wozu es beiträgt'], ['outcome', 'Was sich bei der Zielgruppe verändert'], ['output', 'Was wir liefern'], ['input', 'Was wir hineinstecken']];
+
+  function renderEntwurf() {
+    var a = $('ansicht');
+    var titel = S.vorhaben.trim() || 'Euer Vorhaben';
+    var html = '<div class="kopf"><div><h1>Euer Entwurf</h1><p class="unter">Hier steht, was ihr auf die Treppe gelegt habt. Die Zusammenfassung schreibt ihr selbst, in euren Worten.</p></div></div>' +
+      '<div class="entwurf"><article class="blattseite" id="blattseite">' +
+      '<h2>' + esc(titel) + '</h2>' + (zg() ? '<p class="zg-zeile">Zielgruppe: ' + esc(zg()) + '</p>' : '') +
+      '<section class="abschnitt"><h3>Kurz gesagt</h3><textarea id="zusammenfassung" aria-label="Zusammenfassung in euren Worten" placeholder="Was macht ihr, was soll sich bei eurer Zielgruppe ändern, und woran merkt ihr es? In euren eigenen Worten, ein paar Sätze.">' + esc(S.zusammenfassung) + '</textarea></section>';
+    ABSCHNITTE.forEach(function (ab) {
+      var ks = karten(ab[0]);
+      html += '<section class="abschnitt"><h3>' + ab[1] + ' <span>· ' + EBENEN[ab[0]][0] + '</span></h3>' +
+        (ks.length ? '<ul>' + ks.map(function (k) { return '<li>' + esc(k.t) + '</li>'; }).join('') + '</ul>' : '<p class="leer">Noch offen.</p>') + '</section>';
+    });
+    var zz = zettelZeilen();
+    html += '<section class="abschnitt"><h3>Woran wir es merken</h3>' + (zz.length ? '<ul>' + zz.map(function (z) {
+      return z.zs.map(function (k) { return '<li>' + EBENEN[z.e][0] + ': ' + esc(k.t) + ' (' + (z.e === 'impact' ? 'Beitrag begründen' : STAND[k.stand]) + ')</li>'; }).join('');
+    }).join('') + '</ul>' : '<p class="leer">Noch keine Zettel auf der Treppe.</p>') + '</section>';
+    html += '<section class="abschnitt"><h3>Wovon es abhängt</h3><p class="leer">Kommt aus der Portfolio-Steuerung, sobald das Werkzeug im SharePoint läuft.</p></section>';
+    var off = offenes();
+    html += '<section class="abschnitt"><h3>Was noch offen ist</h3>' + (off.length ? '<ul>' + off.map(function (o) { return '<li>' + esc(o) + '</li>'; }).join('') + '</ul>' : '<p class="leer">Nichts, soweit das Werkzeug es sieht.</p>') + '</section>';
+    html += '</article><aside class="seitenleiste"><p class="leise">Den Text könnt ihr kopieren und weitergeben, oder die Seite drucken. Gespeichert ist alles in diesem Browser.</p>' +
+      '<div class="knopfreihe"><button type="button" class="rahmenknopf" id="kopieren">Text kopieren</button><button type="button" class="rahmenknopf" id="drucken">Drucken</button></div></aside></div>';
+    a.innerHTML = html;
+    $('zusammenfassung').addEventListener('input', function (e) { S.zusammenfassung = e.target.value; speichern(); });
+    $('drucken').onclick = function () { window.print(); };
+    $('kopieren').onclick = function () {
+      var b = $('kopieren'), text = textFassung();
+      function ok() { b.textContent = 'Kopiert'; setTimeout(function () { b.textContent = 'Text kopieren'; }, 1600); }
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(ok, function () { altKopieren(text); ok(); }); else { altKopieren(text); ok(); }
+    };
+  }
+  function altKopieren(text) { var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} ta.remove(); }
+  function textFassung() {
+    var z = [S.vorhaben.trim() || 'Euer Vorhaben'];
+    if (zg()) z.push('Zielgruppe: ' + zg());
+    z.push('', 'Kurz gesagt', S.zusammenfassung.trim() || '(noch offen)');
+    ABSCHNITTE.forEach(function (ab) { var ks = karten(ab[0]); z.push('', ab[1] + ' (' + EBENEN[ab[0]][0] + ')'); if (ks.length) ks.forEach(function (k) { z.push('- ' + k.t); }); else z.push('(noch offen)'); });
+    z.push('', 'Woran wir es merken');
+    var zz = zettelZeilen(); if (zz.length) zz.forEach(function (x) { x.zs.forEach(function (k) { z.push('- ' + EBENEN[x.e][0] + ': ' + k.t + ' (' + (x.e === 'impact' ? 'Beitrag begründen' : STAND[k.stand]) + ')'); }); }); else z.push('(noch offen)');
+    var off = offenes(); if (off.length) { z.push('', 'Was noch offen ist'); off.forEach(function (o) { z.push('- ' + o); }); }
+    return z.join('\n');
+  }
+  function fussEntwurf() {
+    $('fuss').innerHTML = '<div class="links"><button type="button" class="leiser-weg" id="zurueck">Zurück zum Sortieren</button></div><span></span>';
+    $('zurueck').onclick = function () { geheZu('sortieren'); };
   }
 
   function render() {
     renderSchritte();
-    if (S.ansicht === 'sortieren') { $('ansicht').innerHTML = ''; renderSortieren(); renderFussSortieren(); }
+    $('ansicht').classList.remove('zeige-ebenen');
+    if (S.ansicht === 'sortieren') { renderSortieren(); renderFussSortieren(); }
+    else if (S.ansicht === 'entwurf') { renderEntwurf(); fussEntwurf(); }
     else { S.ansicht = 'sammeln'; renderSammeln(); fussSammeln(); }
   }
 
   document.addEventListener('keydown', function (e) {
-    if (document.activeElement && document.activeElement.id === 'aktuell' && /^[0-7]$/.test(e.key)) {
-      var k = stapel()[0]; if (k) { lege(k.id, +e.key); var a = $('aktuell'); if (a) a.focus(); }
-    }
+    var a = document.activeElement;
+    if (a && a.id === 'aktuell' && /^[0-7]$/.test(e.key)) { lege(a.dataset.id, +e.key); var n = $('aktuell'); if (n) n.focus(); }
+    if (e.key === 'Escape' && hilfeOffen !== null) { hilfeOffen = null; if ($('treppe')) renderTreppe(); }
+  });
+  document.addEventListener('click', function (e) {
+    if (hilfeOffen !== null && !e.target.closest('.hilfe-box') && !e.target.closest('.i')) { hilfeOffen = null; if ($('treppe')) renderTreppe(); }
   });
 
   render();
