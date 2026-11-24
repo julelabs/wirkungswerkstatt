@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wirkung im Haus, Entwurf der gemeinsamen Seite</title>
+<title>Wirkung im Haus (Entwurf)</title>
 <link rel="stylesheet" href="gemeinsam.css">
 <style>
 
@@ -13,11 +13,12 @@
   a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
   .strich .zart { stroke: var(--blau-40); stroke-dasharray: 2 9; }
 
-  header.top { gap: 14px; }
-
   .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 20px 48px; padding-top: clamp(28px, 5vw, 64px); padding-bottom: clamp(30px, 5vw, 60px); }
   h1 { font-size: clamp(38px, 5.4vw, 62px); margin-bottom: 18px; text-wrap: balance; }
-  .lead { color: var(--fg-2); font-size: clamp(18px, 1.9vw, 21px); max-width: 36ch; text-wrap: pretty; }
+  .lead { color: var(--fg-2); font-size: clamp(18px, 1.9vw, 21px); text-wrap: pretty; }
+  .lead a { color: var(--blau); text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .lead a:hover { text-decoration-thickness: 2.5px; }
+  .lead a:focus-visible { outline: 3px solid var(--blau); outline-offset: 3px; border-radius: 4px; }
   .bild { position: relative; justify-self: end; width: 100%; max-width: 500px; }
   .bild::before { content: ''; position: absolute; inset: -4% -6% 6% 8%; border-radius: 50%; background: radial-gradient(closest-side, rgba(77,255,176,.26), rgba(227,230,242,.5) 62%, rgba(247,247,252,0)); }
   .bild svg { position: relative; display: block; width: 100%; height: auto; }
@@ -26,30 +27,33 @@
     .bild { justify-self: start; max-width: 340px; order: -1; }
   }
 
-  .kacheln { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 1.5vw, 20px); }
+  .kacheln { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 1.5vw, 20px); }
+  .kacheln > li { display: flex; }
   @media (max-width: 1020px) { .kacheln { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 540px) { .kacheln { grid-template-columns: 1fr; } }
 
-  .kachel { display: flex; flex-direction: column; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 14px; padding: clamp(22px, 2.2vw, 28px); text-decoration: none; transition: transform .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease); }
+  .kachel { flex: 1; display: flex; flex-direction: column; background: var(--weiss); border: 1.5px solid var(--line); border-radius: 14px; padding: clamp(22px, 2.2vw, 28px); text-decoration: none; transition: transform .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease); }
   .kachel .zeichen { width: 60px; height: 60px; margin-bottom: 22px; }
   .kachel .zeichen .akzent { transition: transform .3s var(--ease); transform-box: fill-box; transform-origin: center; }
   .kachel h2 { font-size: clamp(21px, 1.9vw, 24px); margin-bottom: 8px; }
-  .kachel p { color: var(--fg-2); font-size: 16.5px; text-wrap: pretty; }
-  .weiter { margin-top: auto; padding-top: 26px; font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--blau); display: flex; align-items: center; gap: 8px; }
-  .weiter svg { width: 18px; height: 18px; transition: transform .3s var(--ease); }
 
-  a.kachel:hover { transform: translateY(-4px); border-color: var(--blau); box-shadow: 0 18px 40px rgba(54,52,157,.13); }
-  a.kachel:hover .weiter svg { transform: translateX(5px); }
-  a.kachel:hover .zeichen .akzent { transform: scale(1.18); }
+  .kachel p { color: var(--fg-2); font-size: 16.5px; text-wrap: pretty; }
+  .weiter { margin-top: auto; padding-top: 26px; font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--blau); line-height: 1.4; text-wrap: balance; }
+
+  .weiter svg { display: inline-block; width: 18px; height: 18px; margin-left: 6px; vertical-align: -4px; transition: transform .3s var(--ease); }
+
+  a.kachel:hover, a.kachel:focus-visible { transform: translateY(-4px); border-color: var(--blau); box-shadow: 0 18px 40px rgba(54,52,157,.13); }
+  a.kachel:hover .weiter svg, a.kachel:focus-visible .weiter svg { transform: translateX(5px); }
+  a.kachel:hover .weiter .extern, a.kachel:focus-visible .weiter .extern { transform: translate(3px, -3px); }
+  a.kachel:hover .zeichen .akzent, a.kachel:focus-visible .zeichen .akzent { transform: scale(1.18); }
   a.kachel:focus-visible { outline: 3px solid var(--blau); outline-offset: 3px; }
 
   .kachel.kommt .weiter { color: var(--fg-muted); }
-  .stand { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; background: var(--minze); color: var(--dunkel); border-radius: 999px; padding: 4px 11px; white-space: nowrap; }
+  .stand { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; background: var(--minze); color: var(--dunkel); border-radius: 999px; padding: 4px 11px; white-space: nowrap; }
 
-  .fuss { display: flex; justify-content: space-between; align-items: baseline; gap: 10px 40px; flex-wrap: wrap; padding-top: clamp(36px, 5vw, 64px); padding-bottom: 60px; }
-  .fuss p { color: var(--fg-2); font-size: 15.5px; }
-  .fuss b { font-family: var(--display); font-weight: 700; color: var(--blau); }
-  .fuss .traeger { color: var(--fg-muted); font-size: 14px; }
+  .vorlesen { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  .fuss { display: flex; justify-content: space-between; gap: 6px 40px; flex-wrap: wrap; padding-top: clamp(36px, 5vw, 64px); padding-bottom: 60px; color: var(--fg-muted); font-size: 14px; }
 </style>
 </head>
 <body>
@@ -57,79 +61,88 @@
 
   <header class="top">
     <div class="brand">Wirkung im Haus</div>
-    <div class="badge">Entwurf</div>
+    <p class="kontakt">Fragen oder fehlt ein Thema? <a href="wer-macht-was.html">Fragt uns</a></p>
   </header>
 
-  <section class="hero">
-    <div>
-      <h1>Was braucht ihr gerade?</h1>
-      <p class="lead">Vier Einstiege in die Wirkungsorientierung. Sucht euch einen aus.</p>
-    </div>
-    <div class="bild">
-      <svg class="strich" viewBox="0 0 520 290" aria-hidden="true">
-        <path class="zart" d="M112 226Q250 128 388 70"/>
-        <path d="M14 254l84-8 82 4v-44h82v-44h82v-44h82v132l80 6"/>
-        <path d="M396 118V60"/>
-        <path class="akzent" d="M396 62l36 12-36 12z"/>
-        <circle class="akzent" cx="221" cy="206" r="7"/>
-        <circle class="akzent" cx="303" cy="162" r="7"/>
-        <circle class="akzent" cx="372" cy="118" r="7"/>
-      </svg>
-    </div>
-  </section>
+  <main>
+    <section class="hero">
+      <div>
+        <h1 id="frage">Was braucht ihr gerade?</h1>
+        <p class="lead">Neu hier? Fangt bei den <a href="grundlagen.html">Grundlagen</a> an.</p>
+      </div>
+      <div class="bild">
+        <svg class="strich" viewBox="0 0 520 290" aria-hidden="true">
+          <path class="zart" d="M112 226Q250 128 388 70"/>
+          <path d="M14 254l84-8 82 4v-44h82v-44h82v-44h82v132l80 6"/>
+          <path d="M396 118V60"/>
+          <path class="akzent" d="M396 62l36 12-36 12z"/>
+          <circle class="akzent" cx="221" cy="206" r="7"/>
+          <circle class="akzent" cx="303" cy="162" r="7"/>
+          <circle class="akzent" cx="372" cy="118" r="7"/>
+        </svg>
+      </div>
+    </section>
 
-  <main class="kacheln">
+    <ul class="kacheln" role="list" aria-labelledby="frage">
 
-    <a class="kachel" href="grundlagen.html">
-      <svg class="zeichen strich" viewBox="0 0 64 64" aria-hidden="true">
-        <path d="M32 17c-6-4-14-5-23-4v36c9-1 17 0 23 4 6-4 14-5 23-4V13c-9-1-17 0-23 4z"/>
-        <path d="M32 17v36"/>
-        <path class="akzent" d="M41 13.6v15l4-3.4 4 3.4V12.9"/>
-      </svg>
-      <h2>Grundlagen</h2>
-      <p>Wir wollen verstehen, worum es geht.</p>
-      <span class="weiter">Lesen <svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
-    </a>
+      <li>
+        <a class="kachel" href="grundlagen.html">
+          <svg class="zeichen strich" viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 17c-6-4-14-5-23-4v36c9-1 17 0 23 4 6-4 14-5 23-4V13c-9-1-17 0-23 4z"/>
+            <path d="M32 17v36"/>
+            <path class="akzent" d="M41 13.6v15l4-3.4 4 3.4V12.9"/>
+          </svg>
+          <h2>Grundlagen</h2>
+          <p>Wir wollen verstehen, worum es geht.</p>
+          <span class="weiter">Lesen <svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </li>
 
-    <a class="kachel" href="indikatoren.html">
-      <svg class="zeichen strich" viewBox="0 0 64 64" aria-hidden="true">
-        <circle cx="27" cy="27" r="18"/>
-        <path d="M40.500 40.500L57 57"/>
-        <circle class="akzent" cx="27" cy="27" r="6"/>
-      </svg>
-      <h2>Indikatoren</h2>
-      <p>Wir wollen erkennen, ob es vorangeht.</p>
-      <span class="weiter">Lesen <svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
-    </a>
+      <li>
+        <a class="kachel" href="indikatoren.html">
+          <svg class="zeichen strich" viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="27" cy="27" r="18"/>
+            <path d="M40.500 40.500L57 57"/>
+            <circle class="akzent" cx="27" cy="27" r="6"/>
+          </svg>
+          <h2>Indikatoren</h2>
+          <p>Wir wollen wissen, woran wir Erfolg merken.</p>
+          <span class="weiter">Lesen <svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </li>
 
-    <a class="kachel" href="wirkungstreppe.html">
-      <svg class="zeichen strich" viewBox="0 0 64 64" aria-hidden="true">
-        <path d="M6 55h15V41h15V27h15v28h7"/>
-        <path d="M46 27V9"/>
-        <path class="akzent" d="M46 10l12 4.500-12 4.500z"/>
-      </svg>
-      <h2>Wirkungstreppe</h2>
-      <p>Wir wollen unser Vorhaben durchdenken.</p>
-      <span class="weiter">Ausprobieren <svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
-    </a>
+      <li>
+        <a class="kachel" href="wirkungstreppe.html">
+          <svg class="zeichen strich" viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M6 55h15V41h15V27h15v28h7"/>
+            <path d="M46 27V9"/>
+            <path class="akzent" d="M46 10l12 4.500-12 4.500z"/>
+          </svg>
+          <h2>Wirkungstreppe</h2>
+          <p>Wir wollen unser Vorhaben durchdenken.</p>
+          <span class="weiter">Ausprobieren <svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </li>
 
-    <a class="kachel" href="https://okr-werkstatt.org">
-      <svg class="zeichen strich" viewBox="0 0 64 64" aria-hidden="true">
-        <circle cx="32" cy="32" r="25"/>
-        <circle cx="32" cy="32" r="15"/>
-        <circle class="akzent" cx="32" cy="32" r="6"/>
-      </svg>
-      <h2>OKR</h2>
-      <p>Wir wollen im Alltag nachsteuern.</p>
-      <span class="weiter">Zur OKR-Werkstatt <svg class="strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
-    </a>
+      <li>
+        <a class="kachel" href="https://okr-werkstatt.org">
+          <svg class="zeichen strich" viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="32" cy="32" r="25"/>
+            <circle cx="32" cy="32" r="15"/>
+            <circle class="akzent" cx="32" cy="32" r="6"/>
+          </svg>
+          <h2>OKR</h2>
+          <p>Wir wollen unsere Ziele im Quartal verfolgen.</p>
+          <span class="weiter">Zur OKR-Werkstatt <span class="vorlesen">(externe Seite)</span><svg class="strich extern" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+        </a>
+      </li>
 
+    </ul>
   </main>
 
   <footer class="fuss">
-    <p><b>Fragen, oder fehlt ein Thema?</b> <a href="wer-macht-was.html">Wer macht was</a></p>
-    <p class="traeger">Gemeinsam getragen von Stabsstelle und Modernisierungsprogramm (Platzhalter).</p>
-    <p class="traeger"><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
+    <p>Gemeinsam getragen von Stabsstelle und Modernisierungsprogramm (Platzhalter).</p>
+    <p><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a> · Entwurf</p>
   </footer>
 
 </div>
