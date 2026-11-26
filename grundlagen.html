@@ -34,47 +34,86 @@
 
     <section class="leitsatz">
       <h2>Was ist Wirkung?</h2>
-      <p class="aussage">Wirkung ist das, was sich durch eure Arbeit für Menschen tatsächlich verändert. Nicht das, was ihr gebaut oder ausgegeben habt, sondern was danach anders läuft.</p>
+      <div>
+        <p class="aussage">Wirkung ist das, was sich durch eure Arbeit für Menschen tatsächlich verändert. Nicht das, was ihr gebaut oder ausgegeben habt, sondern was danach anders läuft.</p>
+
+        <div class="def">
+          <button type="button" class="weg klapp" id="def-weg" aria-expanded="false" aria-controls="definition"><span class="kreis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span><span class="text">Die ausführliche Definition</span></button>
+          <div class="definition" id="definition" hidden>
+            <p class="wortlaut">Wortlaut der drei Referate</p>
+            <p class="titel">Was wir unter Wirkungsorientierung verstehen</p>
+            <p>(Fast) alles was wir tun, wirkt auf die Bürgerinnen und Bürger sowie Unternehmen im Land. Wenn wir wirkungsorientiert vorgehen, machen wir uns bewusst, welche Wirkung wir erreichen möchten, bevor wir in die Umsetzung starten.</p>
+            <p>Für uns bedeutet Wirkungsorientierung, konsequent von einem angestrebten Zustand zu denken und zu planen und diesen transparent zu machen.</p>
+            <ul>
+              <li>Das erfordert, eine Theory of Change zu nutzen und diese konsequent in der Priorisierung von Vorhaben mitzudenken, um die Vorhaben mit dem größten (angenommenen) Nutzen im Verhältnis der erwarteten Kosten zu fokussieren.</li>
+              <li>Ermöglicht während der Umsetzung zu lernen und umzusteuern → während der Umsetzung kontinuierlich prüfen und entsprechend handeln, um das Ziel zu erreichen.</li>
+              <li>Nach Abschluss eines Vorhabens bedarf es der Überprüfung, ob die ursprünglichen Ziele erreicht wurden (oder nicht) und was daraus für die Zukunft gelernt wird.</li>
+              <li>Sie hilft dabei, einen Konsens der Akteure zu schaffen.</li>
+              <li>Ist eine Summe verschiedener Bausteine und Methodiken, die unterschiedlich zum Einsatz kommen.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section>
       <h2>Drei Ebenen, die oft verwechselt werden</h2>
-      <div class="ebenen">
-        <div class="karte">
-          <h3>Output</h3>
-          <p class="deutsch">Was wir liefern.</p>
-          <p class="text">Woran ihr arbeitet und was ihr anbietet, und ob es bei der Zielgruppe ankommt.</p>
-        </div>
-        <svg class="pfeil strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
-        <div class="karte">
-          <h3>Outcome</h3>
-          <p class="deutsch">Was sich bei der Zielgruppe verändert.</p>
-          <p class="text">Was die Menschen mit dem Angebot anders machen als vorher.</p>
-        </div>
-        <svg class="pfeil strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
-        <div class="karte">
-          <h3>Impact</h3>
-          <p class="deutsch">Wozu das darüber hinaus beiträgt.</p>
-          <p class="text">Die Veränderung in der Gesellschaft, zu der euer Vorhaben einen Beitrag leistet, neben vielem anderen.</p>
-        </div>
-      </div>
 
-      <div class="beispiel-block">
-        <p class="am-beispiel"><b>Am Beispiel.</b> Ein Förderprogramm des Bundes bekommt einen Online-Antrag. Er richtet sich an kleine Unternehmen, die zum ersten Mal Fördergeld beantragen.</p>
-        <div class="ebenen beispiele">
-          <div class="karte">
-            <h3>Output</h3>
-            <p class="text">Der Antrag ist online, die Förderdatenbank verlinkt darauf, und die ersten Unternehmen stellen ihn.</p>
+      <button type="button" class="ansage" id="ansage" aria-pressed="false">
+        <span class="satz"><b>Am Beispiel.</b> Ein Förderprogramm des Bundes bekommt einen Online-Antrag. Er richtet sich an kleine Unternehmen, die zum ersten Mal Fördergeld beantragen.</span>
+        <span class="sr" id="ansage-text">Alle drei Karten umdrehen</span>
+        <span class="kreis" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v3.8h-3.8"/></svg></span>
+      </button>
+
+      <div class="ebenen">
+        <div class="wende">
+          <div class="dreh">
+            <div class="karte seite vorn">
+              <h3>Output</h3>
+              <p class="deutsch">Was wir liefern.</p>
+              <p class="text">Woran ihr arbeitet und was ihr anbietet, und ob es bei der Zielgruppe ankommt.</p>
+              <button type="button" class="weg drehen" data-seite="vorn"><span class="kreis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v3.8h-3.8"/></svg></span><span class="sr">Am Beispiel für Output</span></button>
+            </div>
+            <div class="karte seite rueck">
+              <h3 aria-hidden="true">Output</h3>
+              <p class="deutsch">Am Beispiel</p>
+              <p class="text">Der Antrag ist online, die Förderdatenbank verlinkt darauf, und die ersten Unternehmen stellen ihn.</p>
+              <button type="button" class="weg drehen" data-seite="rueck" tabindex="-1" aria-hidden="true"><span class="kreis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v3.8h3.8"/></svg></span><span class="sr">Zur Erklärung von Output</span></button>
+            </div>
           </div>
-          <svg class="pfeil strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
-          <div class="karte">
-            <h3>Outcome</h3>
-            <p class="text">Die Unternehmen reichen vollständige Anträge ein, und die Bewilligungsstelle muss seltener nachfragen.</p>
+        </div>
+        <svg class="pfeil strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+        <div class="wende">
+          <div class="dreh">
+            <div class="karte seite vorn">
+              <h3>Outcome</h3>
+              <p class="deutsch">Was sich bei der Zielgruppe verändert.</p>
+              <p class="text">Was die Menschen mit dem Angebot anders machen als vorher.</p>
+              <button type="button" class="weg drehen" data-seite="vorn"><span class="kreis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v3.8h-3.8"/></svg></span><span class="sr">Am Beispiel für Outcome</span></button>
+            </div>
+            <div class="karte seite rueck">
+              <h3 aria-hidden="true">Outcome</h3>
+              <p class="deutsch">Am Beispiel</p>
+              <p class="text">Die Unternehmen reichen vollständige Anträge ein, und die Bewilligungsstelle muss seltener nachfragen.</p>
+              <button type="button" class="weg drehen" data-seite="rueck" tabindex="-1" aria-hidden="true"><span class="kreis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v3.8h3.8"/></svg></span><span class="sr">Zur Erklärung von Outcome</span></button>
+            </div>
           </div>
-          <svg class="pfeil strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
-          <div class="karte">
-            <h3>Impact</h3>
-            <p class="text">Fördergeld kommt schneller dort an, wo es etwas bewegen soll.</p>
+        </div>
+        <svg class="pfeil strich" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+        <div class="wende">
+          <div class="dreh">
+            <div class="karte seite vorn">
+              <h3>Impact</h3>
+              <p class="deutsch">Wozu das darüber hinaus beiträgt.</p>
+              <p class="text">Die Veränderung in der Gesellschaft, zu der euer Vorhaben einen Beitrag leistet, neben vielem anderen.</p>
+              <button type="button" class="weg drehen" data-seite="vorn"><span class="kreis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v3.8h-3.8"/></svg></span><span class="sr">Am Beispiel für Impact</span></button>
+            </div>
+            <div class="karte seite rueck">
+              <h3 aria-hidden="true">Impact</h3>
+              <p class="deutsch">Am Beispiel</p>
+              <p class="text">Fördergeld kommt schneller dort an, wo es etwas bewegen soll.</p>
+              <button type="button" class="weg drehen" data-seite="rueck" tabindex="-1" aria-hidden="true"><span class="kreis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v3.8h3.8"/></svg></span><span class="sr">Zur Erklärung von Impact</span></button>
+            </div>
           </div>
         </div>
       </div>
@@ -88,12 +127,30 @@
           <p class="text">Die Menschen oder Stellen, bei denen sich durch euer Vorhaben etwas ändern soll. Je enger ihr sie fasst, desto genauer könnt ihr sagen, was sich für sie ändern soll: „kleine Unternehmen, die zum ersten Mal eine Förderung beantragen“ statt „die Wirtschaft“.</p>
         </div>
         <div class="zeile">
-          <div><h3>Indikator</h3><p class="deutsch">Woran wir es erkennen.</p></div>
-          <div><p class="text">Eine Beobachtung, an der ihr erkennt, ob die Veränderung, die ihr schaffen wollt, auch eintritt. Weil sich eine Veränderung selten direkt zählen lässt, schaut ihr auf etwas, das sich mit ihr bewegt.</p><a class="weg mehr" href="indikatoren.html"><span class="kreis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="text">Mehr zu Indikatoren</span></a></div>
+          <div><h3><a class="begriff" href="indikatoren.html">Indikator<span class="kreis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="sr">, zur Seite Indikatoren</span></a></h3><p class="deutsch">Woran wir es erkennen.</p></div>
+          <p class="text">Eine Beobachtung, an der ihr erkennt, ob die Veränderung, die ihr schaffen wollt, auch eintritt. Weil sich eine Veränderung selten direkt zählen lässt, schaut ihr auf etwas, das sich mit ihr bewegt.</p>
         </div>
         <div class="zeile">
-          <div><h3>Wirkungstreppe</h3></div>
+          <div><h3><a class="begriff" href="wirkungstreppe.html">Wirkungstreppe<span class="kreis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="sr">, zum Werkzeug</span></a></h3><p class="deutsch">Wie aus unserer Arbeit Wirkung wird.</p></div>
           <p class="text">Die Wirkungstreppe (nach Phineo) zerlegt den Weg von dem, was ihr tut, bis zu dem, was es bewirkt, in Stufen, die ihr gemeinsam nacheinander durchdenken könnt. So werden auch die kleinen Schritte dazwischen sichtbar, und ihr müsst nicht gleich beweisen, dass sich die ganze Gesellschaft verändert.</p>
+        </div>
+      </div>
+
+      <div class="az">
+        <button type="button" class="weg klapp" id="az-weg" aria-expanded="false" aria-controls="az-offen"><span class="kreis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span><span class="text">Begriffe von A bis Z</span></button>
+        <div class="az-offen" id="az-offen" hidden>
+          <label class="suche"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><span class="sr">In den Begriffen suchen</span><input type="search" id="az-suche" placeholder="Begriff suchen" autocomplete="off"></label>
+          <dl class="az-liste">
+            <div class="az-zeile"><dt>Baseline</dt><dd>Der gemessene Ausgangszustand vor Beginn einer Maßnahme. Mit ihm vergleicht ihr später, was sich tatsächlich verändert hat.</dd></div>
+            <div class="az-zeile"><dt>Evaluation</dt><dd>Eine einmalige wissenschaftliche Bewertung einer Maßnahme und ihrer gesellschaftlichen Wirkung. Ihre Ergebnisse helfen, die Maßnahme weiterzuentwickeln.</dd></div>
+            <div class="az-zeile"><dt>Input</dt><dd>Alles, was in ein Vorhaben hineinfließt: Geld, Arbeitszeit, Netzwerke und Fachwissen.</dd></div>
+            <div class="az-zeile"><dt>Maßnahme</dt><dd>Ein konkretes Vorhaben, Projekt oder Instrument, etwa ein Förderprogramm, eine Kampagne oder ein Gesetz, mit dem ein Wirkungsziel erreicht werden soll.</dd></div>
+            <div class="az-zeile"><dt>Monitoring</dt><dd>Die laufende Beobachtung eines Vorhabens. In regelmäßigen Abständen werden Daten gesammelt, damit ihr den Fortschritt im Blick behaltet.</dd></div>
+            <div class="az-zeile"><dt>Theory of Change</dt><dd>Ein Wirkungsmodell, das die vermuteten Wege vom langfristigen Ziel (Impact) rückwärts bis zu den nötigen Mitteln (Input) beschreibt, einschließlich äußerer Einflüsse.</dd></div>
+            <div class="az-zeile"><dt>Wirkungsmessung</dt><dd>Die systematische Prüfung, ob und wie stark die geplanten Wirkungen bei der Zielgruppe eingetreten sind. Dafür werden vorab festgelegte Indikatoren mit Daten unterlegt.</dd></div>
+            <div class="az-zeile"><dt>Wirkungsmodell</dt><dd>Zeigt den Zusammenhang zwischen dem, was eingesetzt wird, und der Wirkung, die eintritt. Häufige Formen sind das IOOI-Modell und die Wirkungstreppe.</dd></div>
+          </dl>
+          <p class="zaehler" id="az-zaehler" role="status"></p>
         </div>
       </div>
     </section>
@@ -112,5 +169,82 @@
   </div>
 
 </div>
+
+<script>
+(function () {
+  'use strict';
+  function $(id) { return document.getElementById(id); }
+  function wenigBewegung() { return matchMedia('(prefers-reduced-motion: reduce)').matches; }
+
+  var karten = Array.prototype.slice.call(document.querySelectorAll('.wende'));
+  var ansage = $('ansage');
+
+  function drehe(k, hinten, fokus) {
+    k.classList.toggle('hinten', hinten);
+    var vorn = k.querySelector('[data-seite="vorn"]'), rueck = k.querySelector('[data-seite="rueck"]');
+    [[vorn, !hinten], [rueck, hinten]].forEach(function (p) {
+      if (p[1]) { p[0].removeAttribute('tabindex'); p[0].removeAttribute('aria-hidden'); }
+      else { p[0].setAttribute('tabindex', '-1'); p[0].setAttribute('aria-hidden', 'true'); }
+    });
+
+    if (fokus) (hinten ? rueck : vorn).focus({ preventScroll: true });
+    schalterStand();
+  }
+  function alleHinten() { return karten.every(function (k) { return k.classList.contains('hinten'); }); }
+
+  function schalterStand() {
+    var alle = alleHinten();
+    ansage.setAttribute('aria-pressed', alle ? 'true' : 'false');
+    $('ansage-text').textContent = alle ? 'Alle drei zurückdrehen' : 'Alle drei Karten umdrehen';
+  }
+  function alleDrehen() {
+    var ziel = !alleHinten();
+    karten.forEach(function (k, i) {
+
+      setTimeout(function () { drehe(k, ziel, false); }, wenigBewegung() ? 0 : i * 110);
+    });
+  }
+  document.addEventListener('click', function (ev) {
+    var k = ev.target.closest('.wende');
+    if (k) {
+      if (String(getSelection()).length) return;
+      drehe(k, !k.classList.contains('hinten'), !!ev.target.closest('.drehen'));
+      return;
+    }
+    if (ev.target.closest('#ansage')) alleDrehen();
+  });
+  schalterStand();
+
+  function klapp(knopf, zu, auf, beimOeffnen, beimSchliessen) {
+    if (!knopf) return;
+    var ziel = $(knopf.getAttribute('aria-controls'));
+    knopf.addEventListener('click', function () {
+      var offen = knopf.getAttribute('aria-expanded') !== 'true';
+      knopf.setAttribute('aria-expanded', offen ? 'true' : 'false');
+      ziel.hidden = !offen;
+      knopf.querySelector('.text').textContent = offen ? auf : zu;
+      if (offen && beimOeffnen) beimOeffnen();
+      if (!offen && beimSchliessen) beimSchliessen();
+    });
+  }
+  klapp($('def-weg'), 'Die ausführliche Definition', 'Definition wieder schließen');
+
+  var suche = $('az-suche');
+  function filtern() {
+    var s = suche.value.trim().toLowerCase(), zeilen = document.querySelectorAll('.az-zeile'), n = 0;
+    Array.prototype.forEach.call(zeilen, function (z) {
+      var treffer = !s || z.textContent.toLowerCase().indexOf(s) >= 0;
+      z.hidden = !treffer; if (treffer) n++;
+    });
+    $('az-zaehler').textContent = !s ? '' : n ? n + ' von ' + zeilen.length + ' Begriffen' : 'Kein Begriff gefunden. Fehlt einer? Dann fragt uns.';
+  }
+  if (suche) {
+    suche.addEventListener('input', filtern);
+    klapp($('az-weg'), 'Begriffe von A bis Z', 'Liste schließen',
+      function () { suche.focus(); },
+      function () { suche.value = ''; filtern(); });
+  }
+})();
+</script>
 </body>
 </html>
